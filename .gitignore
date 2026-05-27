@@ -29,11 +29,6 @@ credentials*.json
 *.secret
 .secrets/
 
-# Generated project artifacts
-/data/processed/
-/outputs/
-/*.csv
-
 # Local/editor noise
 .vscode/
 .idea/

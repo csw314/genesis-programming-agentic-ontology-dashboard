@@ -1,0 +1,24 @@
+challenge_name,normalized_funding_office,evidence_row_count,evidence_wbs_count,five_year_total,review_flag_count,evidence_wbs_names,claim_role,is_claimed
+Accelerating Business and Management Processes for National Security Missions,NAIM,3,3,485027182.0,2,Artificial Intelligence - Program Work; Enterprise Operations; Mission Contract Tasks,partner,True
+Accelerating Business and Management Processes for National Security Missions,NA11,1,1,216804000.0,1,Artificial Intelligence for Nuclear Security (AI4NS),unclaimed,False
+Accelerating Business and Management Processes for National Security Missions,NA70,1,1,10000000.0,1,Security Program Operations & Planning,unclaimed,False
+Accelerating Business and Management Processes for National Security Missions,NA90,1,1,15220000.0,1,Operations of Facilties,unclaimed,False
+"Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence",NA11,7,5,206222966.0,3,Advanced Certification & Qualification (formerly Advanced Certification); Advanced Manufacturing Development; Aging & Lifetimes (formerly Enhanced Surveillance); Delivery Environments (formerly WSEAT); Dynamic Materials Properties,partner,True
+Accelerating Nuclear Enterprise Acquisition,NAIM,1,1,636625000.0,0,Artificial Intelligence - Program Work,partner,True
+Accelerating Nuclear Enterprise Acquisition,NA11,1,1,192000000.0,1,Artificial Intelligence for Nuclear Security (AI4NS),unclaimed,False
+Accelerating Nuclear Enterprise Acquisition,NA20,1,1,17500000.0,1,Civil Nuclear Cooperation & Engagement,unclaimed,False
+"Accelerating Nuclear Threat Assessment, Preparedness, and Response",NA80,4,4,150000000.0,0,National Technical Nuclear Forensics (NA-83); Nuclear Incident Preparedness and Collaboration (NA-81); Nuclear Incident Response (NA-84); Nuclear Threat Science (NA-82),lead,True
+"Accelerating Nuclear Threat Assessment, Preparedness, and Response",NA11,2,2,112525500.0,1,HED & Ignition Science for Stockpile Applications (formerly Ignition); Primary Assessment Technologies,unclaimed,False
+"Accelerating Nuclear Threat Assessment, Preparedness, and Response",NAESH,1,1,75000000.0,1,"Safety Analytics, Forecasting, Evaluation and Reporting (SAFER)",unclaimed,False
+"Accelerating Nuclear Threat Assessment, Preparedness, and Response",NAIM,1,1,45000000.0,0,Artificial Intelligence - Program Work,unclaimed,False
+Harnessing America’s Historic Nuclear Data and Research,NA11,5,3,1035720915.0,3,Archiving & Support; Artificial Intelligence for Nuclear Security (AI4NS); Computational Systems & Software Environment,lead,True
+Harnessing America’s Historic Nuclear Data and Research,NA90,1,1,183700000.0,1,"32-D-XXX New Central Computing Facility, Y-12",unclaimed,False
+Harnessing America’s Historic Nuclear Data and Research,NAESH,1,1,3100000.0,1,Site-Wide Environmental Impact Statement (SWEIS),unclaimed,False
+Increasing Experimental Capacity at Nuclear Research Facilities,NA11,4,4,79481500.0,2,"Delivery Environments (formerly WSEAT); Facility Operations (formerly also Target Production); ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support); Secondary Assessment Technologies",lead,True
+Increasing Experimental Capacity at Nuclear Research Facilities,NA90,4,3,167727000.0,4,LANL - 23-D-517 Electrical Power Capacity Upgrade; Maintenance at Working Facilities; Other Project Costs,unclaimed,False
+Integrating Design and Production Operations for Nuclear Deterrence,NA11,6,6,154659000.0,3,"Dynamic Materials Properties; Facility Operations (formerly also Target Production); HED & Ignition Science for Stockpile Applications (formerly Ignition); Hydrodynamic & Subcritical Execution Support (formerly RDC&S); ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support); Secondary Assessment Technologies",partner,True
+Integrating Design and Production Operations for Nuclear Deterrence,NA12,2,1,483384000.0,0,Multi-Weapon Systems (formerly MTP),lead,True
+Integrating Design and Production Operations for Nuclear Deterrence,NA30,1,1,16200000.0,1,Reactor Systems & Component Technology,unclaimed,False
+Safeguarding Nuclear Materials from Proliferation Threats,NA20,4,3,535000000.0,4,Civil Nuclear Cooperation & Engagement; Export Control; PD,lead,True
+"Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA30,1,1,5500000.0,0,"Laboratory Facility Regulation, Compliance, & Protection",unclaimed,False
+Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures,NA20,1,1,150000000.0,0,FRD,partner,True
