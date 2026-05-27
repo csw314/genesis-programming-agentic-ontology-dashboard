@@ -1,0 +1,6 @@
+# Development bootstrap for this repository.
+# Runtime dependencies are declared in pyproject.toml.
+-e .
+
+# Test tooling used by the repository's smoke and regression tests.
+pytest>=8.0

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "programming-ontology"
+version = "0.1.0"
+description = "Build and review programming challenge ontology classifications."
+requires-python = ">=3.11"
+dependencies = [
+    "networkx>=3.4",
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+    "ipykernel>=6.29",
+    "nbconvert>=7.16",
+    "nbformat>=5.10",
+    "openai>=2.0",
+    "asksageclient>=1.42",
+    "pip-system-certs",
+    "pydantic>=2.0",
+    "httpx>=0.27",
+    "truststore>=0.10",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

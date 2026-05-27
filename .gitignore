@@ -1,0 +1,52 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Local secrets and machine-specific configuration
+.env
+.env.*
+*.env
+credentials.json
+credentials*.json
+!credentials.example.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.token
+*.secret
+.secrets/
+
+# Generated project artifacts
+/data/processed/
+/outputs/
+/*.csv
+
+# Local/editor noise
+.vscode/
+.idea/
+*.code-workspace
+
+# Build/package artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
