@@ -1,0 +1,1677 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Genesis Mission Funding and Collaboration Dashboard</title>
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #52606d;
+      --line: #d9e2ec;
+      --soft: #f8fafc;
+      --panel: #f0f4f8;
+      --baseline: #3f6f9f;
+      --ufr: #d97706;
+      --lead: #2f7d59;
+      --partner: #6f55a2;
+      --contributor: #52606d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Segoe UI, Arial, sans-serif;
+      margin: 0;
+      color: var(--ink);
+      background: #ffffff;
+    }
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 32px 44px;
+    }
+    h1, h2, h3 { color: #102a43; letter-spacing: 0; }
+    h1 { margin: 0 0 6px; font-size: 30px; }
+    h2 { margin: 34px 0 10px; font-size: 22px; }
+    h3 { margin: 18px 0 8px; font-size: 17px; }
+    p { line-height: 1.42; }
+    .meta { color: var(--muted); margin: 0 0 22px; }
+    .section-note { color: var(--muted); max-width: 1080px; }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 18px 0 26px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .metric .value {
+      display: block;
+      margin-top: 5px;
+      font-size: 23px;
+      font-weight: 650;
+      color: #102a43;
+    }
+    .viz-block {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin: 12px 0 24px;
+      overflow-x: auto;
+    }
+    .data-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0 24px;
+      font-size: 13px;
+    }
+    .data-table th, .data-table td {
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      vertical-align: top;
+    }
+    .data-table th {
+      background: var(--panel);
+      text-align: left;
+      font-weight: 650;
+    }
+    .data-table tr:nth-child(even) td { background: var(--soft); }
+    .num { text-align: right; white-space: nowrap; }
+    .muted { color: var(--muted); }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      margin: 8px 0 12px;
+    }
+    .legend-swatch {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+      vertical-align: -1px;
+    }
+    .bar-wrap {
+      width: 100%;
+      min-width: 190px;
+      height: 18px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 18px;
+      display: flex;
+      min-width: 3px;
+    }
+    .baseline { background: var(--baseline); }
+    .ufr { background: var(--ufr); }
+    .mini-stack {
+      display: flex;
+      height: 7px;
+      min-width: 72px;
+      background: #e5e7eb;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .role-pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 650;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .role-lead { background: var(--lead); }
+    .role-partner { background: var(--partner); }
+    .role-contributor { background: var(--contributor); }
+    .matrix-table {
+      min-width: 1040px;
+      table-layout: fixed;
+    }
+    .matrix-table th:first-child,
+    .matrix-table td:first-child {
+      min-width: 250px;
+      width: 250px;
+    }
+    .matrix-cell {
+      min-height: 56px;
+      font-size: 12px;
+    }
+    .cell-total {
+      font-weight: 650;
+      margin-bottom: 3px;
+      white-space: nowrap;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin: 12px 0 24px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+    .card h3 { margin-top: 0; }
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 7px 0 10px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      background: var(--soft);
+    }
+    .office-card {
+      border-top: 3px solid #627d98;
+    }
+    .office-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+      gap: 8px;
+      margin: 8px 0 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .portfolio-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) minmax(140px, 220px) 82px;
+      gap: 8px;
+      align-items: center;
+      margin: 8px 0;
+      font-size: 12px;
+    }
+    .citation-list {
+      margin: 8px 0 0 18px;
+      padding: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .citation-list li { margin: 3px 0; }
+    .svg-chart {
+      width: 100%;
+      min-width: 900px;
+      height: auto;
+      display: block;
+    }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 10px 0 14px;
+      background: #fff;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 650;
+      color: #102a43;
+    }
+    .appendix-actions {
+      display: flex;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    button {
+      border: 1px solid #bcccdc;
+      background: #fff;
+      color: #102a43;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    @media (max-width: 760px) {
+      .page { padding: 20px 14px 34px; }
+      .portfolio-row { grid-template-columns: 1fr; }
+      .data-table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <h1>Genesis Mission Funding and Collaboration Dashboard</h1>
+  <p class="meta">Generated from Programming Ontology data snapshot on 2026-05-27 13:17. Executive views use BASELINE and UFR rows only.</p>
+
+  <section>
+    <h2>Executive Mission Funding Snapshot</h2>
+    <div class="metric-grid">
+      <div class="metric"><span class="label">Total BASELINE + UFR</span><span class="value">$4.98B</span></div>
+      <div class="metric"><span class="label">BASELINE</span><span class="value">$1.97B</span></div>
+      <div class="metric"><span class="label">UFR</span><span class="value">$3.01B</span></div>
+      <div class="metric"><span class="label">Funded Challenges</span><span class="value">10</span></div>
+      <div class="metric"><span class="label">Contributing Offices</span><span class="value">9</span></div>
+      <div class="metric"><span class="label">Program Office Players</span><span class="value">12</span></div>
+      <div class="metric"><span class="label">Multi-Office Challenges</span><span class="value">6</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Mission Funding Mix</h2>
+    <p class="section-note">How much funding is available in BASELINE funds versus UFR funds for each Genesis Mission Challenge.</p>
+    <div class="legend"><span><span class="legend-swatch" style="background:var(--baseline)"></span>BASELINE</span><span><span class="legend-swatch" style="background:var(--ufr)"></span>UFR</span><span><span class="role-pill role-lead">Lead</span></span><span><span class="role-pill role-partner">Partner</span></span><span><span class="role-pill role-contributor">Actual contributor</span></span></div>
+    <div class="viz-block"><table class="data-table"><thead><tr><th>Genesis Mission Challenge</th><th>Funding Mix</th><th>Total</th><th>BASELINE</th><th>UFR</th><th>Funding Offices</th><th>Office Players</th><th>Collaboration Signal</th></tr></thead><tbody><tr data-challenge="Harnessing America’s Historic Nuclear Data and Research" data-baseline-total="264348915.00" data-ufr-total="958172000.00" data-total="1222520915.00" data-contributor-count="3"><td>Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100.0%"><span class="baseline" style="width:21.6%"></span><span class="ufr" style="width:78.4%"></span></div></div></td><td class="num">$1.22B</td><td class="num">$264.3M</td><td class="num">$958.2M</td><td class="num">3</td><td class="num">7</td><td>Coordinate NA11; NA12; NA20; NA80; NA90; NAESH; NAIM</td></tr><tr data-challenge="Accelerating Nuclear Enterprise Acquisition" data-baseline-total="209500000.00" data-ufr-total="636625000.00" data-total="846125000.00" data-contributor-count="3"><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:69.2%"><span class="baseline" style="width:24.8%"></span><span class="ufr" style="width:75.2%"></span></div></div></td><td class="num">$846.1M</td><td class="num">$209.5M</td><td class="num">$636.6M</td><td class="num">3</td><td class="num">4</td><td>Coordinate NA-PAS; NA11; NA20; NAIM</td></tr><tr data-challenge="Accelerating Business and Management Processes for National Security Missions" data-baseline-total="711831182.00" data-ufr-total="15220000.00" data-total="727051182.00" data-contributor-count="4"><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:59.5%"><span class="baseline" style="width:97.9%"></span><span class="ufr" style="width:2.1%"></span></div></div></td><td class="num">$727.1M</td><td class="num">$711.8M</td><td class="num">$15.2M</td><td class="num">4</td><td class="num">5</td><td>Coordinate NA-MB; NA11; NA70; NA90; NAIM</td></tr><tr data-challenge="Integrating Design and Production Operations for Nuclear Deterrence" data-baseline-total="16200000.00" data-ufr-total="638043000.00" data-total="654243000.00" data-contributor-count="3"><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:53.5%"><span class="baseline" style="width:2.5%"></span><span class="ufr" style="width:97.5%"></span></div></div></td><td class="num">$654.2M</td><td class="num">$16.2M</td><td class="num">$638.0M</td><td class="num">3</td><td class="num">4</td><td>Coordinate NA11; NA12; NA19; NA30</td></tr><tr data-challenge="Safeguarding Nuclear Materials from Proliferation Threats" data-baseline-total="165000000.00" data-ufr-total="370000000.00" data-total="535000000.00" data-contributor-count="1"><td>Safeguarding Nuclear Materials from Proliferation Threats</td><td><div class="bar-wrap"><div class="bar-fill" style="width:43.8%"><span class="baseline" style="width:30.8%"></span><span class="ufr" style="width:69.2%"></span></div></div></td><td class="num">$535.0M</td><td class="num">$165.0M</td><td class="num">$370.0M</td><td class="num">1</td><td class="num">3</td><td>Coordinate NA20; NA80; NAIM</td></tr><tr data-challenge="Accelerating Nuclear Threat Assessment, Preparedness, and Response" data-baseline-total="187525500.00" data-ufr-total="195000000.00" data-total="382525500.00" data-contributor-count="4"><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td><td><div class="bar-wrap"><div class="bar-fill" style="width:31.3%"><span class="baseline" style="width:49.0%"></span><span class="ufr" style="width:51.0%"></span></div></div></td><td class="num">$382.5M</td><td class="num">$187.5M</td><td class="num">$195.0M</td><td class="num">4</td><td class="num">5</td><td>Coordinate NA11; NA20; NA80; NAESH; NAIM</td></tr><tr data-challenge="Increasing Experimental Capacity at Nuclear Research Facilities" data-baseline-total="200808500.00" data-ufr-total="46400000.00" data-total="247208500.00" data-contributor-count="2"><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20.2%"><span class="baseline" style="width:81.2%"></span><span class="ufr" style="width:18.8%"></span></div></div></td><td class="num">$247.2M</td><td class="num">$200.8M</td><td class="num">$46.4M</td><td class="num">2</td><td class="num">4</td><td>Coordinate NA11; NA20; NA80; NA90</td></tr><tr data-challenge="Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence" data-baseline-total="206222966.00" data-ufr-total="0.00" data-total="206222966.00" data-contributor-count="1"><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:16.9%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$206.2M</td><td class="num">$206.2M</td><td class="num">$0</td><td class="num">1</td><td class="num">2</td><td>Coordinate NA11; NA19</td></tr><tr data-challenge="Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures" data-baseline-total="0.00" data-ufr-total="150000000.00" data-total="150000000.00" data-contributor-count="1"><td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12.3%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></td><td class="num">$150.0M</td><td class="num">$0</td><td class="num">$150.0M</td><td class="num">1</td><td class="num">2</td><td>Coordinate NA20; NA80</td></tr><tr data-challenge="Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise" data-baseline-total="5500000.00" data-ufr-total="0.00" data-total="5500000.00" data-contributor-count="1"><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$5.5M</td><td class="num">$5.5M</td><td class="num">$0</td><td class="num">1</td><td class="num">7</td><td>Coordinate NA11; NA12; NA19; NA30; NA70; NA90; NAESH</td></tr><tr data-challenge="(CUI) Preventing AI-Induced Nuclear Proliferation" data-baseline-total="0.00" data-ufr-total="0.00" data-total="0.00" data-contributor-count="0"><td>(CUI) Preventing AI-Induced Nuclear Proliferation</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">0</td><td class="num">2</td><td>Coordinate NA20; NA80</td></tr></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Challenge-by-Office Contribution Matrix</h2>
+    <p class="section-note">Which program offices contribute BASELINE and UFR funds to each challenge, regardless of whether they are the lead office.</p>
+    <div class="viz-block"><table class="data-table matrix-table"><thead><tr><th>Challenge</th><th>NA11</th><th>NAIM</th><th>NA20</th><th>NA12</th><th>NA90</th><th>NA80</th><th>NAESH</th><th>NA30</th><th>NA70</th><th>NA-PAS</th><th>NA-MB</th><th>NA19</th></tr></thead><tbody><tr data-challenge="Harnessing America’s Historic Nuclear Data and Research" data-contributor-count="3" data-office-player-count="7"><td><strong>Harnessing America’s Historic Nuclear Data and Research</strong><br><span class="muted">$1.22B</span></td><td><div class="matrix-cell"><div class="cell-total">$1.04B</div><div class="mini-stack"><span class="baseline" style="width:7.5%"></span><span class="ufr" style="width:92.5%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">5 rows / 3 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$183.7M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$3.1M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td></tr><tr data-challenge="Accelerating Nuclear Enterprise Acquisition" data-contributor-count="3" data-office-player-count="4"><td><strong>Accelerating Nuclear Enterprise Acquisition</strong><br><span class="muted">$846.1M</span></td><td><div class="matrix-cell"><div class="cell-total">$192.0M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$636.6M</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$17.5M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td></tr><tr data-challenge="Accelerating Business and Management Processes for National Security Missions" data-contributor-count="4" data-office-player-count="5"><td><strong>Accelerating Business and Management Processes for National Security Missions</strong><br><span class="muted">$727.1M</span></td><td><div class="matrix-cell"><div class="cell-total">$216.8M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$485.0M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">3 rows / 3 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$15.2M</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$10.0M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td></tr><tr data-challenge="Integrating Design and Production Operations for Nuclear Deterrence" data-contributor-count="3" data-office-player-count="4"><td><strong>Integrating Design and Production Operations for Nuclear Deterrence</strong><br><span class="muted">$654.2M</span></td><td><div class="matrix-cell"><div class="cell-total">$154.7M</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">6 rows / 6 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$483.4M</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">2 rows / 1 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$16.2M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td></tr><tr data-challenge="Safeguarding Nuclear Materials from Proliferation Threats" data-contributor-count="1" data-office-player-count="3"><td><strong>Safeguarding Nuclear Materials from Proliferation Threats</strong><br><span class="muted">$535.0M</span></td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$535.0M</div><div class="mini-stack"><span class="baseline" style="width:30.8%"></span><span class="ufr" style="width:69.2%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">4 rows / 3 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td></tr><tr data-challenge="Accelerating Nuclear Threat Assessment, Preparedness, and Response" data-contributor-count="4" data-office-player-count="5"><td><strong>Accelerating Nuclear Threat Assessment, Preparedness, and Response</strong><br><span class="muted">$382.5M</span></td><td><div class="matrix-cell"><div class="cell-total">$112.5M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">2 rows / 2 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$45.0M</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$150.0M</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">4 rows / 4 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$75.0M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td></tr><tr data-challenge="Increasing Experimental Capacity at Nuclear Research Facilities" data-contributor-count="2" data-office-player-count="4"><td><strong>Increasing Experimental Capacity at Nuclear Research Facilities</strong><br><span class="muted">$247.2M</span></td><td><div class="matrix-cell"><div class="cell-total">$79.5M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">4 rows / 4 WBS</div></div></td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$167.7M</div><div class="mini-stack"><span class="baseline" style="width:72.3%"></span><span class="ufr" style="width:27.7%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">4 rows / 3 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td></tr><tr data-challenge="Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence" data-contributor-count="1" data-office-player-count="2"><td><strong>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</strong><br><span class="muted">$206.2M</span></td><td><div class="matrix-cell"><div class="cell-total">$206.2M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">7 rows / 5 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">0 rows / 0 WBS</div></div></td></tr><tr data-challenge="Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures" data-contributor-count="1" data-office-player-count="2"><td><strong>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</strong><br><span class="muted">$150.0M</span></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$150.0M</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td></tr><tr data-challenge="Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise" data-contributor-count="1" data-office-player-count="7"><td><strong>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</strong><br><span class="muted">$5.5M</span></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$5.5M</div><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-contributor">Actual contributor</span></div><div class="muted">1 rows / 1 WBS</div></div></td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td></tr><tr data-challenge="(CUI) Preventing AI-Induced Nuclear Proliferation" data-contributor-count="0" data-office-player-count="2"><td><strong>(CUI) Preventing AI-Induced Nuclear Proliferation</strong><br><span class="muted">$0</span></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-partner">Partner</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td><div class="matrix-cell"><div class="cell-total">$0</div><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div><div><span class="role-pill role-lead">Lead</span></div><div class="muted">0 rows / 0 WBS</div></div></td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td><td class="muted">-</td></tr></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Collaboration Posture</h2>
+    <p class="section-note">Challenges farther right have more program office players, including claimed leads/partners and actual funding contributors; larger circles have more total funding; orange-heavy circles depend more on UFR funds.</p>
+    <div class="viz-block"><svg class="svg-chart" viewBox="0 0 1120 596" role="img" aria-label="Bubble chart of collaboration posture by challenge"><line x1="330.0" y1="26" x2="330.0" y2="562" stroke="#e5e7eb" /><text x="330.0" y="584" text-anchor="middle" font-size="11" fill="#52606d">0</text><line x1="432.9" y1="26" x2="432.9" y2="562" stroke="#e5e7eb" /><text x="432.9" y="584" text-anchor="middle" font-size="11" fill="#52606d">1</text><line x1="535.7" y1="26" x2="535.7" y2="562" stroke="#e5e7eb" /><text x="535.7" y="584" text-anchor="middle" font-size="11" fill="#52606d">2</text><line x1="638.6" y1="26" x2="638.6" y2="562" stroke="#e5e7eb" /><text x="638.6" y="584" text-anchor="middle" font-size="11" fill="#52606d">3</text><line x1="741.4" y1="26" x2="741.4" y2="562" stroke="#e5e7eb" /><text x="741.4" y="584" text-anchor="middle" font-size="11" fill="#52606d">4</text><line x1="844.3" y1="26" x2="844.3" y2="562" stroke="#e5e7eb" /><text x="844.3" y="584" text-anchor="middle" font-size="11" fill="#52606d">5</text><line x1="947.1" y1="26" x2="947.1" y2="562" stroke="#e5e7eb" /><text x="947.1" y="584" text-anchor="middle" font-size="11" fill="#52606d">6</text><line x1="1050.0" y1="26" x2="1050.0" y2="562" stroke="#e5e7eb" /><text x="1050.0" y="584" text-anchor="middle" font-size="11" fill="#52606d">7</text><text x="690.0" y="16" text-anchor="middle" font-size="12" fill="#52606d">Program office players</text><text x="12" y="46.0" font-size="12" fill="#1f2933">Harnessing America’s Historic Nuclear Data and Research</text><circle cx="1050.0" cy="42.0" r="30.0" fill="#d97706" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Harnessing America’s Historic Nuclear Data and Research" data-total="1222520915.00" data-ufr-share="0.7838" /><text x="1088.0" y="46.0" font-size="11" fill="#52606d">$1.22B / 7 players (3 funded) / 78% UFR</text><text x="12" y="92.0" font-size="12" fill="#1f2933">Accelerating Nuclear Enterprise Acquisition</text><circle cx="741.4" cy="88.0" r="26.0" fill="#d97706" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Accelerating Nuclear Enterprise Acquisition" data-total="846125000.00" data-ufr-share="0.7524" /><text x="775.4" y="92.0" font-size="11" fill="#52606d">$846.1M / 4 players (3 funded) / 75% UFR</text><text x="12" y="138.0" font-size="12" fill="#1f2933">Accelerating Business and Management Processes for Nati...</text><circle cx="844.3" cy="134.0" r="24.5" fill="#3f6f9f" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Accelerating Business and Management Processes for National Security Missions" data-total="727051182.00" data-ufr-share="0.0209" /><text x="876.8" y="138.0" font-size="11" fill="#52606d">$727.1M / 5 players (4 funded) / 2% UFR</text><text x="12" y="184.0" font-size="12" fill="#1f2933">Integrating Design and Production Operations for Nuclea...</text><circle cx="741.4" cy="180.0" r="23.6" fill="#d97706" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Integrating Design and Production Operations for Nuclear Deterrence" data-total="654243000.00" data-ufr-share="0.9752" /><text x="773.0" y="184.0" font-size="11" fill="#52606d">$654.2M / 4 players (3 funded) / 98% UFR</text><text x="12" y="230.0" font-size="12" fill="#1f2933">Safeguarding Nuclear Materials from Proliferation Threats</text><circle cx="638.6" cy="226.0" r="21.9" fill="#d97706" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Safeguarding Nuclear Materials from Proliferation Threats" data-total="535000000.00" data-ufr-share="0.6916" /><text x="668.4" y="230.0" font-size="11" fill="#52606d">$535.0M / 3 players (1 funded) / 69% UFR</text><text x="12" y="276.0" font-size="12" fill="#1f2933">Accelerating Nuclear Threat Assessment, Preparedness, a...</text><circle cx="844.3" cy="272.0" r="19.4" fill="#9b7354" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Accelerating Nuclear Threat Assessment, Preparedness, and Response" data-total="382525500.00" data-ufr-share="0.5098" /><text x="871.7" y="276.0" font-size="11" fill="#52606d">$382.5M / 5 players (4 funded) / 51% UFR</text><text x="12" y="322.0" font-size="12" fill="#1f2933">Increasing Experimental Capacity at Nuclear Research Fa...</text><circle cx="741.4" cy="318.0" r="16.8" fill="#3f6f9f" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Increasing Experimental Capacity at Nuclear Research Facilities" data-total="247208500.00" data-ufr-share="0.1877" /><text x="766.2" y="322.0" font-size="11" fill="#52606d">$247.2M / 4 players (2 funded) / 19% UFR</text><text x="12" y="368.0" font-size="12" fill="#1f2933">Accelerating Materials Discovery, Production, and Quali...</text><circle cx="535.7" cy="364.0" r="15.9" fill="#3f6f9f" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence" data-total="206222966.00" data-ufr-share="0.0000" /><text x="559.6" y="368.0" font-size="11" fill="#52606d">$206.2M / 2 players (1 funded) / 0% UFR</text><text x="12" y="414.0" font-size="12" fill="#1f2933">Strengthening Deterrence Through Attribution of Nuclear...</text><circle cx="535.7" cy="410.0" r="14.4" fill="#d97706" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures" data-total="150000000.00" data-ufr-share="1.0000" /><text x="558.1" y="414.0" font-size="11" fill="#52606d">$150.0M / 2 players (1 funded) / 100% UFR</text><text x="12" y="460.0" font-size="12" fill="#1f2933">Streamlining Production, Removing Red Tape, and Ensurin...</text><circle cx="1050.0" cy="456.0" r="7.6" fill="#3f6f9f" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise" data-total="5500000.00" data-ufr-share="0.0000" /><text x="1065.6" y="460.0" font-size="11" fill="#52606d">$5.5M / 7 players (1 funded) / 0% UFR</text><text x="12" y="506.0" font-size="12" fill="#1f2933">(CUI) Preventing AI-Induced Nuclear Proliferation</text><circle cx="535.7" cy="502.0" r="5.0" fill="#bcccdc" opacity="0.82" stroke="#ffffff" stroke-width="1.5" data-challenge="(CUI) Preventing AI-Induced Nuclear Proliferation" data-total="0.00" data-ufr-share="0.0000" /><text x="548.7" y="506.0" font-size="11" fill="#52606d">$0 / 2 players (0 funded) / 0% UFR</text></svg><div class="legend"><span><span class="legend-swatch" style="background:#3f6f9f"></span>BASELINE-heavy</span><span><span class="legend-swatch" style="background:#9b7354"></span>Mixed</span><span><span class="legend-swatch" style="background:#d97706"></span>UFR-heavy</span></div></div>
+  </section>
+
+  <section>
+    <h2>Challenge Collaboration Groups</h2>
+    <p class="section-note">These cards group the offices that should be coordinating around each challenge: claimed leads, claimed partners, and other actual funding contributors.</p>
+    <div class="cards"><article class="card" data-challenge="Harnessing America’s Historic Nuclear Data and Research" data-contributor-count="3"><h3>Harnessing America’s Historic Nuclear Data and Research</h3><p><strong>$1.22B</strong> across 7 program office players; 3 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA11</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA12</span><span class="chip">NA20</span><span class="chip">NA80</span><span class="chip">NAIM</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">NA90</span><span class="chip">NAESH</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA12</span><span class="chip">NA20</span><span class="chip">NA80</span><span class="chip">NA90</span><span class="chip">NAESH</span><span class="chip">NAIM</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA11</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$1.04B</td><td><div class="mini-stack"><span class="baseline" style="width:7.5%"></span><span class="ufr" style="width:92.5%"></span></div></td></tr><tr><td>NA12</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA20</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA80</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAIM</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA90</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$183.7M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAESH</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$3.1M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Accelerating Nuclear Enterprise Acquisition" data-contributor-count="3"><h3>Accelerating Nuclear Enterprise Acquisition</h3><p><strong>$846.1M</strong> across 4 program office players; 3 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA-PAS</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NAIM</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA20</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA-PAS</span><span class="chip">NA11</span><span class="chip">NA20</span><span class="chip">NAIM</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA-PAS</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAIM</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$636.6M</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></td></tr><tr><td>NA11</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$192.0M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA20</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$17.5M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Accelerating Business and Management Processes for National Security Missions" data-contributor-count="4"><h3>Accelerating Business and Management Processes for National Security Missions</h3><p><strong>$727.1M</strong> across 5 program office players; 4 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA-MB</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NAIM</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA70</span><span class="chip">NA90</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA-MB</span><span class="chip">NA11</span><span class="chip">NA70</span><span class="chip">NA90</span><span class="chip">NAIM</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA-MB</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAIM</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$485.0M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA11</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$216.8M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA90</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$15.2M</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></td></tr><tr><td>NA70</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$10.0M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Integrating Design and Production Operations for Nuclear Deterrence" data-contributor-count="3"><h3>Integrating Design and Production Operations for Nuclear Deterrence</h3><p><strong>$654.2M</strong> across 4 program office players; 3 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA12</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA19</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">NA30</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA12</span><span class="chip">NA19</span><span class="chip">NA30</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA12</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$483.4M</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></td></tr><tr><td>NA11</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$154.7M</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></td></tr><tr><td>NA19</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA30</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$16.2M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Safeguarding Nuclear Materials from Proliferation Threats" data-contributor-count="1"><h3>Safeguarding Nuclear Materials from Proliferation Threats</h3><p><strong>$535.0M</strong> across 3 program office players; 1 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA20</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA80</span><span class="chip">NAIM</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">None identified</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA20</span><span class="chip">NA80</span><span class="chip">NAIM</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA20</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$535.0M</td><td><div class="mini-stack"><span class="baseline" style="width:30.8%"></span><span class="ufr" style="width:69.2%"></span></div></td></tr><tr><td>NA80</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAIM</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Accelerating Nuclear Threat Assessment, Preparedness, and Response" data-contributor-count="4"><h3>Accelerating Nuclear Threat Assessment, Preparedness, and Response</h3><p><strong>$382.5M</strong> across 5 program office players; 4 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA80</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA20</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NAESH</span><span class="chip">NAIM</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA20</span><span class="chip">NA80</span><span class="chip">NAESH</span><span class="chip">NAIM</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA80</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$150.0M</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></td></tr><tr><td>NA20</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA11</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$112.5M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAESH</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$75.0M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAIM</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$45.0M</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Increasing Experimental Capacity at Nuclear Research Facilities" data-contributor-count="2"><h3>Increasing Experimental Capacity at Nuclear Research Facilities</h3><p><strong>$247.2M</strong> across 4 program office players; 2 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA11</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA20</span><span class="chip">NA80</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">NA90</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA20</span><span class="chip">NA80</span><span class="chip">NA90</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA11</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$79.5M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA20</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA80</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA90</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$167.7M</td><td><div class="mini-stack"><span class="baseline" style="width:72.3%"></span><span class="ufr" style="width:27.7%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence" data-contributor-count="1"><h3>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</h3><p><strong>$206.2M</strong> across 2 program office players; 1 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA19</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA11</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">None identified</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA19</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA19</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA11</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$206.2M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures" data-contributor-count="1"><h3>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</h3><p><strong>$150.0M</strong> across 2 program office players; 1 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA80</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA20</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">None identified</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA20</span><span class="chip">NA80</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA80</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA20</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$150.0M</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise" data-contributor-count="1"><h3>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</h3><p><strong>$5.5M</strong> across 7 program office players; 1 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA90</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA12</span><span class="chip">NA19</span><span class="chip">NA70</span><span class="chip">NAESH</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">NA30</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA11</span><span class="chip">NA12</span><span class="chip">NA19</span><span class="chip">NA30</span><span class="chip">NA70</span><span class="chip">NA90</span><span class="chip">NAESH</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA90</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA11</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA12</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA19</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA70</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NAESH</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA30</td><td><span class="role-pill role-contributor">Actual contributor</span></td><td class="num">$5.5M</td><td><div class="mini-stack"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article><article class="card" data-challenge="(CUI) Preventing AI-Induced Nuclear Proliferation" data-contributor-count="0"><h3>(CUI) Preventing AI-Induced Nuclear Proliferation</h3><p><strong>$0</strong> across 2 program office players; 0 have direct BASELINE/UFR funding.</p><div><strong>Lead:</strong><div class="chip-list"><span class="chip">NA80</span></div></div><div><strong>Claimed partners:</strong><div class="chip-list"><span class="chip">NA20</span></div></div><div><strong>Other funding contributors:</strong><div class="chip-list"><span class="chip">None identified</span></div></div><div><strong>Suggested collaboration group:</strong><div class="chip-list"><span class="chip">NA20</span><span class="chip">NA80</span></div></div><table class="data-table"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead><tbody><tr><td>NA80</td><td><span class="role-pill role-lead">Lead</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr><tr><td>NA20</td><td><span class="role-pill role-partner">Partner</span></td><td class="num">$0</td><td><div class="mini-stack"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></td></tr></tbody></table></article></div>
+  </section>
+
+  <section>
+    <h2>Office Pair Collaboration Opportunities</h2>
+    <p class="section-note">Ranked pairs show offices already funding the same challenge areas and therefore likely candidates for joint execution planning.</p>
+    <div class="viz-block"><table class="data-table"><thead><tr><th>Office Pair</th><th>Shared Challenges</th><th>Mission Areas</th><th>Relative Combined Funding</th><th>Combined Funding</th></tr></thead><tbody><tr data-office-a="NA11" data-office-b="NAIM" data-shared-challenge-count="4"><td><strong>NA11 + NAIM</strong></td><td class="num">4</td><td>Accelerating Business and Management Processes for National Security Missions; Accelerating Nuclear Enterprise Acquisition; Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100.0%; background:#627d98"></div></div></td><td class="num">$2.72B</td></tr><tr data-office-a="NA11" data-office-b="NA20" data-shared-challenge-count="4"><td><strong>NA11 + NA20</strong></td><td class="num">4</td><td>Accelerating Nuclear Enterprise Acquisition; Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:52.8%; background:#627d98"></div></div></td><td class="num">$1.44B</td></tr><tr data-office-a="NA11" data-office-b="NA90" data-shared-challenge-count="3"><td><strong>NA11 + NA90</strong></td><td class="num">3</td><td>Accelerating Business and Management Processes for National Security Missions; Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:62.4%; background:#627d98"></div></div></td><td class="num">$1.70B</td></tr><tr data-office-a="NA11" data-office-b="NA80" data-shared-challenge-count="3"><td><strong>NA11 + NA80</strong></td><td class="num">3</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:50.6%; background:#627d98"></div></div></td><td class="num">$1.38B</td></tr><tr data-office-a="NA20" data-office-b="NAIM" data-shared-challenge-count="3"><td><strong>NA20 + NAIM</strong></td><td class="num">3</td><td>Accelerating Nuclear Enterprise Acquisition; Accelerating Nuclear Threat Assessment, Preparedness, and Response; Safeguarding Nuclear Materials from Proliferation Threats</td><td><div class="bar-wrap"><div class="bar-fill" style="width:45.3%; background:#627d98"></div></div></td><td class="num">$1.23B</td></tr><tr data-office-a="NA20" data-office-b="NA80" data-shared-challenge-count="3"><td><strong>NA20 + NA80</strong></td><td class="num">3</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response; Safeguarding Nuclear Materials from Proliferation Threats; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td><div class="bar-wrap"><div class="bar-fill" style="width:30.7%; background:#627d98"></div></div></td><td class="num">$835.0M</td></tr><tr data-office-a="NA11" data-office-b="NA12" data-shared-challenge-count="2"><td><strong>NA11 + NA12</strong></td><td class="num">2</td><td>Harnessing America’s Historic Nuclear Data and Research; Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:61.5%; background:#627d98"></div></div></td><td class="num">$1.67B</td></tr><tr data-office-a="NA11" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA11 + NAESH</strong></td><td class="num">2</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:45.0%; background:#627d98"></div></div></td><td class="num">$1.23B</td></tr><tr data-office-a="NA90" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NA90 + NAIM</strong></td><td class="num">2</td><td>Accelerating Business and Management Processes for National Security Missions; Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:25.1%; background:#627d98"></div></div></td><td class="num">$683.9M</td></tr><tr data-office-a="NA12" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA12 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18.5%; background:#627d98"></div></div></td><td class="num">$505.1M</td></tr><tr data-office-a="NA11" data-office-b="NA19" data-shared-challenge-count="2"><td><strong>NA11 + NA19</strong></td><td class="num">2</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:13.2%; background:#627d98"></div></div></td><td class="num">$360.9M</td></tr><tr data-office-a="NA20" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA20 + NA90</strong></td><td class="num">2</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12.9%; background:#627d98"></div></div></td><td class="num">$351.4M</td></tr><tr data-office-a="NA80" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA80 + NA90</strong></td><td class="num">2</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12.9%; background:#627d98"></div></div></td><td class="num">$351.4M</td></tr><tr data-office-a="NA80" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA80 + NAESH</strong></td><td class="num">2</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:8.4%; background:#627d98"></div></div></td><td class="num">$228.1M</td></tr><tr data-office-a="NA11" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA11 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6.5%; background:#627d98"></div></div></td><td class="num">$176.4M</td></tr><tr data-office-a="NAESH" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NAESH + NAIM</strong></td><td class="num">2</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$123.1M</td></tr><tr data-office-a="NA20" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA20 + NAESH</strong></td><td class="num">2</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$78.1M</td></tr><tr data-office-a="NA19" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA19 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$21.7M</td></tr><tr data-office-a="NA-PAS" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-PAS + NAIM</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:23.4%; background:#627d98"></div></div></td><td class="num">$636.6M</td></tr><tr data-office-a="NA70" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA70 + NAIM</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18.2%; background:#627d98"></div></div></td><td class="num">$495.0M</td></tr><tr data-office-a="NA-MB" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-MB + NAIM</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:17.8%; background:#627d98"></div></div></td><td class="num">$485.0M</td></tr><tr data-office-a="NA12" data-office-b="NA19" data-shared-challenge-count="1"><td><strong>NA12 + NA19</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:17.7%; background:#627d98"></div></div></td><td class="num">$483.4M</td></tr><tr data-office-a="NA11" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA11 + NA70</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:8.3%; background:#627d98"></div></div></td><td class="num">$226.8M</td></tr><tr data-office-a="NA-MB" data-office-b="NA11" data-shared-challenge-count="1"><td><strong>NA-MB + NA11</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:8.0%; background:#627d98"></div></div></td><td class="num">$216.8M</td></tr><tr data-office-a="NA80" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA80 + NAIM</strong></td><td class="num">1</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7.2%; background:#627d98"></div></div></td><td class="num">$195.0M</td></tr><tr data-office-a="NA-PAS" data-office-b="NA11" data-shared-challenge-count="1"><td><strong>NA-PAS + NA11</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7.0%; background:#627d98"></div></div></td><td class="num">$192.0M</td></tr><tr data-office-a="NA90" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA90 + NAESH</strong></td><td class="num">1</td><td>Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6.9%; background:#627d98"></div></div></td><td class="num">$186.8M</td></tr><tr data-office-a="NA12" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA12 + NA90</strong></td><td class="num">1</td><td>Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:6.7%; background:#627d98"></div></div></td><td class="num">$183.7M</td></tr><tr data-office-a="NA70" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA70 + NA90</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$25.2M</td></tr><tr data-office-a="NA-PAS" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA-PAS + NA20</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.5M</td></tr><tr data-office-a="NA-MB" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA-MB + NA90</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$15.2M</td></tr><tr data-office-a="NA-MB" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA-MB + NA70</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA30" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA30 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA30" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA30 + NA90</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA30" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA30 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA12" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA12 + NAESH</strong></td><td class="num">1</td><td>Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$3.1M</td></tr></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Office Portfolios</h2>
+    <p class="section-note">Each office view shows the funded Genesis Mission Challenges in its portfolio, the BASELINE/UFR mix, and programming-data citations for senior-leader traceability.</p>
+    <div class="cards"><article class="card office-card" data-office="NA11" data-funded-challenge-count="7" data-claimed-challenge-count="5" data-office-total="1997413881.00"><h3>NA11</h3><div class="office-summary"><div><strong>7</strong><br>funded challenges</div><div><strong>2</strong><br>lead claims</div><div><strong>3</strong><br>partner claims</div><div><strong>$884.6M</strong><br>BASELINE</div><div><strong>$1.11B</strong><br>UFR</div><div><strong>14</strong><br>WBS areas</div></div><p>NA11 has 7 funded Genesis Mission Challenges and 5 claimed roles, with $2.00B across 26 programming rows. Mission areas shown: Harnessing America’s Historic Nuclear Data and Research; Accelerating Business and Management Processes for National Security Missions; Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence.</p><div class="portfolio-row"><div>Harnessing America’s Historic Nuclear Data and Research<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:51.9%"><span class="baseline" style="width:7.5%"></span><span class="ufr" style="width:92.5%"></span></div></div></div><div class="num">$1.04B</div></div><div class="portfolio-row"><div>Accelerating Business and Management Processes for National Security...<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:10.9%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$216.8M</div></div><div class="portfolio-row"><div>Accelerating Materials Discovery, Production, and Qualification for S...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:10.3%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$206.2M</div></div><div class="portfolio-row"><div>Accelerating Nuclear Enterprise Acquisition<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:9.6%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$192.0M</div></div><div class="portfolio-row"><div>Integrating Design and Production Operations for Nuclear Deterrence<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:7.7%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></div><div class="num">$154.7M</div></div><div class="portfolio-row"><div>Accelerating Nuclear Threat Assessment, Preparedness, and Response<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$112.5M</div></div><div class="portfolio-row"><div>Increasing Experimental Capacity at Nuclear Research Facilities<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$79.5M</div></div><div class="portfolio-row"><div>Streamlining Production, Removing Red Tape, and Ensuring Safety in th...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 3: Artificial Intelligence for Nuclear Security (AI4NS); Harnessing America’s Historic Nuclear Data and Research; UFR; $346.6M</li><li>programming_data.csv row 5: Computational Systems &amp; Software Environment; Harnessing America’s Historic Nuclear Data and Research; UFR; $338.5M</li><li>programming_data.csv row 2: Artificial Intelligence for Nuclear Security (AI4NS); Accelerating Business and Management Processes for National Security Missions; BASELINE; $216.8M</li><li>programming_data.csv row 1: Artificial Intelligence for Nuclear Security (AI4NS); Accelerating Nuclear Enterprise Acquisition; BASELINE; $192.0M</li><li>programming_data.csv row 21: Archiving &amp; Support; Harnessing America’s Historic Nuclear Data and Research; UFR; $153.8M</li></ul></details></article><article class="card office-card" data-office="NA20" data-funded-challenge-count="3" data-claimed-challenge-count="6" data-office-total="702500000.00"><h3>NA20</h3><div class="office-summary"><div><strong>3</strong><br>funded challenges</div><div><strong>1</strong><br>lead claims</div><div><strong>5</strong><br>partner claims</div><div><strong>$182.5M</strong><br>BASELINE</div><div><strong>$520.0M</strong><br>UFR</div><div><strong>4</strong><br>WBS areas</div></div><p>NA20 has 3 funded Genesis Mission Challenges and 6 claimed roles, with $702.5M across 6 programming rows. Mission areas shown: Safeguarding Nuclear Materials from Proliferation Threats; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures; Accelerating Nuclear Enterprise Acquisition.</p><div class="portfolio-row"><div>Safeguarding Nuclear Materials from Proliferation Threats<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:26.8%"><span class="baseline" style="width:30.8%"></span><span class="ufr" style="width:69.2%"></span></div></div></div><div class="num">$535.0M</div></div><div class="portfolio-row"><div>Strengthening Deterrence Through Attribution of Nuclear and Radiologi...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:7.5%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></div><div class="num">$150.0M</div></div><div class="portfolio-row"><div>Accelerating Nuclear Enterprise Acquisition<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$17.5M</div></div><div class="portfolio-row"><div>(CUI) Preventing AI-Induced Nuclear Proliferation<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Accelerating Nuclear Threat Assessment, Preparedness, and Response<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Harnessing America’s Historic Nuclear Data and Research<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Increasing Experimental Capacity at Nuclear Research Facilities<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 37: PD; Safeguarding Nuclear Materials from Proliferation Threats; UFR; $342.0M</li><li>programming_data.csv row 36: PD; Safeguarding Nuclear Materials from Proliferation Threats; BASELINE; $165.0M</li><li>programming_data.csv row 35: FRD; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures; UFR; $150.0M</li><li>programming_data.csv row 39: Civil Nuclear Cooperation &amp; Engagement; Safeguarding Nuclear Materials from Proliferation Threats; UFR; $20.0M</li><li>programming_data.csv row 38: Civil Nuclear Cooperation &amp; Engagement; Accelerating Nuclear Enterprise Acquisition; BASELINE; $17.5M</li></ul></details></article><article class="card office-card" data-office="NAIM" data-funded-challenge-count="3" data-claimed-challenge-count="4" data-office-total="1166652182.00"><h3>NAIM</h3><div class="office-summary"><div><strong>3</strong><br>funded challenges</div><div><strong>0</strong><br>lead claims</div><div><strong>4</strong><br>partner claims</div><div><strong>$485.0M</strong><br>BASELINE</div><div><strong>$681.6M</strong><br>UFR</div><div><strong>3</strong><br>WBS areas</div></div><p>NAIM has 3 funded Genesis Mission Challenges and 4 claimed roles, with $1.17B across 5 programming rows. Mission areas shown: Accelerating Nuclear Enterprise Acquisition; Accelerating Business and Management Processes for National Security Missions; Accelerating Nuclear Threat Assessment, Preparedness, and Response.</p><div class="portfolio-row"><div>Accelerating Nuclear Enterprise Acquisition<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:31.9%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></div><div class="num">$636.6M</div></div><div class="portfolio-row"><div>Accelerating Business and Management Processes for National Security...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:24.3%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$485.0M</div></div><div class="portfolio-row"><div>Accelerating Nuclear Threat Assessment, Preparedness, and Response<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></div><div class="num">$45.0M</div></div><div class="portfolio-row"><div>Harnessing America’s Historic Nuclear Data and Research<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Safeguarding Nuclear Materials from Proliferation Threats<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 61: Artificial Intelligence - Program Work; Accelerating Nuclear Enterprise Acquisition; UFR; $636.6M</li><li>programming_data.csv row 57: Enterprise Operations; Accelerating Business and Management Processes for National Security Missions; BASELINE; $467.4M</li><li>programming_data.csv row 60: Artificial Intelligence - Program Work; Accelerating Nuclear Threat Assessment, Preparedness, and Response; UFR; $45.0M</li><li>programming_data.csv row 59: Artificial Intelligence - Program Work; Accelerating Business and Management Processes for National Security Missions; BASELINE; $15.1M</li><li>programming_data.csv row 58: Mission Contract Tasks; Accelerating Business and Management Processes for National Security Missions; BASELINE; $2.5M</li></ul></details></article><article class="card office-card" data-office="NA90" data-funded-challenge-count="3" data-claimed-challenge-count="1" data-office-total="366647000.00"><h3>NA90</h3><div class="office-summary"><div><strong>3</strong><br>funded challenges</div><div><strong>1</strong><br>lead claims</div><div><strong>0</strong><br>partner claims</div><div><strong>$305.0M</strong><br>BASELINE</div><div><strong>$61.6M</strong><br>UFR</div><div><strong>5</strong><br>WBS areas</div></div><p>NA90 has 3 funded Genesis Mission Challenges and 1 claimed role, with $366.6M across 6 programming rows. Mission areas shown: Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Accelerating Business and Management Processes for National Security Missions.</p><div class="portfolio-row"><div>Harnessing America’s Historic Nuclear Data and Research<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:9.2%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$183.7M</div></div><div class="portfolio-row"><div>Increasing Experimental Capacity at Nuclear Research Facilities<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:8.4%"><span class="baseline" style="width:72.3%"></span><span class="ufr" style="width:27.7%"></span></div></div></div><div class="num">$167.7M</div></div><div class="portfolio-row"><div>Accelerating Business and Management Processes for National Security...<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></div><div class="num">$15.2M</div></div><div class="portfolio-row"><div>Streamlining Production, Removing Red Tape, and Ensuring Safety in th...<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 50: 32-D-XXX New Central Computing Facility, Y-12; Harnessing America’s Historic Nuclear Data and Research; BASELINE; $183.7M</li><li>programming_data.csv row 49: LANL - 23-D-517 Electrical Power Capacity Upgrade; Increasing Experimental Capacity at Nuclear Research Facilities; BASELINE; $115.1M</li><li>programming_data.csv row 48: Maintenance at Working Facilities; Increasing Experimental Capacity at Nuclear Research Facilities; UFR; $46.4M</li><li>programming_data.csv row 51: Operations of Facilties; Accelerating Business and Management Processes for National Security Missions; UFR; $15.2M</li><li>programming_data.csv row 53: Other Project Costs; Increasing Experimental Capacity at Nuclear Research Facilities; BASELINE; $3.4M</li></ul></details></article><article class="card office-card" data-office="NAESH" data-funded-challenge-count="2" data-claimed-challenge-count="1" data-office-total="78100000.00"><h3>NAESH</h3><div class="office-summary"><div><strong>2</strong><br>funded challenges</div><div><strong>0</strong><br>lead claims</div><div><strong>1</strong><br>partner claims</div><div><strong>$78.1M</strong><br>BASELINE</div><div><strong>$0</strong><br>UFR</div><div><strong>2</strong><br>WBS areas</div></div><p>NAESH has 2 funded Genesis Mission Challenges and 1 claimed role, with $78.1M across 2 programming rows. Mission areas shown: Accelerating Nuclear Threat Assessment, Preparedness, and Response; Harnessing America’s Historic Nuclear Data and Research; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise.</p><div class="portfolio-row"><div>Accelerating Nuclear Threat Assessment, Preparedness, and Response<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$75.0M</div></div><div class="portfolio-row"><div>Harnessing America’s Historic Nuclear Data and Research<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$3.1M</div></div><div class="portfolio-row"><div>Streamlining Production, Removing Red Tape, and Ensuring Safety in th...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 55: Safety Analytics, Forecasting, Evaluation and Reporting (SAFER); Accelerating Nuclear Threat Assessment, Preparedness, and Response; BASELINE; $75.0M</li><li>programming_data.csv row 54: Site-Wide Environmental Impact Statement (SWEIS); Harnessing America’s Historic Nuclear Data and Research; BASELINE; $3.1M</li></ul></details></article><article class="card office-card" data-office="NA30" data-funded-challenge-count="2" data-claimed-challenge-count="0" data-office-total="21700000.00"><h3>NA30</h3><div class="office-summary"><div><strong>2</strong><br>funded challenges</div><div><strong>0</strong><br>lead claims</div><div><strong>0</strong><br>partner claims</div><div><strong>$21.7M</strong><br>BASELINE</div><div><strong>$0</strong><br>UFR</div><div><strong>2</strong><br>WBS areas</div></div><p>NA30 has 2 funded Genesis Mission Challenges and 0 claimed roles, with $21.7M across 2 programming rows. Mission areas shown: Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise.</p><div class="portfolio-row"><div>Integrating Design and Production Operations for Nuclear Deterrence<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$16.2M</div></div><div class="portfolio-row"><div>Streamlining Production, Removing Red Tape, and Ensuring Safety in th...<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$5.5M</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 41: Reactor Systems &amp; Component Technology; Integrating Design and Production Operations for Nuclear Deterrence; BASELINE; $16.2M</li><li>programming_data.csv row 42: Laboratory Facility Regulation, Compliance, &amp; Protection; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise; BASELINE; $5.5M</li></ul></details></article><article class="card office-card" data-office="NA80" data-funded-challenge-count="1" data-claimed-challenge-count="6" data-office-total="150000000.00"><h3>NA80</h3><div class="office-summary"><div><strong>1</strong><br>funded challenges</div><div><strong>3</strong><br>lead claims</div><div><strong>3</strong><br>partner claims</div><div><strong>$0</strong><br>BASELINE</div><div><strong>$150.0M</strong><br>UFR</div><div><strong>4</strong><br>WBS areas</div></div><p>NA80 has 1 funded Genesis Mission Challenge and 6 claimed roles, with $150.0M across 4 programming rows. Mission areas shown: Accelerating Nuclear Threat Assessment, Preparedness, and Response; (CUI) Preventing AI-Induced Nuclear Proliferation; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures.</p><div class="portfolio-row"><div>Accelerating Nuclear Threat Assessment, Preparedness, and Response<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:7.5%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></div><div class="num">$150.0M</div></div><div class="portfolio-row"><div>(CUI) Preventing AI-Induced Nuclear Proliferation<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Strengthening Deterrence Through Attribution of Nuclear and Radiologi...<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Harnessing America’s Historic Nuclear Data and Research<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Increasing Experimental Capacity at Nuclear Research Facilities<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Safeguarding Nuclear Materials from Proliferation Threats<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 47: Nuclear Incident Response (NA-84); Accelerating Nuclear Threat Assessment, Preparedness, and Response; UFR; $87.5M</li><li>programming_data.csv row 45: Nuclear Threat Science (NA-82); Accelerating Nuclear Threat Assessment, Preparedness, and Response; UFR; $40.0M</li><li>programming_data.csv row 46: National Technical Nuclear Forensics (NA-83); Accelerating Nuclear Threat Assessment, Preparedness, and Response; UFR; $17.5M</li><li>programming_data.csv row 44: Nuclear Incident Preparedness and Collaboration (NA-81); Accelerating Nuclear Threat Assessment, Preparedness, and Response; UFR; $5.0M</li></ul></details></article><article class="card office-card" data-office="NA12" data-funded-challenge-count="1" data-claimed-challenge-count="3" data-office-total="483384000.00"><h3>NA12</h3><div class="office-summary"><div><strong>1</strong><br>funded challenges</div><div><strong>1</strong><br>lead claims</div><div><strong>2</strong><br>partner claims</div><div><strong>$0</strong><br>BASELINE</div><div><strong>$483.4M</strong><br>UFR</div><div><strong>1</strong><br>WBS areas</div></div><p>NA12 has 1 funded Genesis Mission Challenge and 3 claimed roles, with $483.4M across 2 programming rows. Mission areas shown: Integrating Design and Production Operations for Nuclear Deterrence; Harnessing America’s Historic Nuclear Data and Research; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise.</p><div class="portfolio-row"><div>Integrating Design and Production Operations for Nuclear Deterrence<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:24.2%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></div><div class="num">$483.4M</div></div><div class="portfolio-row"><div>Harnessing America’s Historic Nuclear Data and Research<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Streamlining Production, Removing Red Tape, and Ensuring Safety in th...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 33: Multi-Weapon Systems (formerly MTP); Integrating Design and Production Operations for Nuclear Deterrence; UFR; $318.3M</li><li>programming_data.csv row 34: Multi-Weapon Systems (formerly MTP); Integrating Design and Production Operations for Nuclear Deterrence; UFR; $165.1M</li></ul></details></article><article class="card office-card" data-office="NA70" data-funded-challenge-count="1" data-claimed-challenge-count="1" data-office-total="10000000.00"><h3>NA70</h3><div class="office-summary"><div><strong>1</strong><br>funded challenges</div><div><strong>0</strong><br>lead claims</div><div><strong>1</strong><br>partner claims</div><div><strong>$10.0M</strong><br>BASELINE</div><div><strong>$0</strong><br>UFR</div><div><strong>1</strong><br>WBS areas</div></div><p>NA70 has 1 funded Genesis Mission Challenge and 1 claimed role, with $10.0M across 1 programming rows. Mission areas shown: Accelerating Business and Management Processes for National Security Missions; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise.</p><div class="portfolio-row"><div>Accelerating Business and Management Processes for National Security...<br><span class="role-pill role-contributor">Actual contributor</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$10.0M</div></div><div class="portfolio-row"><div>Streamlining Production, Removing Red Tape, and Ensuring Safety in th...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>programming_data.csv row 43: Security Program Operations &amp; Planning; Accelerating Business and Management Processes for National Security Missions; BASELINE; $10.0M</li></ul></details></article><article class="card office-card" data-office="NA19" data-funded-challenge-count="0" data-claimed-challenge-count="3" data-office-total="0.00"><h3>NA19</h3><div class="office-summary"><div><strong>0</strong><br>funded challenges</div><div><strong>1</strong><br>lead claims</div><div><strong>2</strong><br>partner claims</div><div><strong>$0</strong><br>BASELINE</div><div><strong>$0</strong><br>UFR</div><div><strong>0</strong><br>WBS areas</div></div><p>NA19 has 0 funded Genesis Mission Challenges and 3 claimed roles, with $0 across 0 programming rows. Mission areas shown: Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise.</p><div class="portfolio-row"><div>Accelerating Materials Discovery, Production, and Qualification for S...<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Integrating Design and Production Operations for Nuclear Deterrence<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><div class="portfolio-row"><div>Streamlining Production, Removing Red Tape, and Ensuring Safety in th...<br><span class="role-pill role-partner">Partner</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>No direct BASELINE/UFR programming rows found for this claimed office.</li></ul></details></article><article class="card office-card" data-office="NA-MB" data-funded-challenge-count="0" data-claimed-challenge-count="1" data-office-total="0.00"><h3>NA-MB</h3><div class="office-summary"><div><strong>0</strong><br>funded challenges</div><div><strong>1</strong><br>lead claims</div><div><strong>0</strong><br>partner claims</div><div><strong>$0</strong><br>BASELINE</div><div><strong>$0</strong><br>UFR</div><div><strong>0</strong><br>WBS areas</div></div><p>NA-MB has 0 funded Genesis Mission Challenges and 1 claimed role, with $0 across 0 programming rows. Mission areas shown: Accelerating Business and Management Processes for National Security Missions.</p><div class="portfolio-row"><div>Accelerating Business and Management Processes for National Security...<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>No direct BASELINE/UFR programming rows found for this claimed office.</li></ul></details></article><article class="card office-card" data-office="NA-PAS" data-funded-challenge-count="0" data-claimed-challenge-count="1" data-office-total="0.00"><h3>NA-PAS</h3><div class="office-summary"><div><strong>0</strong><br>funded challenges</div><div><strong>1</strong><br>lead claims</div><div><strong>0</strong><br>partner claims</div><div><strong>$0</strong><br>BASELINE</div><div><strong>$0</strong><br>UFR</div><div><strong>0</strong><br>WBS areas</div></div><p>NA-PAS has 0 funded Genesis Mission Challenges and 1 claimed role, with $0 across 0 programming rows. Mission areas shown: Accelerating Nuclear Enterprise Acquisition.</p><div class="portfolio-row"><div>Accelerating Nuclear Enterprise Acquisition<br><span class="role-pill role-lead">Lead</span></div><div><div class="bar-wrap"><div class="bar-fill" style="width:6.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></div><div class="num">$0</div></div><details><summary>Programming-data citations</summary><ul class="citation-list"><li>No direct BASELINE/UFR programming rows found for this claimed office.</li></ul></details></article></div>
+  </section>
+
+  <section>
+    <h2>Lead Office Funding by Claimed Mission</h2>
+    <p class="section-note">This preserves the original accountability view while emphasizing funding mix, mission coverage, and where lead offices need collaborators.</p>
+    <div class="viz-block"><table class="data-table"><thead><tr><th>Lead Office</th><th>Genesis Mission Challenge</th><th>Funding Mix</th><th>Total</th><th>BASELINE</th><th>UFR</th><th>Rows</th><th>WBS</th><th>Signal</th></tr></thead><tbody><tr><td>NA11</td><td>Harnessing America’s Historic Nuclear Data and Research</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100.0%"><span class="baseline" style="width:7.5%"></span><span class="ufr" style="width:92.5%"></span></div></div></td><td class="num">$1.04B</td><td class="num">$77.5M</td><td class="num">$958.2M</td><td class="num">5</td><td class="num">3</td><td>Multi-office mission area</td></tr><tr><td>NA20</td><td>Safeguarding Nuclear Materials from Proliferation Threats</td><td><div class="bar-wrap"><div class="bar-fill" style="width:51.7%"><span class="baseline" style="width:30.8%"></span><span class="ufr" style="width:69.2%"></span></div></div></td><td class="num">$535.0M</td><td class="num">$165.0M</td><td class="num">$370.0M</td><td class="num">4</td><td class="num">3</td><td>Multi-office mission area</td></tr><tr><td>NA12</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:46.7%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></td><td class="num">$483.4M</td><td class="num">$0</td><td class="num">$483.4M</td><td class="num">2</td><td class="num">1</td><td>Multi-office mission area</td></tr><tr><td>NA80</td><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14.5%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:100.0%"></span></div></div></td><td class="num">$150.0M</td><td class="num">$0</td><td class="num">$150.0M</td><td class="num">4</td><td class="num">4</td><td>Multi-office mission area</td></tr><tr><td>NA11</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:7.7%"><span class="baseline" style="width:100.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$79.5M</td><td class="num">$79.5M</td><td class="num">$0</td><td class="num">4</td><td class="num">4</td><td>Multi-office mission area</td></tr><tr><td>NA80</td><td>(CUI) Preventing AI-Induced Nuclear Proliferation</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">0</td><td class="num">0</td><td>Multi-office mission area</td></tr><tr><td>NA-MB</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">0</td><td class="num">0</td><td>Multi-office mission area</td></tr><tr><td>NA19</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">0</td><td class="num">0</td><td>Multi-office mission area</td></tr><tr><td>NA-PAS</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">0</td><td class="num">0</td><td>Multi-office mission area</td></tr><tr><td>NA90</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">0</td><td class="num">0</td><td>Multi-office mission area</td></tr><tr><td>NA80</td><td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td><div class="bar-wrap"><div class="bar-fill" style="width:3.0%"><span class="baseline" style="width:0.0%"></span><span class="ufr" style="width:0.0%"></span></div></div></td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">0</td><td class="num">0</td><td>Multi-office mission area</td></tr></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Challenge Coverage</h2>
+    <p class="section-note">Coverage now centers on each mission challenge's available funding, contributors, claimed offices, and collaboration signal.</p>
+    <table class="data-table"><thead><tr><th>Genesis Mission Challenge</th><th>Total</th><th>BASELINE</th><th>UFR</th><th>Office Players</th><th>Funding Offices</th><th>Claimed Lead</th><th>Claimed Partners</th><th>Actual Contributors</th><th>Signal</th></tr></thead><tbody><tr><td>Harnessing America’s Historic Nuclear Data and Research</td><td class="num">$1.22B</td><td class="num">$264.3M</td><td class="num">$958.2M</td><td class="num">7</td><td class="num">3</td><td>NA11</td><td>NA12; NA20; NA80; NAIM</td><td>NA11; NA90; NAESH</td><td>Coordinate NA11; NA12; NA20; NA80; NA90; NAESH; NAIM</td></tr><tr><td>Accelerating Nuclear Enterprise Acquisition</td><td class="num">$846.1M</td><td class="num">$209.5M</td><td class="num">$636.6M</td><td class="num">4</td><td class="num">3</td><td>NA-PAS</td><td>NAIM</td><td>NA11; NA20; NAIM</td><td>Coordinate NA-PAS; NA11; NA20; NAIM</td></tr><tr><td>Accelerating Business and Management Processes for National Security Missions</td><td class="num">$727.1M</td><td class="num">$711.8M</td><td class="num">$15.2M</td><td class="num">5</td><td class="num">4</td><td>NA-MB</td><td>NAIM</td><td>NA11; NA70; NA90; NAIM</td><td>Coordinate NA-MB; NA11; NA70; NA90; NAIM</td></tr><tr><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td class="num">$654.2M</td><td class="num">$16.2M</td><td class="num">$638.0M</td><td class="num">4</td><td class="num">3</td><td>NA12</td><td>NA11; NA19</td><td>NA11; NA12; NA30</td><td>Coordinate NA11; NA12; NA19; NA30</td></tr><tr><td>Safeguarding Nuclear Materials from Proliferation Threats</td><td class="num">$535.0M</td><td class="num">$165.0M</td><td class="num">$370.0M</td><td class="num">3</td><td class="num">1</td><td>NA20</td><td>NA80; NAIM</td><td>NA20</td><td>Coordinate NA20; NA80; NAIM</td></tr><tr><td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td><td class="num">$382.5M</td><td class="num">$187.5M</td><td class="num">$195.0M</td><td class="num">5</td><td class="num">4</td><td>NA80</td><td>NA20</td><td>NA11; NA80; NAESH; NAIM</td><td>Coordinate NA11; NA20; NA80; NAESH; NAIM</td></tr><tr><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td class="num">$247.2M</td><td class="num">$200.8M</td><td class="num">$46.4M</td><td class="num">4</td><td class="num">2</td><td>NA11</td><td>NA20; NA80</td><td>NA11; NA90</td><td>Coordinate NA11; NA20; NA80; NA90</td></tr><tr><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td><td class="num">$206.2M</td><td class="num">$206.2M</td><td class="num">$0</td><td class="num">2</td><td class="num">1</td><td>NA19</td><td>NA11</td><td>NA11</td><td>Coordinate NA11; NA19</td></tr><tr><td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td class="num">$150.0M</td><td class="num">$0</td><td class="num">$150.0M</td><td class="num">2</td><td class="num">1</td><td>NA80</td><td>NA20</td><td>NA20</td><td>Coordinate NA20; NA80</td></tr><tr><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td class="num">$5.5M</td><td class="num">$5.5M</td><td class="num">$0</td><td class="num">7</td><td class="num">1</td><td>NA90</td><td>NA11; NA12; NA19; NA70; NAESH</td><td>NA30</td><td>Coordinate NA11; NA12; NA19; NA30; NA70; NA90; NAESH</td></tr><tr><td>(CUI) Preventing AI-Induced Nuclear Proliferation</td><td class="num">$0</td><td class="num">$0</td><td class="num">$0</td><td class="num">2</td><td class="num">0</td><td>NA80</td><td>NA20</td><td>No BASELINE/UFR funding found</td><td>Coordinate NA20; NA80</td></tr></tbody></table>
+  </section>
+
+  <section class="appendix">
+    <h2>Appendix: Validation and Traceability</h2>
+    <p class="section-note">Validation, confidence, review, and row-level details remain available here without dominating the executive dashboard flow.</p>
+    <div class="appendix-actions">
+      <button type="button" onclick="setAppendix(true)">Open all</button>
+      <button type="button" onclick="setAppendix(false)">Close all</button>
+    </div>
+    <details>
+      <summary>Office Claim Validation</summary>
+      <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>challenge_name</th>
+      <th>claimed_office</th>
+      <th>claim_role</th>
+      <th>validation_status</th>
+      <th>evidence_row_count</th>
+      <th>evidence_wbs_count</th>
+      <th>five_year_total_display</th>
+      <th>high_confidence_count</th>
+      <th>medium_confidence_count</th>
+      <th>low_confidence_count</th>
+      <th>review_flag_count</th>
+      <th>evidence_wbs_names</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>NA12</td>
+      <td>lead</td>
+      <td>needs_review</td>
+      <td>2</td>
+      <td>1</td>
+      <td>$483.4M</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>0</td>
+      <td>Multi-Weapon Systems (formerly MTP)</td>
+    </tr>
+    <tr>
+      <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
+      <td>NA20</td>
+      <td>lead</td>
+      <td>needs_review</td>
+      <td>4</td>
+      <td>3</td>
+      <td>$535.0M</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>4</td>
+      <td>Civil Nuclear Cooperation &amp; Engagement; Export Control; PD</td>
+    </tr>
+    <tr>
+      <td>(CUI) Preventing AI-Induced Nuclear Proliferation</td>
+      <td>NA20</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>(CUI) Preventing AI-Induced Nuclear Proliferation</td>
+      <td>NA80</td>
+      <td>lead</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>NA-MB</td>
+      <td>lead</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>NA19</td>
+      <td>lead</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Enterprise Acquisition</td>
+      <td>NA-PAS</td>
+      <td>lead</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>NA20</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>NA12</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>NA20</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>NA80</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>NAIM</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>NA20</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>NA80</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>NA19</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
+      <td>NA80</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
+      <td>NAIM</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>NA11</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>NA12</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>NA19</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>NA70</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>NA90</td>
+      <td>lead</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>NAESH</td>
+      <td>partner</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td>
+      <td>NA80</td>
+      <td>lead</td>
+      <td>unfunded</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>NAIM</td>
+      <td>partner</td>
+      <td>validated</td>
+      <td>3</td>
+      <td>3</td>
+      <td>$485.0M</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+      <td>2</td>
+      <td>Artificial Intelligence - Program Work; Enterprise Operations; Mission Contract Tasks</td>
+    </tr>
+    <tr>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>NA11</td>
+      <td>partner</td>
+      <td>validated</td>
+      <td>7</td>
+      <td>5</td>
+      <td>$206.2M</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Advanced Certification &amp; Qualification (formerly Advanced Certification); Advanced Manufacturing Development; Aging &amp; Lifetimes (formerly Enhanced Surveillance); Delivery Environments (formerly WSEAT); Dynamic Materials Properties</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Enterprise Acquisition</td>
+      <td>NAIM</td>
+      <td>partner</td>
+      <td>validated</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$636.6M</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>Artificial Intelligence - Program Work</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>NA80</td>
+      <td>lead</td>
+      <td>validated</td>
+      <td>4</td>
+      <td>4</td>
+      <td>$150.0M</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>National Technical Nuclear Forensics (NA-83); Nuclear Incident Preparedness and Collaboration (NA-81); Nuclear Incident Response (NA-84); Nuclear Threat Science (NA-82)</td>
+    </tr>
+    <tr>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>NA11</td>
+      <td>lead</td>
+      <td>validated</td>
+      <td>5</td>
+      <td>3</td>
+      <td>$1.04B</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Archiving &amp; Support; Artificial Intelligence for Nuclear Security (AI4NS); Computational Systems &amp; Software Environment</td>
+    </tr>
+    <tr>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>NA11</td>
+      <td>lead</td>
+      <td>validated</td>
+      <td>4</td>
+      <td>4</td>
+      <td>$79.5M</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+      <td>2</td>
+      <td>Delivery Environments (formerly WSEAT); Facility Operations (formerly also Target Production); ICF Diagnostics &amp; Instrumentation (formerly Diagnostics, Cryogenics &amp; Experimental Support); Secondary Assessment Technologies</td>
+    </tr>
+    <tr>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>NA11</td>
+      <td>partner</td>
+      <td>validated</td>
+      <td>6</td>
+      <td>6</td>
+      <td>$154.7M</td>
+      <td>0</td>
+      <td>6</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Dynamic Materials Properties; Facility Operations (formerly also Target Production); HED &amp; Ignition Science for Stockpile Applications (formerly Ignition); Hydrodynamic &amp; Subcritical Execution Support (formerly RDC&amp;S); ICF Diagnostics &amp; Instrumentation (formerly Diagnostics, Cryogenics &amp; Experimental Support); Secondary Assessment Technologies</td>
+    </tr>
+    <tr>
+      <td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td>
+      <td>NA20</td>
+      <td>partner</td>
+      <td>validated</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$150.0M</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>FRD</td>
+    </tr>
+  </tbody>
+</table>
+    </details>
+    <details>
+      <summary>Unclaimed Positive Evidence</summary>
+      <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>challenge_name</th>
+      <th>normalized_funding_office</th>
+      <th>evidence_row_count</th>
+      <th>evidence_wbs_count</th>
+      <th>five_year_total_display</th>
+      <th>evidence_wbs_names</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>NA11</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$216.8M</td>
+      <td>Artificial Intelligence for Nuclear Security (AI4NS)</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Enterprise Acquisition</td>
+      <td>NA11</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$192.0M</td>
+      <td>Artificial Intelligence for Nuclear Security (AI4NS)</td>
+    </tr>
+    <tr>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>NA90</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$183.7M</td>
+      <td>32-D-XXX New Central Computing Facility, Y-12</td>
+    </tr>
+    <tr>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>NA90</td>
+      <td>4</td>
+      <td>3</td>
+      <td>$167.7M</td>
+      <td>LANL - 23-D-517 Electrical Power Capacity Upgrade; Maintenance at Working Facilities; Other Project Costs</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>NA11</td>
+      <td>2</td>
+      <td>2</td>
+      <td>$112.5M</td>
+      <td>HED &amp; Ignition Science for Stockpile Applications (formerly Ignition); Primary Assessment Technologies</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>NAESH</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$75.0M</td>
+      <td>Safety Analytics, Forecasting, Evaluation and Reporting (SAFER)</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>NAIM</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$45.0M</td>
+      <td>Artificial Intelligence - Program Work</td>
+    </tr>
+    <tr>
+      <td>Accelerating Nuclear Enterprise Acquisition</td>
+      <td>NA20</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$17.5M</td>
+      <td>Civil Nuclear Cooperation &amp; Engagement</td>
+    </tr>
+    <tr>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>NA30</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$16.2M</td>
+      <td>Reactor Systems &amp; Component Technology</td>
+    </tr>
+    <tr>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>NA90</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$15.2M</td>
+      <td>Operations of Facilties</td>
+    </tr>
+    <tr>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>NA70</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$10.0M</td>
+      <td>Security Program Operations &amp; Planning</td>
+    </tr>
+    <tr>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>NA30</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$5.5M</td>
+      <td>Laboratory Facility Regulation, Compliance, &amp; Protection</td>
+    </tr>
+    <tr>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>NAESH</td>
+      <td>1</td>
+      <td>1</td>
+      <td>$3.1M</td>
+      <td>Site-Wide Environmental Impact Statement (SWEIS)</td>
+    </tr>
+  </tbody>
+</table>
+    </details>
+    <details>
+      <summary>Reviewed Row-Level Classifications</summary>
+      <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>source_file</th>
+      <th>source_row_number</th>
+      <th>wbs_name</th>
+      <th>normalized_funding_office</th>
+      <th>funding_level</th>
+      <th>predicted_challenge</th>
+      <th>confidence</th>
+      <th>review_flag</th>
+      <th>five_year_total_display</th>
+      <th>scope_description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>20</td>
+      <td>Archiving &amp; Support</td>
+      <td>NA11</td>
+      <td>DECREMENT</td>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>-$10.4M</td>
+      <td>Decrement would necessitate a workforce reduction of approximately 17 full-time employees in FY28 across our laboratories, plants, and sites. Given that A&amp;S activities are heavily concentrated in personnel and AI/ML tools; critical AI/ML endeavors will remain a strategic priority</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>2</td>
+      <td>Artificial Intelligence for Nuclear Security (AI4NS)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$216.8M</td>
+      <td>Participation in the Genesis Platforms that apply AI solutions to accelerating mission problems, increasing enterprise efficiency, or increasing scientific/engineering insight.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>43</td>
+      <td>Security Program Operations &amp; Planning</td>
+      <td>NA70</td>
+      <td>BASELINE</td>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>high</td>
+      <td>True</td>
+      <td>$10.0M</td>
+      <td>CSTART - Use of AI to enhance capabilities within the S&amp;S program is growing and has potential to yeild valuable improvemements in addressing gaps and effeciciencies. This activity will be coordianted with the overall NNSA Genesis and other endeavors to ensure integrated and complimentary efforts.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>51</td>
+      <td>Operations of Facilties</td>
+      <td>NA90</td>
+      <td>UFR</td>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$15.2M</td>
+      <td>Telecommunication &amp; AI Infrastructure Program Integration</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>59</td>
+      <td>Artificial Intelligence - Program Work</td>
+      <td>NAIM</td>
+      <td>BASELINE</td>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>$15.1M</td>
+      <td>Covers all expenses including labor and equipment associated with Artificial Intelligence investments.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>57</td>
+      <td>Enterprise Operations</td>
+      <td>NAIM</td>
+      <td>BASELINE</td>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$467.4M</td>
+      <td>AI-enabled cybersecurity tools that support the enterprise</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>58</td>
+      <td>Mission Contract Tasks</td>
+      <td>NAIM</td>
+      <td>BASELINE</td>
+      <td>Accelerating Business and Management Processes for National Security Missions</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$2.5M</td>
+      <td>Covers all expenses including covers annual license and tokens associated with AI.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>30</td>
+      <td>Advanced Certification &amp; Qualification (formerly Advanced Certification)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$1.8M</td>
+      <td>Apply AI/ML techniques for qualification of CT data for part acceptance</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>31</td>
+      <td>Advanced Manufacturing Development</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$5.8M</td>
+      <td>Automated Defect Detection of AM Structures; Machine Learning Models for AM Metal Components</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>32</td>
+      <td>Advanced Manufacturing Development</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$11.5M</td>
+      <td>Develop Large Langugage Model to find replacement HE binder candidates; Develop high performance and multimetal alloys, optimizing strength and stability with new AM methods that meet future system requirements.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>17</td>
+      <td>Aging &amp; Lifetimes (formerly Enhanced Surveillance)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>True</td>
+      <td>$24.7M</td>
+      <td>Incorporate machine learning tools to predict compatibility/incompatibility of energetic materials</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>18</td>
+      <td>Aging &amp; Lifetimes (formerly Enhanced Surveillance)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$29.4M</td>
+      <td>Materials Aging &amp; Compatibility</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>22</td>
+      <td>Delivery Environments (formerly WSEAT)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>True</td>
+      <td>$22.2M</td>
+      <td>Characterize and validate energetic and shock mitigation materials to increase the credibility of computational models; Curating and Analyzing New and Legacy Flight Test Data to Predict Environments of Future Systems</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>6</td>
+      <td>Dynamic Materials Properties</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$110.9M</td>
+      <td>New materials discovery for HE/Light sources -- New AI/ML</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>9</td>
+      <td>Dynamic Materials Properties</td>
+      <td>NA11</td>
+      <td>DECREMENT</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>False</td>
+      <td>-$986,000</td>
+      <td>Light sources -- New AI/ML for rapid data analysis, AI-guided dynamic expts, and image analysis.NNM qualification for W93, AI-assisted design of materials (LANL) Impact/Risk More efficient, faster, more accurate data analysis.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>10</td>
+      <td>Dynamic Materials Properties</td>
+      <td>NA11</td>
+      <td>DECREMENT</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>False</td>
+      <td>-$2.8M</td>
+      <td>New materials discovery for HE</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>11</td>
+      <td>Dynamic Materials Properties</td>
+      <td>NA11</td>
+      <td>DECREMENT</td>
+      <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
+      <td>high</td>
+      <td>False</td>
+      <td>-$3.5M</td>
+      <td>Use ML to develop synthesis pathways to novel high-performance materials. Synthesize candidate materials in each of the programmatic driver areas. The materials developed will then be characterized chemically, characterized with respect to small scale sensitivity and performance properties. Failure to support will result in the complex to continue to be restricted to 2 high explosives, an HMX based and a TATB based with all the issues and limitations we have been dealing with. Additional explosives, with different capabilities will enable systems design options not currently possible</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>1</td>
+      <td>Artificial Intelligence for Nuclear Security (AI4NS)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Nuclear Enterprise Acquisition</td>
+      <td>low</td>
+      <td>True</td>
+      <td>$192.0M</td>
+      <td>Participation in the Genesis Mission Technology and Science Challenges ("MiSTCs") that apply AI solutions to accelerating mission problems, increasing enterprise efficiency, or increasing scientific/engineering insight.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>38</td>
+      <td>Civil Nuclear Cooperation &amp; Engagement</td>
+      <td>NA20</td>
+      <td>BASELINE</td>
+      <td>Accelerating Nuclear Enterprise Acquisition</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$17.5M</td>
+      <td>Automation and AI/ML capabilities to enhance the e810 system to streamline the process for submitting civil nuclear technology transfer requests under 10 CFR Part 810.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>61</td>
+      <td>Artificial Intelligence - Program Work</td>
+      <td>NAIM</td>
+      <td>UFR</td>
+      <td>Accelerating Nuclear Enterprise Acquisition</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>$636.6M</td>
+      <td>This UFR requests funding vital for enabling AI Innovation and Collaboration, upgrading Core Computing infrastructure to enhance enterprise connectivity, developing and deploying secure AI Models and Tools, strengthening data governance and cybersecurity frameworks, and providing AI Readiness Workforce Training. These investments are foundational for both current operations and future AI initiatives associated with the Genesis Mission.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>26</td>
+      <td>HED &amp; Ignition Science for Stockpile Applications (formerly Ignition)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$76.1M</td>
+      <td>AI for Ignition Applications, Double Shells, Experiment Analyses and Understanding, Simulations and Analysis Methods, Pulse Shaping Machine Learning (PUSH ML), Development and Interface with CMF</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>14</td>
+      <td>Primary Assessment Technologies</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$36.4M</td>
+      <td>AI/ML implementation including, modeling suites to develop an AI workflow, employing and building AI systems that reveal causality relationships between material response and expanded UGT diagnostic data, and experimental datasets toward the development of frontier-class AI models</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>46</td>
+      <td>National Technical Nuclear Forensics (NA-83)</td>
+      <td>NA80</td>
+      <td>UFR</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$17.5M</td>
+      <td>Surge support for advancing AI-tools for rapid and effective response to nuclear and radiological events that require detailed analysis of vast and varied data, deploy AI tools to identify and mitigate sensitive information in the public domain, and improve the speed and accuracy of nuclear forensics analyses.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>44</td>
+      <td>Nuclear Incident Preparedness and Collaboration (NA-81)</td>
+      <td>NA80</td>
+      <td>UFR</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$5.0M</td>
+      <td>Surge support for advancing AI-tools for rapid and effective response to nuclear and radiological events that require detailed analysis of vast and varied data, deploy AI tools to identify and mitigate sensitive information in the public domain, and improve the speed and accuracy of nuclear forensics analyses.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>47</td>
+      <td>Nuclear Incident Response (NA-84)</td>
+      <td>NA80</td>
+      <td>UFR</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$87.5M</td>
+      <td>Surge support for advancing AI-tools for rapid and effective response to nuclear and radiological events that require detailed analysis of vast and varied data, deploy AI tools to identify and mitigate sensitive information in the public domain, and improve the speed and accuracy of nuclear forensics analyses.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>45</td>
+      <td>Nuclear Threat Science (NA-82)</td>
+      <td>NA80</td>
+      <td>UFR</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$40.0M</td>
+      <td>Surge support for advancing AI-tools for rapid and effective response to nuclear and radiological events that require detailed analysis of vast and varied data, deploy AI tools to identify and mitigate sensitive information in the public domain, and improve the speed and accuracy of nuclear forensics analyses.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>55</td>
+      <td>Safety Analytics, Forecasting, Evaluation and Reporting (SAFER)</td>
+      <td>NAESH</td>
+      <td>BASELINE</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$75.0M</td>
+      <td>Maintain NNSA Decision and Analytics Platform, develop new data analysis, operational, and/or artificial intelligence tools</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>56</td>
+      <td>Safety Analytics, Forecasting, Evaluation and Reporting (SAFER)</td>
+      <td>NAESH</td>
+      <td>DECREMENT</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>-$22.5M</td>
+      <td>Maintain NNSA Decision and Analytics Platform, develop new data analysis, operational, and/or artificial intelligence tools</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>60</td>
+      <td>Artificial Intelligence - Program Work</td>
+      <td>NAIM</td>
+      <td>UFR</td>
+      <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>$45.0M</td>
+      <td>The UFR is a joint effort between NA-IM and NA-11 with benefits for NA-10, -20,-20, and -IM. The effort will support a new HPC resource concept that enables the efficient use of resources to support NNSA's growing mission demand. Full details of the effort are found in the NA-114 whitepaper.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>19</td>
+      <td>Archiving &amp; Support</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$77.5M</td>
+      <td>AI/ML implementation including, software and licenses to automatically index, catalog, extract metadata and search an increased number of digital repositories</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>21</td>
+      <td>Archiving &amp; Support</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$153.8M</td>
+      <td>Expanded deployment of the Terrier tool suite across the design agencies to provide data conditioning, curation, and labeling for legacy weapons data.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>3</td>
+      <td>Artificial Intelligence for Nuclear Security (AI4NS)</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$346.6M</td>
+      <td>This effort aims to productionize several prototype AI tools to accelerate weapons design, modeling, and simulation workflows, such as the CHANDLER federated model, the Horizon Shield simulation workflow, and the CADSAT meshing tool. It also involves deploying the necessary infrastructure, including GPUs, cloud access, and optimized storage, while developing a "Secure AI" suite to protect these assets on classified networks.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>4</td>
+      <td>Artificial Intelligence for Nuclear Security (AI4NS)</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$119.2M</td>
+      <td>This effort aims to productionize several prototype AI tools to accelerate weapons design, modeling, and simulation workflows, such as the CHANDLER federated model, the Horizon Shield simulation workflow, and the CADSAT meshing tool. It also involves deploying the necessary infrastructure, including GPUs, cloud access, and optimized storage, while developing a "Secure AI" suite to protect these assets on classified networks.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>5</td>
+      <td>Computational Systems &amp; Software Environment</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$338.5M</td>
+      <td>This effort aims to productionize several prototype AI tools to accelerate weapons design, modeling, and simulation workflows, such as the CHANDLER federated model, the Horizon Shield simulation workflow, and the CADSAT meshing tool. It also involves deploying the necessary infrastructure, including GPUs, cloud access, and optimized storage, while developing a "Secure AI" suite to protect these assets on classified networks.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>7</td>
+      <td>Dynamic Materials Properties</td>
+      <td>NA11</td>
+      <td>DECREMENT</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>-$7.8M</td>
+      <td>AI/ML on Pu strength datasets. Required for AI/ML and predictive modeling</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>8</td>
+      <td>Dynamic Materials Properties</td>
+      <td>NA11</td>
+      <td>DECREMENT</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>-$4.2M</td>
+      <td>Create a library of HE characterizations for new and existing formulations . Characterization of HE microstructures and documentation are FY26 growth areas. The Energetic Binders task will explore the characterization of the set of polymers already prepared on a small scale. Promising binders will be scale-up and formulated to determine binder properties and compatibilities. Enables AI/ML. Cannot apply AI/ML without supporting data in correct formats.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>50</td>
+      <td>32-D-XXX New Central Computing Facility, Y-12</td>
+      <td>NA90</td>
+      <td>BASELINE</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>low</td>
+      <td>True</td>
+      <td>$183.7M</td>
+      <td>Ensure reliabe classified and unclassified computing availability by providing space for network and data servers/hubs and office space for ~400 personnel</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>54</td>
+      <td>Site-Wide Environmental Impact Statement (SWEIS)</td>
+      <td>NAESH</td>
+      <td>BASELINE</td>
+      <td>Harnessing America’s Historic Nuclear Data and Research</td>
+      <td>low</td>
+      <td>True</td>
+      <td>$3.1M</td>
+      <td>AI Data Center activities associated with SWEIS/NEPA</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>23</td>
+      <td>Delivery Environments (formerly WSEAT)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$13.9M</td>
+      <td>Investigation of novel physics modeling pertinent to reentry systems and the associated validation and uncertainty quantification (VUQ)</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>24</td>
+      <td>Facility Operations (formerly also Target Production)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$19.5M</td>
+      <td>Capability Development, ICF Operations, Develop experimental capabilities and support for target metrology in Fusion Yield Platforms</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>28</td>
+      <td>ICF Diagnostics &amp; Instrumentation (formerly Diagnostics, Cryogenics &amp; Experimental Support)</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$2.0M</td>
+      <td>Constraining Mix using radiochemistry on NIF</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>15</td>
+      <td>Secondary Assessment Technologies</td>
+      <td>NA11</td>
+      <td>BASELINE</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>$44.1M</td>
+      <td>AI/ML work across multiple HED experiments: analysis and modeling of data, with the goal of developing more refined approaches</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>49</td>
+      <td>LANL - 23-D-517 Electrical Power Capacity Upgrade</td>
+      <td>NA90</td>
+      <td>BASELINE</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$115.1M</td>
+      <td>Ensure sufficient electrical power availability for all mission work by installing one additional 115 kV import power line to increase LANL's import capacity to 200 MV, two 13.8 kV distribution power lines to the Supercomputing Center, three additional distribution power lines between existing substations, and existing substation modifications.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>48</td>
+      <td>Maintenance at Working Facilities</td>
+      <td>NA90</td>
+      <td>UFR</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>low</td>
+      <td>True</td>
+      <td>$46.4M</td>
+      <td>Project replaces overloaded telecommunications towers to meet current and future communication demands.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>52</td>
+      <td>Other Project Costs</td>
+      <td>NA90</td>
+      <td>BASELINE</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$2.8M</td>
+      <td>Electrical Power Capacity Upgrade, LANL OPCs</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>53</td>
+      <td>Other Project Costs</td>
+      <td>NA90</td>
+      <td>BASELINE</td>
+      <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
+      <td>low</td>
+      <td>True</td>
+      <td>$3.4M</td>
+      <td>New Central Computing Facility, Y-12 OPCs</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>12</td>
+      <td>Dynamic Materials Properties</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>$9.1M</td>
+      <td>The President, Secretary, and Administrator have declared expanded use of AI is a national, departmental, and agency priority. The NA-1 NNSA Planning and Programming Guidance for Fiscal years 2028-2032 Future Years Nuclear Security Program (FYNSP) directs the establishment of a plan of record for the NNSA Genesis Mission, to include identifying funding requirements to accomplish the two sets of AI Genesis objectives (Platform and Mission S&amp;T Challenges (MiSTC)). In FY27, NA-11 submitted the UFR "Developing Artificial Intelligence Tools for Nuclear Deterrence." The FY27 FYNSP UFR (which was accepted as a ROT) requested a total of $1,329,460K for all NA-11 program offices over the FYNSP. This new UFR represents a significant change from the previous year as early results from ASC's AI4NS sub-program projects now support the cost estimates and scope, and the Genesis Mission has officially been launched by the Department, marking a significant change in prioritization for the development of AI capabilities.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>25</td>
+      <td>Facility Operations (formerly also Target Production)</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>$33.7M</td>
+      <td>The President, Secretary, and Administrator have declared expanded use of AI is a national, departmental, and agency priority. The NA-1 NNSA Planning and Programming Guidance for Fiscal years 2028-2032 Future Years Nuclear Security Program (FYNSP) directs the establishment of a plan of record for the NNSA Genesis Mission, to include identifying funding requirements to accomplish the two sets of AI Genesis objectives (Platform and Mission S&amp;T Challenges (MiSTC)). In FY27, NA-11 submitted the UFR "Developing Artificial Intelligence Tools for Nuclear Deterrence." The FY27 FYNSP UFR (which was accepted as a ROT) requested a total of $1,329,460K for all NA-11 program offices over the FYNSP. This new UFR represents a significant change from the previous year as early results from ASC's AI4NS sub-program projects now support the cost estimates and scope, and the Genesis Mission has officially been launched by the Department, marking a significant change in prioritization for the development of AI capabilities.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>27</td>
+      <td>HED &amp; Ignition Science for Stockpile Applications (formerly Ignition)</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$20.4M</td>
+      <td>The President, Secretary, and Administrator have declared expanded use of AI is a national, departmental, and agency priority. The NA-1 NNSA Planning and Programming Guidance for Fiscal years 2028-2032 Future Years Nuclear Security Program (FYNSP) directs the establishment of a plan of record for the NNSA Genesis Mission, to include identifying funding requirements to accomplish the two sets of AI Genesis objectives (Platform and Mission S&amp;T Challenges (MiSTC)). In FY27, NA-11 submitted the UFR "Developing Artificial Intelligence Tools for Nuclear Deterrence." The FY27 FYNSP UFR (which was accepted as a ROT) requested a total of $1,329,460K for all NA-11 program offices over the FYNSP. This new UFR represents a significant change from the previous year as early results from ASC's AI4NS sub-program projects now support the cost estimates and scope, and the Genesis Mission has officially been launched by the Department, marking a significant change in prioritization for the development of AI capabilities.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>13</td>
+      <td>Hydrodynamic &amp; Subcritical Execution Support (formerly RDC&amp;S)</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$30.0M</td>
+      <td>The President, Secretary, and Administrator have declared expanded use of AI is a national, departmental, and agency priority. The NA-1 NNSA Planning and Programming Guidance for Fiscal years 2028-2032 Future Years Nuclear Security Program (FYNSP) directs the establishment of a plan of record for the NNSA Genesis Mission, to include identifying funding requirements to accomplish the two sets of AI Genesis objectives (Platform and Mission S&amp;T Challenges (MiSTC)). In FY27, NA-11 submitted the UFR "Developing Artificial Intelligence Tools for Nuclear Deterrence." The FY27 FYNSP UFR (which was accepted as a ROT) requested a total of $1,329,460K for all NA-11 program offices over the FYNSP. This new UFR represents a significant change from the previous year as early results from ASC's AI4NS sub-program projects now support the cost estimates and scope, and the Genesis Mission has officially been launched by the Department, marking a significant change in prioritization for the development of AI capabilities.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>29</td>
+      <td>ICF Diagnostics &amp; Instrumentation (formerly Diagnostics, Cryogenics &amp; Experimental Support)</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$5.0M</td>
+      <td>The President, Secretary, and Administrator have declared expanded use of AI is a national, departmental, and agency priority. The NA-1 NNSA Planning and Programming Guidance for Fiscal years 2028-2032 Future Years Nuclear Security Program (FYNSP) directs the establishment of a plan of record for the NNSA Genesis Mission, to include identifying funding requirements to accomplish the two sets of AI Genesis objectives (Platform and Mission S&amp;T Challenges (MiSTC)). In FY27, NA-11 submitted the UFR "Developing Artificial Intelligence Tools for Nuclear Deterrence." The FY27 FYNSP UFR (which was accepted as a ROT) requested a total of $1,329,460K for all NA-11 program offices over the FYNSP. This new UFR represents a significant change from the previous year as early results from ASC's AI4NS sub-program projects now support the cost estimates and scope, and the Genesis Mission has officially been launched by the Department, marking a significant change in prioritization for the development of AI capabilities.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>16</td>
+      <td>Secondary Assessment Technologies</td>
+      <td>NA11</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>medium</td>
+      <td>False</td>
+      <td>$56.4M</td>
+      <td>The President, Secretary, and Administrator have declared expanded use of AI is a national, departmental, and agency priority. The NA-1 NNSA Planning and Programming Guidance for Fiscal years 2028-2032 Future Years Nuclear Security Program (FYNSP) directs the establishment of a plan of record for the NNSA Genesis Mission, to include identifying funding requirements to accomplish the two sets of AI Genesis objectives (Platform and Mission S&amp;T Challenges (MiSTC)). In FY27, NA-11 submitted the UFR "Developing Artificial Intelligence Tools for Nuclear Deterrence." The FY27 FYNSP UFR (which was accepted as a ROT) requested a total of $1,329,460K for all NA-11 program offices over the FYNSP. This new UFR represents a significant change from the previous year as early results from ASC's AI4NS sub-program projects now support the cost estimates and scope, and the Genesis Mission has officially been launched by the Department, marking a significant change in prioritization for the development of AI capabilities.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>33</td>
+      <td>Multi-Weapon Systems (formerly MTP)</td>
+      <td>NA12</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>low</td>
+      <td>False</td>
+      <td>$318.3M</td>
+      <td>Critical Executable CE UFR: Genesis AI</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>34</td>
+      <td>Multi-Weapon Systems (formerly MTP)</td>
+      <td>NA12</td>
+      <td>UFR</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>low</td>
+      <td>False</td>
+      <td>$165.1M</td>
+      <td>Critical Executable CE UFR: Programmatic AI</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>41</td>
+      <td>Reactor Systems &amp; Component Technology</td>
+      <td>NA30</td>
+      <td>BASELINE</td>
+      <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$16.2M</td>
+      <td>Designing and maintaining the major reactor plant components and plant systems required for technologically superior naval nuclear propulsion.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>39</td>
+      <td>Civil Nuclear Cooperation &amp; Engagement</td>
+      <td>NA20</td>
+      <td>UFR</td>
+      <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
+      <td>high</td>
+      <td>True</td>
+      <td>$20.0M</td>
+      <td>Fully support and implement activities under EO 14299 and expand IAEA safeguards at U.S. nuclear facilities under the VOA as new facilities are completed.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>40</td>
+      <td>Export Control</td>
+      <td>NA20</td>
+      <td>UFR</td>
+      <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
+      <td>high</td>
+      <td>True</td>
+      <td>$8.0M</td>
+      <td>Export control IT systems upgrade to increase efficiency and accelerate statutory technical reviews of export licenses for U.S. nuclear and dual-use commodities.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>36</td>
+      <td>PD</td>
+      <td>NA20</td>
+      <td>BASELINE</td>
+      <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
+      <td>medium</td>
+      <td>True</td>
+      <td>$165.0M</td>
+      <td>AI PROGRAM WORK</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>37</td>
+      <td>PD</td>
+      <td>NA20</td>
+      <td>UFR</td>
+      <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
+      <td>high</td>
+      <td>True</td>
+      <td>$342.0M</td>
+      <td>This UFR will accelerate the application of AI to challenging proliferation detection scenarios, including through deployment and maturation of DNN R&amp;D's Alexandria Data Management System; the development, prototyping, and demonstration of AI-driven process modeling; and the development AI-enabled system-of-systems digital twin developments and fully leverage the Digital Transformation effort in NA-10/IM.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>42</td>
+      <td>Laboratory Facility Regulation, Compliance, &amp; Protection</td>
+      <td>NA30</td>
+      <td>BASELINE</td>
+      <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$5.5M</td>
+      <td>Activities to ensure Naval Reactors program operations meet or exceed applicable federal, state, and local standards and requirements.</td>
+    </tr>
+    <tr>
+      <td>programming_data.csv</td>
+      <td>35</td>
+      <td>FRD</td>
+      <td>NA20</td>
+      <td>UFR</td>
+      <td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td>
+      <td>high</td>
+      <td>False</td>
+      <td>$150.0M</td>
+      <td>This UFR will significantly accelerate nuclear forensics attribution timelines in the event of a nuclear or radiological incident by restoring sufficient support for scientists at the National Laboratories and fully leveraging AI capabilities to achieve step changes in post-event processing.</td>
+    </tr>
+  </tbody>
+</table>
+    </details>
+  </section>
+</div>
+<script>
+  function setAppendix(open) {
+    document.querySelectorAll('.appendix details').forEach(function(detail) {
+      detail.open = open;
+    });
+  }
+</script>
+</body>
+</html>

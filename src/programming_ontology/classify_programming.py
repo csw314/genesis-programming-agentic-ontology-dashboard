@@ -12,10 +12,11 @@ import argparse
 from collections import Counter
 from dataclasses import asdict, dataclass
 from hashlib import sha1
-from pathlib import Path
 import json
+from pathlib import Path
 import re
 from typing import Any, Callable, Mapping, Sequence
+import warnings
 
 import networkx as nx
 import pandas as pd
@@ -196,6 +197,24 @@ class ClassificationResult:
     additional_programming_context: tuple[str, ...]
     evidence_node_ids: tuple[str, ...]
     review_reasons: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class _ClassificationEdgeRecord:
+    """Minimal classification context needed to create graph evidence edges."""
+
+    programming_record_id: str
+    source_file: str
+    source_row_number: int
+    predicted_challenge: str
+    challenge_node_id: str
+    validation_funding_level: bool
+    five_year_total: float
+    normalized_funding_office: str
+    confidence: str
+    review_flag: bool
+    rationale: str
+    funding_level: str
 
 
 def normalize_office_code(value: Any) -> str:
@@ -744,46 +763,22 @@ def enrich_graph_with_classifications(
     enriched = graph.copy()
 
     for result in results:
-        record_id = _ensure_node(
-            enriched,
-            result.programming_record_id,
-            f"{result.source_file} row {result.source_row_number}",
-            "programming_record",
-        )
-        challenge_node_id = _ensure_node(
-            enriched,
-            result.challenge_node_id,
-            result.predicted_challenge,
-            "mstc_challenge",
-        )
-        _add_classification_edge(
-            enriched,
-            record_id,
-            challenge_node_id,
-            "classified_as_challenge",
-            result,
-        )
+        _add_classification_record_edges(enriched, _edge_record_from_result(result))
 
-        funding_office_node = _find_node(
-            enriched,
-            "sub_office",
-            result.normalized_funding_office,
-        )
-        if result.validation_funding_level and result.five_year_total > 0:
-            if not funding_office_node:
-                funding_office_node = _ensure_node(
-                    enriched,
-                    "",
-                    result.normalized_funding_office,
-                    "sub_office",
-                )
-            _add_classification_edge(
-                enriched,
-                funding_office_node,
-                challenge_node_id,
-                "funds_challenge_evidence",
-                result,
-            )
+    enriched.graph["classification_source"] = CLASSIFICATION_SOURCE
+    return enriched
+
+
+def enrich_graph_with_reviewed_classifications(
+    graph: nx.MultiDiGraph,
+    reviewed_classifications: pd.DataFrame,
+) -> nx.MultiDiGraph:
+    """Return a graph enriched from SME-reviewed classification rows."""
+
+    enriched = graph.copy()
+
+    for _, row in reviewed_classifications.iterrows():
+        _add_classification_record_edges(enriched, _edge_record_from_reviewed_row(row))
 
     enriched.graph["classification_source"] = CLASSIFICATION_SOURCE
     return enriched
@@ -851,8 +846,12 @@ def load_or_initialize_sme_review(
     review["review_decision"] = (
         review["review_decision"].fillna("").astype(str).str.strip().str.lower()
     )
+    review["corrected_challenge"] = (
+        review["corrected_challenge"].fillna("").astype(str).str.strip()
+    )
+    has_correction = review["corrected_challenge"].ne("")
     review.loc[
-        ~review["review_decision"].isin(VALID_REVIEW_DECISIONS),
+        ~has_correction & ~review["review_decision"].isin(VALID_REVIEW_DECISIONS),
         "review_decision",
     ] = "needs_discussion"
     review_path.parent.mkdir(parents=True, exist_ok=True)
@@ -867,22 +866,48 @@ def apply_sme_overrides(
 ) -> pd.DataFrame:
     """Apply row-level SME review decisions without changing funding offices."""
 
-    invalid_decisions = review_df.loc[
-        ~review_df["review_decision"].isin(VALID_REVIEW_DECISIONS)
+    review = review_df.copy()
+    for column in ["review_decision", "corrected_challenge"]:
+        if column not in review.columns:
+            review[column] = ""
+    review["review_decision"] = (
+        review["review_decision"].fillna("").astype(str).str.strip().str.lower()
+    )
+    review["corrected_challenge"] = (
+        review["corrected_challenge"].fillna("").astype(str).str.strip()
+    )
+
+    has_correction = review["corrected_challenge"].ne("")
+    valid_challenges = set(challenges)
+    invalid_corrections = review.loc[
+        has_correction & ~review["corrected_challenge"].isin(valid_challenges)
+    ]
+    if not invalid_corrections.empty:
+        raise ValueError(
+            "SME review file contains rows with invalid corrected_challenge values: "
+            f"{_format_sme_review_rows(invalid_corrections)}"
+        )
+
+    stale_corrections = review.loc[
+        has_correction & review["review_decision"].ne("change")
+    ]
+    if not stale_corrections.empty:
+        warnings.warn(
+            "SME review file contains corrected_challenge rows whose "
+            "review_decision is not 'change'; corrected_challenge will be "
+            f"treated as fact for: {_format_sme_review_rows(stale_corrections)}",
+            UserWarning,
+            stacklevel=2,
+        )
+
+    invalid_decisions = review.loc[
+        ~has_correction & ~review["review_decision"].isin(VALID_REVIEW_DECISIONS)
     ]
     if not invalid_decisions.empty:
-        raise ValueError("SME review file contains invalid review_decision values")
-
-    valid_challenges = set(challenges)
-    change_rows = review_df.loc[review_df["review_decision"] == "change"].copy()
-    change_rows["corrected_challenge"] = (
-        change_rows["corrected_challenge"].fillna("").astype(str).str.strip()
-    )
-    invalid_changes = change_rows.loc[
-        ~change_rows["corrected_challenge"].isin(valid_challenges)
-    ]
-    if not invalid_changes.empty:
-        raise ValueError("SME review file contains change rows with invalid corrected_challenge values")
+        raise ValueError(
+            "SME review file contains invalid review_decision values: "
+            f"{_format_sme_review_rows(invalid_decisions)}"
+        )
 
     reviewed = classifications_df.copy()
     reviewed["original_predicted_challenge"] = reviewed["predicted_challenge"]
@@ -894,7 +919,7 @@ def apply_sme_overrides(
     reviewed["sme_review_date"] = ""
     reviewed["review_flag"] = reviewed["review_flag"].map(_truthy)
 
-    review_by_record = review_df.drop_duplicates(
+    review_by_record = review.drop_duplicates(
         "programming_record_id",
         keep="last",
     ).set_index("programming_record_id")
@@ -909,13 +934,8 @@ def apply_sme_overrides(
         reviewed.loc[row_mask, "sme_reviewer"] = str(review_row.get("reviewer", ""))
         reviewed.loc[row_mask, "sme_review_date"] = str(review_row.get("review_date", ""))
 
-        if decision == "accept":
-            reviewed.loc[row_mask, "review_flag"] = False
-            reviewed.loc[row_mask, "review_reasons"] = reviewed.loc[
-                row_mask,
-                "review_reasons",
-            ].map(lambda value: append_reason(value, "sme_accepted"))
-        elif decision == "change":
+        corrected = str(review_row.get("corrected_challenge", "")).strip()
+        if corrected:
             corrected = str(review_row["corrected_challenge"]).strip()
             challenge = challenges[corrected]
             notes = str(review_row.get("sme_notes", "")).strip()
@@ -933,6 +953,12 @@ def apply_sme_overrides(
                     + " SME correction: "
                     + notes
                 )
+        elif decision == "accept":
+            reviewed.loc[row_mask, "review_flag"] = False
+            reviewed.loc[row_mask, "review_reasons"] = reviewed.loc[
+                row_mask,
+                "review_reasons",
+            ].map(lambda value: append_reason(value, "sme_accepted"))
         elif decision == "needs_discussion":
             reviewed.loc[row_mask, "review_flag"] = True
             reviewed.loc[row_mask, "review_reasons"] = reviewed.loc[
@@ -1092,7 +1118,10 @@ def run_classification_pipeline(
 
     reviewed_classifications = apply_sme_overrides(classification_df, review_df, challenges)
     validation_outputs = build_validation_outputs(reviewed_classifications, claims)
-    classified_graph = enrich_graph_with_classifications(graph, results)
+    classified_graph = enrich_graph_with_reviewed_classifications(
+        graph,
+        reviewed_classifications,
+    )
 
     if write_outputs:
         reviewed_classifications.to_csv(
@@ -1138,6 +1167,28 @@ def append_reason(existing: Any, reason: str) -> str:
     if reason not in parts:
         parts.append(reason)
     return "; ".join(parts)
+
+
+def _format_sme_review_rows(rows: pd.DataFrame, *, limit: int = 10) -> str:
+    labels = []
+    for _, row in rows.head(limit).iterrows():
+        record_id = _scalar_text(row.get("programming_record_id")) or "<missing id>"
+        source_row = _scalar_text(row.get("source_row_number"))
+        decision = _scalar_text(row.get("review_decision"))
+        corrected = _scalar_text(row.get("corrected_challenge"))
+        label = record_id
+        if source_row:
+            label = f"{label} source_row_number={source_row}"
+        if decision:
+            label = f"{label} review_decision={decision!r}"
+        if corrected:
+            label = f"{label} corrected_challenge={corrected!r}"
+        labels.append(label)
+
+    remaining = len(rows) - len(labels)
+    if remaining > 0:
+        labels.append(f"... and {remaining} more")
+    return "; ".join(labels)
 
 
 def _eligible_challenge_profiles(
@@ -1753,12 +1804,104 @@ def _bool_text(value: Any) -> str:
     return "true" if _truthy(value) else "false"
 
 
+def _edge_record_from_result(result: ClassificationResult) -> _ClassificationEdgeRecord:
+    return _ClassificationEdgeRecord(
+        programming_record_id=result.programming_record_id,
+        source_file=result.source_file,
+        source_row_number=result.source_row_number,
+        predicted_challenge=result.predicted_challenge,
+        challenge_node_id=result.challenge_node_id,
+        validation_funding_level=result.validation_funding_level,
+        five_year_total=result.five_year_total,
+        normalized_funding_office=result.normalized_funding_office,
+        confidence=result.confidence,
+        review_flag=result.review_flag,
+        rationale=result.rationale,
+        funding_level=result.funding_level,
+    )
+
+
+def _edge_record_from_reviewed_row(row: pd.Series) -> _ClassificationEdgeRecord:
+    return _ClassificationEdgeRecord(
+        programming_record_id=_scalar_text(row.get("programming_record_id")),
+        source_file=_scalar_text(row.get("source_file")),
+        source_row_number=int(_to_float(row.get("source_row_number")) or 0),
+        predicted_challenge=_scalar_text(row.get("predicted_challenge")),
+        challenge_node_id=_scalar_text(row.get("challenge_node_id")),
+        validation_funding_level=_truthy(row.get("validation_funding_level")),
+        five_year_total=_to_float(row.get("five_year_total")) or 0.0,
+        normalized_funding_office=_scalar_text(row.get("normalized_funding_office")),
+        confidence=_scalar_text(row.get("confidence")),
+        review_flag=_truthy(row.get("review_flag")),
+        rationale=_scalar_text(row.get("rationale")),
+        funding_level=_scalar_text(row.get("funding_level")),
+    )
+
+
+def _add_classification_record_edges(
+    graph: nx.MultiDiGraph,
+    record: _ClassificationEdgeRecord,
+) -> None:
+    record_id = _ensure_node(
+        graph,
+        record.programming_record_id,
+        f"{record.source_file} row {record.source_row_number}",
+        "programming_record",
+    )
+    challenge_node_id = _ensure_node(
+        graph,
+        record.challenge_node_id,
+        record.predicted_challenge,
+        "mstc_challenge",
+    )
+    _add_classification_edge(
+        graph,
+        record_id,
+        challenge_node_id,
+        "classified_as_challenge",
+        record,
+    )
+
+    funding_office_node = _find_node(
+        graph,
+        "sub_office",
+        record.normalized_funding_office,
+    )
+    if record.validation_funding_level and record.five_year_total > 0:
+        if not funding_office_node:
+            funding_office_node = _ensure_node(
+                graph,
+                "",
+                record.normalized_funding_office,
+                "sub_office",
+            )
+        _add_classification_edge(
+            graph,
+            funding_office_node,
+            challenge_node_id,
+            "funds_challenge_evidence",
+            record,
+        )
+
+
+def _scalar_text(value: Any) -> str:
+    if value is None:
+        return ""
+    try:
+        if pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    text = str(value).strip()
+    return "" if text.casefold() == "nan" else text
+
+
 def _add_classification_edge(
     graph: nx.MultiDiGraph,
     source: str,
     target: str,
     relation: str,
-    result: ClassificationResult,
+    result: _ClassificationEdgeRecord,
 ) -> None:
     graph.add_edge(
         source,

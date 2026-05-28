@@ -2,10 +2,10 @@ challenge_name,claimed_office,claim_role,challenge_has_mstc_context,validation_s
 Integrating Design and Production Operations for Nuclear Deterrence,NA12,lead,True,needs_review,2,1,483384000.0,0,0,2,0,Multi-Weapon Systems (formerly MTP)
 Safeguarding Nuclear Materials from Proliferation Threats,NA20,lead,True,needs_review,4,3,535000000.0,3,1,0,4,Civil Nuclear Cooperation & Engagement; Export Control; PD
 (CUI) Preventing AI-Induced Nuclear Proliferation,NA20,partner,False,unfunded,0,0,0.0,0,0,0,0,
-(CUI) Preventing AI-Induced Nuclear Proliferation,NA80,lead,False,unfunded,0,0,0.0,0,0,0,0,
 Accelerating Business and Management Processes for National Security Missions,NA-MB,lead,True,unfunded,0,0,0.0,0,0,0,0,
 "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence",NA19,lead,True,unfunded,0,0,0.0,0,0,0,0,
 Accelerating Nuclear Enterprise Acquisition,NA-PAS,lead,True,unfunded,0,0,0.0,0,0,0,0,
+Accelerating Nuclear Enterprise Acquisition,NAIM,partner,True,unfunded,0,0,0.0,0,0,0,0,
 "Accelerating Nuclear Threat Assessment, Preparedness, and Response",NA20,partner,True,unfunded,0,0,0.0,0,0,0,0,
 Harnessing America’s Historic Nuclear Data and Research,NA12,partner,True,unfunded,0,0,0.0,0,0,0,0,
 Harnessing America’s Historic Nuclear Data and Research,NA20,partner,True,unfunded,0,0,0.0,0,0,0,0,
@@ -16,18 +16,18 @@ Increasing Experimental Capacity at Nuclear Research Facilities,NA80,partner,Tru
 Integrating Design and Production Operations for Nuclear Deterrence,NA19,partner,True,unfunded,0,0,0.0,0,0,0,0,
 Safeguarding Nuclear Materials from Proliferation Threats,NA80,partner,True,unfunded,0,0,0.0,0,0,0,0,
 Safeguarding Nuclear Materials from Proliferation Threats,NAIM,partner,True,unfunded,0,0,0.0,0,0,0,0,
-"Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA11,partner,True,unfunded,0,0,0.0,0,0,0,0,
 "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA12,partner,True,unfunded,0,0,0.0,0,0,0,0,
 "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA19,partner,True,unfunded,0,0,0.0,0,0,0,0,
-"Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA70,partner,True,unfunded,0,0,0.0,0,0,0,0,
 "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA90,lead,True,unfunded,0,0,0.0,0,0,0,0,
-"Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NAESH,partner,True,unfunded,0,0,0.0,0,0,0,0,
-Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures,NA80,lead,True,unfunded,0,0,0.0,0,0,0,0,
-Accelerating Business and Management Processes for National Security Missions,NAIM,partner,True,validated,3,3,485027182.0,0,3,0,2,Artificial Intelligence - Program Work; Enterprise Operations; Mission Contract Tasks
-"Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence",NA11,partner,True,validated,7,5,206222966.0,6,1,0,3,Advanced Certification & Qualification (formerly Advanced Certification); Advanced Manufacturing Development; Aging & Lifetimes (formerly Enhanced Surveillance); Delivery Environments (formerly WSEAT); Dynamic Materials Properties
-Accelerating Nuclear Enterprise Acquisition,NAIM,partner,True,validated,1,1,636625000.0,0,1,0,0,Artificial Intelligence - Program Work
-"Accelerating Nuclear Threat Assessment, Preparedness, and Response",NA80,lead,True,validated,4,4,150000000.0,4,0,0,0,National Technical Nuclear Forensics (NA-83); Nuclear Incident Preparedness and Collaboration (NA-81); Nuclear Incident Response (NA-84); Nuclear Threat Science (NA-82)
-Harnessing America’s Historic Nuclear Data and Research,NA11,lead,True,validated,5,3,1035720915.0,2,3,0,3,Archiving & Support; Artificial Intelligence for Nuclear Security (AI4NS); Computational Systems & Software Environment
-Increasing Experimental Capacity at Nuclear Research Facilities,NA11,lead,True,validated,4,4,79481500.0,1,3,0,2,"Delivery Environments (formerly WSEAT); Facility Operations (formerly also Target Production); ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support); Secondary Assessment Technologies"
+(CUI) Preventing AI-Induced Nuclear Proliferation,NA80,lead,False,validated,1,1,40000000.0,1,0,0,0,Nuclear Threat Science (NA-82)
+Accelerating Business and Management Processes for National Security Missions,NAIM,partner,True,validated,2,2,17648200.0,0,2,0,1,Artificial Intelligence - Program Work; Mission Contract Tasks
+"Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence",NA11,partner,True,validated,8,6,242635466.0,7,1,0,3,Advanced Certification & Qualification (formerly Advanced Certification); Advanced Manufacturing Development; Aging & Lifetimes (formerly Enhanced Surveillance); Delivery Environments (formerly WSEAT); Dynamic Materials Properties; Primary Assessment Technologies
+"Accelerating Nuclear Threat Assessment, Preparedness, and Response",NA80,lead,True,validated,2,2,92500000.0,2,0,0,0,Nuclear Incident Preparedness and Collaboration (NA-81); Nuclear Incident Response (NA-84)
+Harnessing America’s Historic Nuclear Data and Research,NA11,lead,True,validated,2,1,231396915.0,2,0,0,0,Archiving & Support
+Increasing Experimental Capacity at Nuclear Research Facilities,NA11,lead,True,validated,8,7,959918500.0,1,7,0,2,"Artificial Intelligence for Nuclear Security (AI4NS); Computational Systems & Software Environment; Delivery Environments (formerly WSEAT); Facility Operations (formerly also Target Production); HED & Ignition Science for Stockpile Applications (formerly Ignition); ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support); Secondary Assessment Technologies"
 Integrating Design and Production Operations for Nuclear Deterrence,NA11,partner,True,validated,6,6,154659000.0,0,6,0,3,"Dynamic Materials Properties; Facility Operations (formerly also Target Production); HED & Ignition Science for Stockpile Applications (formerly Ignition); Hydrodynamic & Subcritical Execution Support (formerly RDC&S); ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support); Secondary Assessment Technologies"
+"Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA11,partner,True,validated,2,1,408804000.0,0,1,1,0,Artificial Intelligence for Nuclear Security (AI4NS)
+"Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NA70,partner,True,validated,1,1,10000000.0,1,0,0,0,Security Program Operations & Planning
+"Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",NAESH,partner,True,validated,1,1,75000000.0,0,1,0,0,"Safety Analytics, Forecasting, Evaluation and Reporting (SAFER)"
 Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures,NA20,partner,True,validated,1,1,150000000.0,1,0,0,0,FRD
+Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures,NA80,lead,True,validated,1,1,17500000.0,1,0,0,0,National Technical Nuclear Forensics (NA-83)

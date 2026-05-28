@@ -6256,14 +6256,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">1</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:1" target="mstc_challenge:accelerating_nuclear_enterprise_acquisition:5ed1760af3" id="classified_as_challenge:programming_record_programming_data_csv_1">
+    <edge source="programming_record:programming_data_csv:1" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_1">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">1</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope description references applying AI to “accelerating mission problems, increasing enterprise efficiency, or increasing scientific/engineering insight,” which is generic and could map to any of the three challenges. There is no explicit mention of experiments, facilities, or safety-basis processes that would clearly indicate the other two options. Given the emphasis on enterprise efficiency and acceleration, the closest fit is the acquisition-focused challenge, but the evidence is weak and non-specific, so confidence is low.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description references applying AI to “accelerating mission problems, increasing enterprise efficiency, or increasing scientific/engineering insight,” which is generic and could map to any of the three challenges. There is no explicit mention of experiments, facilities, or safety-basis processes that would clearly indicate the other two options. Given the emphasis on enterprise efficiency and acceleration, the closest fit is the acquisition-focused challenge, but the evidence is weak and non-specific, so confidence is low. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">192000000.0</data>
       <data key="d20">NA11</data>
@@ -6290,6 +6290,18 @@
       <data key="d17">The scope description explicitly focuses on 'New materials discovery for HE/Light sources -- New AI/ML,' which directly aligns with the materials-focused Genesis challenge aimed at accelerating discovery and qualification of mission-critical materials using AI. The WBS and STAT context (Dynamic Materials Properties under Assessment Science) further supports that this effort is about material behavior and development for the stockpile, not nonproliferation monitoring or emergency response, making the materials discovery/production challenge the best fit.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">110903334.0</data>
+      <data key="d20">NA11</data>
+    </edge>
+    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:accelerating_materials_discovery_production_and:e89fa227cf" id="funds_challenge_evidence:programming_record_programming_data_csv_14">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">14</data>
+      <data key="d15">high</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on AI/ML workflows and frontier-class AI models to reveal causal relationships between material response and expanded underground test (UGT) diagnostic and experimental datasets, under the Assessment Science / Primary Assessment Technologies WBS. This aligns with improving nuclear assessment and response capabilities rather than facility throughput or historical data digitization, matching the mission of accelerating nuclear threat assessment, preparedness, and response. SME correction: Corrected</data>
+      <data key="d18">BASELINE</data>
+      <data key="d19">36412500.0</data>
       <data key="d20">NA11</data>
     </edge>
     <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:accelerating_materials_discovery_production_and:e89fa227cf" id="funds_challenge_evidence:programming_record_programming_data_csv_17">
@@ -6334,7 +6346,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">30</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description focuses on applying AI/ML techniques for qualification of CT data for part acceptance, which directly aligns with AI-accelerated qualification and certification workflows for materials and components. The associated WBS and STAT levels emphasize Advanced Certification &amp; Qualification, matching the challenge centered on accelerating materials discovery, production, and especially qualification for strategic deterrence, rather than broader design/production integration or historic data digitization.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">1750000.0</data>
@@ -6370,49 +6382,13 @@
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">2</data>
     </edge>
-    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="funds_challenge_evidence:programming_record_programming_data_csv_3">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">3</data>
-      <data key="d15">medium</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, simulation workflows, and meshing (e.g., CHANDLER federated model, Horizon Shield workflow, CADSAT meshing), plus deploying GPUs, cloud access, optimized storage, and a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, digitization, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI infrastructure and tools that turn information into secure, simulation-ready assets rather than on DA/PA production integration or facility operations, so the historic data/research challenge is the best fit given the available evidence.</data>
-      <data key="d18">UFR</data>
-      <data key="d19">346644000.0</data>
-      <data key="d20">NA11</data>
-    </edge>
-    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="funds_challenge_evidence:programming_record_programming_data_csv_4">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">4</data>
-      <data key="d15">medium</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure and a Secure AI suite on classified networks. These are cross-cutting AI capabilities under AI GENESIS PLATFORM and Artificial Intelligence for Nuclear Security, not tied specifically to DA/PA production integration or experimental facility operations. Among the options, they align best with the data- and model-centric emphasis of Harnessing America’s Historic Nuclear Data and Research, which centers on AI pipelines, meshing, simulation-ready datasets, secure archives, and access controls for nuclear data. However, because the description does not explicitly mention historical data digitization or archives, confidence is medium rather than high.</data>
-      <data key="d18">UFR</data>
-      <data key="d19">119159000.0</data>
-      <data key="d20">NA11</data>
-    </edge>
-    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="funds_challenge_evidence:programming_record_programming_data_csv_5">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">5</data>
-      <data key="d15">medium</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (e.g., CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure (GPUs, cloud, optimized storage) plus a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI-enabled modeling/simulation and secure data/compute infrastructure rather than DA/PA production integration or facility operations, so the historic data and research challenge is the best fit.</data>
-      <data key="d18">UFR</data>
-      <data key="d19">338521000.0</data>
-      <data key="d20">NA11</data>
-    </edge>
     <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="funds_challenge_evidence:programming_record_programming_data_csv_19">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">19</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope focuses on AI/ML tools to automatically index, catalog, extract metadata, and enable search across an increased number of digital repositories. This aligns directly with the challenge to digitize, structure, and make accessible historic nuclear data and records via AI-driven digitization and information extraction pipelines, rather than materials development or production-process optimization.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">77548915.0</data>
@@ -6424,7 +6400,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">21</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description focuses on expanding deployment of a tool suite to perform data conditioning, curation, and labeling for legacy weapons data across design agencies. This aligns directly with the challenge centered on digitizing, organizing, and making historic nuclear and weapons data usable for research and AI, rather than on integrating design/production workflows or accelerating materials development. The WBS category of Archiving &amp; Support further supports a data- and archive-focused mission, matching the historic data challenge.</data>
       <data key="d18">UFR</data>
       <data key="d19">153848000.0</data>
@@ -6435,6 +6411,42 @@
       <data key="d12">1</data>
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">3</data>
+    </edge>
+    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_3">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">3</data>
+      <data key="d15">medium</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, simulation workflows, and meshing (e.g., CHANDLER federated model, Horizon Shield workflow, CADSAT meshing), plus deploying GPUs, cloud access, optimized storage, and a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, digitization, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI infrastructure and tools that turn information into secure, simulation-ready assets rather than on DA/PA production integration or facility operations, so the historic data/research challenge is the best fit given the available evidence. SME correction: Corrected</data>
+      <data key="d18">UFR</data>
+      <data key="d19">346644000.0</data>
+      <data key="d20">NA11</data>
+    </edge>
+    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_4">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">4</data>
+      <data key="d15">medium</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure and a Secure AI suite on classified networks. These are cross-cutting AI capabilities under AI GENESIS PLATFORM and Artificial Intelligence for Nuclear Security, not tied specifically to DA/PA production integration or experimental facility operations. Among the options, they align best with the data- and model-centric emphasis of Harnessing America’s Historic Nuclear Data and Research, which centers on AI pipelines, meshing, simulation-ready datasets, secure archives, and access controls for nuclear data. However, because the description does not explicitly mention historical data digitization or archives, confidence is medium rather than high. SME correction: Corrected</data>
+      <data key="d18">UFR</data>
+      <data key="d19">119159000.0</data>
+      <data key="d20">NA11</data>
+    </edge>
+    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_5">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">5</data>
+      <data key="d15">medium</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (e.g., CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure (GPUs, cloud, optimized storage) plus a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI-enabled modeling/simulation and secure data/compute infrastructure rather than DA/PA production integration or facility operations, so the historic data and research challenge is the best fit. SME correction: Corrected</data>
+      <data key="d18">UFR</data>
+      <data key="d19">338521000.0</data>
+      <data key="d20">NA11</data>
     </edge>
     <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_15">
       <data key="d11">funds_challenge_evidence</data>
@@ -6466,10 +6478,22 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">24</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope focuses on developing experimental capabilities and support for target metrology in Fusion Yield Platforms within Inertial Confinement Fusion Facility Operations. This directly aligns with increasing experimental capacity and optimizing use of limited high-consequence experimental facilities, rather than integrating design/production workflows or primarily streamlining regulatory processes.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">19451000.0</data>
+      <data key="d20">NA11</data>
+    </edge>
+    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_26">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">26</data>
+      <data key="d15">medium</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope centers on AI for ignition applications, double-shell experiment analysis, simulations, and pulse-shaping machine learning for stockpile-related inertial confinement fusion. This is operational, physics-informed AI for real-time or near-real-time analysis and decision support in a mission-critical nuclear context, aligning best with the challenge focused on deploying multimodal, continuously learning AI fusion systems for nuclear threat assessment and response. It does not primarily concern materials lifecycle workflows or digitization of historical archives, so the materials and historic-data challenges are less consistent with the described work. SME correction: Corrected</data>
+      <data key="d18">BASELINE</data>
+      <data key="d19">76113000.0</data>
       <data key="d20">NA11</data>
     </edge>
     <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_28">
@@ -6478,7 +6502,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">28</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description “Constraining Mix using radiochemistry on NIF” and the WBS/STAT context (ICF Diagnostics &amp; Instrumentation under Inertial Confinement Fusion and Stockpile Research, Technology, and Engineering) indicate work focused on experimental diagnostics and measurements at the National Ignition Facility. This aligns most directly with the challenge centered on increasing experimental capacity at nuclear research facilities, which emphasizes optimizing experiments, diagnostics, and facility throughput for stockpile stewardship. The other challenges focus on historical data digitization or nuclear threat response, which are less consistent with NIF radiochemistry and diagnostics work.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">2000000.0</data>
@@ -6496,7 +6520,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">12</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description emphasizes NA-11’s UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence,” and the WBS/STAT context is Stockpile Research, Technology, and Engineering with Dynamic Materials Properties—both tightly coupled to weapons design, certification, and production activities. Among the candidate challenges, the one explicitly focused on nuclear deterrence and integrating AI into design/production operations is “Integrating Design and Production Operations for Nuclear Deterrence,” making it the best fit. The other two challenges focus on business/management processes and acquisition, which are not indicated in the scope text. Confidence is medium because the description is high-level and references the overall Genesis Mission rather than a specific MiSTC by name.</data>
       <data key="d18">UFR</data>
       <data key="d19">9127000.0</data>
@@ -6520,7 +6544,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">16</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">Scope centers on NA-11’s AI tools for nuclear deterrence within Stockpile Research, Technology, and Engineering / Assessment Science / Secondary Assessment Technologies, which aligns most directly with AI applied to weapons design, assessment, and production operations rather than business management or acquisition workflows. The prior UFR title “Developing Artificial Intelligence Tools for Nuclear Deterrence” and the technical WBS context support mapping to the design/production-focused Genesis Mission challenge, even though the scope text is high-level and references both platform and MiSTC objectives, lowering confidence slightly.</data>
       <data key="d18">UFR</data>
       <data key="d19">56442000.0</data>
@@ -6532,7 +6556,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">25</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description explicitly references the NA-11 UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence,” which aligns most directly with the design/production-focused nuclear deterrence challenge rather than business management or acquisition. The WBS/STAT context (Stockpile Research, Technology, and Engineering; Inertial Confinement Fusion; Facility Operations) also points toward core weapons R&amp;D and production operations, consistent with integrating AI into nuclear deterrence design and production workflows, not primarily into business processes or acquisition systems. While the description is high-level Genesis-wide AI, the explicit nuclear deterrence framing makes the design/production challenge the best fit.</data>
       <data key="d18">UFR</data>
       <data key="d19">33690000.0</data>
@@ -6568,52 +6592,28 @@
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">5</data>
     </edge>
-    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:accelerating_nuclear_enterprise_acquisition:5ed1760af3" id="funds_challenge_evidence:programming_record_programming_data_csv_1">
+    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="funds_challenge_evidence:programming_record_programming_data_csv_1">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">1</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope description references applying AI to “accelerating mission problems, increasing enterprise efficiency, or increasing scientific/engineering insight,” which is generic and could map to any of the three challenges. There is no explicit mention of experiments, facilities, or safety-basis processes that would clearly indicate the other two options. Given the emphasis on enterprise efficiency and acceleration, the closest fit is the acquisition-focused challenge, but the evidence is weak and non-specific, so confidence is low.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description references applying AI to “accelerating mission problems, increasing enterprise efficiency, or increasing scientific/engineering insight,” which is generic and could map to any of the three challenges. There is no explicit mention of experiments, facilities, or safety-basis processes that would clearly indicate the other two options. Given the emphasis on enterprise efficiency and acceleration, the closest fit is the acquisition-focused challenge, but the evidence is weak and non-specific, so confidence is low. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">192000000.0</data>
       <data key="d20">NA11</data>
     </edge>
-    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="funds_challenge_evidence:programming_record_programming_data_csv_2">
+    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="funds_challenge_evidence:programming_record_programming_data_csv_2">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">2</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope description emphasizes applying AI solutions to accelerating mission problems and increasing enterprise efficiency, which aligns most closely with the business and management challenge focused on an integrated AI ecosystem to improve efficiency across enterprise functions. There is no explicit emphasis on acquisition-specific processes or experimental facilities, so the general enterprise efficiency framing best fits the business and management processes challenge, though the description is broad, leading to medium confidence.</data>
+      <data key="d17">The scope description emphasizes applying AI solutions to accelerating mission problems and increasing enterprise efficiency, which aligns most closely with the business and management challenge focused on an integrated AI ecosystem to improve efficiency across enterprise functions. There is no explicit emphasis on acquisition-specific processes or experimental facilities, so the general enterprise efficiency framing best fits the business and management processes challenge, though the description is broad, leading to medium confidence. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">216804000.0</data>
-      <data key="d20">NA11</data>
-    </edge>
-    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="funds_challenge_evidence:programming_record_programming_data_csv_14">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">14</data>
-      <data key="d15">high</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope focuses on AI/ML workflows and frontier-class AI models to reveal causal relationships between material response and expanded underground test (UGT) diagnostic and experimental datasets, under the Assessment Science / Primary Assessment Technologies WBS. This aligns with improving nuclear assessment and response capabilities rather than facility throughput or historical data digitization, matching the mission of accelerating nuclear threat assessment, preparedness, and response.</data>
-      <data key="d18">BASELINE</data>
-      <data key="d19">36412500.0</data>
-      <data key="d20">NA11</data>
-    </edge>
-    <edge source="sub_office:na11:4d4029855b" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="funds_challenge_evidence:programming_record_programming_data_csv_26">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">26</data>
-      <data key="d15">medium</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope centers on AI for ignition applications, double-shell experiment analysis, simulations, and pulse-shaping machine learning for stockpile-related inertial confinement fusion. This is operational, physics-informed AI for real-time or near-real-time analysis and decision support in a mission-critical nuclear context, aligning best with the challenge focused on deploying multimodal, continuously learning AI fusion systems for nuclear threat assessment and response. It does not primarily concern materials lifecycle workflows or digitization of historical archives, so the materials and historic-data challenges are less consistent with the described work.</data>
-      <data key="d18">BASELINE</data>
-      <data key="d19">76113000.0</data>
       <data key="d20">NA11</data>
     </edge>
     <edge source="stat_l3:stockpile_research_technology_and_engineering:7a4e175ff0" target="stat_l4:advanced_simulation_and_computing:f389ce5b45" id="has_stat_l4">
@@ -7036,14 +7036,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">2</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:2" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="classified_as_challenge:programming_record_programming_data_csv_2">
+    <edge source="programming_record:programming_data_csv:2" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_2">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">2</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope description emphasizes applying AI solutions to accelerating mission problems and increasing enterprise efficiency, which aligns most closely with the business and management challenge focused on an integrated AI ecosystem to improve efficiency across enterprise functions. There is no explicit emphasis on acquisition-specific processes or experimental facilities, so the general enterprise efficiency framing best fits the business and management processes challenge, though the description is broad, leading to medium confidence.</data>
+      <data key="d17">The scope description emphasizes applying AI solutions to accelerating mission problems and increasing enterprise efficiency, which aligns most closely with the business and management challenge focused on an integrated AI ecosystem to improve efficiency across enterprise functions. There is no explicit emphasis on acquisition-specific processes or experimental facilities, so the general enterprise efficiency framing best fits the business and management processes challenge, though the description is broad, leading to medium confidence. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">216804000.0</data>
       <data key="d20">NA11</data>
@@ -7192,14 +7192,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">3</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:3" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="classified_as_challenge:programming_record_programming_data_csv_3">
+    <edge source="programming_record:programming_data_csv:3" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="classified_as_challenge:programming_record_programming_data_csv_3">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">3</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, simulation workflows, and meshing (e.g., CHANDLER federated model, Horizon Shield workflow, CADSAT meshing), plus deploying GPUs, cloud access, optimized storage, and a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, digitization, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI infrastructure and tools that turn information into secure, simulation-ready assets rather than on DA/PA production integration or facility operations, so the historic data/research challenge is the best fit given the available evidence.</data>
+      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, simulation workflows, and meshing (e.g., CHANDLER federated model, Horizon Shield workflow, CADSAT meshing), plus deploying GPUs, cloud access, optimized storage, and a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, digitization, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI infrastructure and tools that turn information into secure, simulation-ready assets rather than on DA/PA production integration or facility operations, so the historic data/research challenge is the best fit given the available evidence. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">346644000.0</data>
       <data key="d20">NA11</data>
@@ -7348,14 +7348,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">4</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:4" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="classified_as_challenge:programming_record_programming_data_csv_4">
+    <edge source="programming_record:programming_data_csv:4" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="classified_as_challenge:programming_record_programming_data_csv_4">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">4</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure and a Secure AI suite on classified networks. These are cross-cutting AI capabilities under AI GENESIS PLATFORM and Artificial Intelligence for Nuclear Security, not tied specifically to DA/PA production integration or experimental facility operations. Among the options, they align best with the data- and model-centric emphasis of Harnessing America’s Historic Nuclear Data and Research, which centers on AI pipelines, meshing, simulation-ready datasets, secure archives, and access controls for nuclear data. However, because the description does not explicitly mention historical data digitization or archives, confidence is medium rather than high.</data>
+      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure and a Secure AI suite on classified networks. These are cross-cutting AI capabilities under AI GENESIS PLATFORM and Artificial Intelligence for Nuclear Security, not tied specifically to DA/PA production integration or experimental facility operations. Among the options, they align best with the data- and model-centric emphasis of Harnessing America’s Historic Nuclear Data and Research, which centers on AI pipelines, meshing, simulation-ready datasets, secure archives, and access controls for nuclear data. However, because the description does not explicitly mention historical data digitization or archives, confidence is medium rather than high. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">119159000.0</data>
       <data key="d20">NA11</data>
@@ -7504,14 +7504,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">5</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:5" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="classified_as_challenge:programming_record_programming_data_csv_5">
+    <edge source="programming_record:programming_data_csv:5" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="classified_as_challenge:programming_record_programming_data_csv_5">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">5</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (e.g., CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure (GPUs, cloud, optimized storage) plus a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI-enabled modeling/simulation and secure data/compute infrastructure rather than DA/PA production integration or facility operations, so the historic data and research challenge is the best fit.</data>
+      <data key="d17">The scope focuses on productionizing AI tools for weapons design, modeling, and simulation workflows (e.g., CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) and deploying supporting infrastructure (GPUs, cloud, optimized storage) plus a Secure AI suite on classified networks. This aligns most closely with the data- and workflow-centric nature of the “Harnessing America’s Historic Nuclear Data and Research” challenge, which emphasizes AI pipelines, meshing, simulation-ready datasets, secure archives, and cross-classification access controls. While there is some overlap with design/production integration and experimental capacity, the emphasis here is on AI-enabled modeling/simulation and secure data/compute infrastructure rather than DA/PA production integration or facility operations, so the historic data and research challenge is the best fit. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">338521000.0</data>
       <data key="d20">NA11</data>
@@ -8212,14 +8212,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">7</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:7" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="classified_as_challenge:programming_record_programming_data_csv_7">
+    <edge source="programming_record:programming_data_csv:7" target="mstc_challenge:accelerating_materials_discovery_production_and:e89fa227cf" id="classified_as_challenge:programming_record_programming_data_csv_7">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">7</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope focuses on AI/ML applied to plutonium strength datasets for predictive modeling, which aligns most closely with leveraging and structuring nuclear materials data for advanced analysis. Among the options, this best fits the "Harnessing America’s Historic Nuclear Data and Research" challenge, which emphasizes converting existing nuclear data into usable, AI-ready datasets. The other challenges center on threat response systems or facility operations, which are less directly related to materials property datasets and predictive modeling for stockpile research.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on AI/ML applied to plutonium strength datasets for predictive modeling, which aligns most closely with leveraging and structuring nuclear materials data for advanced analysis. Among the options, this best fits the "Harnessing America’s Historic Nuclear Data and Research" challenge, which emphasizes converting existing nuclear data into usable, AI-ready datasets. The other challenges center on threat response systems or facility operations, which are less directly related to materials property datasets and predictive modeling for stockpile research. SME correction: Corrected</data>
       <data key="d18">DECREMENT</data>
       <data key="d19">-7837000.0</data>
       <data key="d20">NA11</data>
@@ -8338,14 +8338,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">8</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:8" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="classified_as_challenge:programming_record_programming_data_csv_8">
+    <edge source="programming_record:programming_data_csv:8" target="mstc_challenge:accelerating_materials_discovery_production_and:e89fa227cf" id="classified_as_challenge:programming_record_programming_data_csv_8">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">8</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope focuses on creating a structured library of high explosive (HE) characterizations and microstructural data, explicitly to "enable AI/ML" and because AI/ML cannot be applied without supporting data in correct formats. This aligns best with the challenge centered on digitizing, structuring, and governing scientific/nuclear data to make it usable for AI-driven research and decision-making. While the content is materials-focused rather than emergency response or forensic attribution, the core activity is building a curated, AI-ready data library, which most closely matches the data-centric objectives of Harnessing America’s Historic Nuclear Data and Research rather than real-time threat assessment or attribution missions.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on creating a structured library of high explosive (HE) characterizations and microstructural data, explicitly to "enable AI/ML" and because AI/ML cannot be applied without supporting data in correct formats. This aligns best with the challenge centered on digitizing, structuring, and governing scientific/nuclear data to make it usable for AI-driven research and decision-making. While the content is materials-focused rather than emergency response or forensic attribution, the core activity is building a curated, AI-ready data library, which most closely matches the data-centric objectives of Harnessing America’s Historic Nuclear Data and Research rather than real-time threat assessment or attribution missions. SME correction: Corrected</data>
       <data key="d18">DECREMENT</data>
       <data key="d19">-4200000.0</data>
       <data key="d20">NA11</data>
@@ -8878,7 +8878,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">12</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description emphasizes NA-11’s UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence,” and the WBS/STAT context is Stockpile Research, Technology, and Engineering with Dynamic Materials Properties—both tightly coupled to weapons design, certification, and production activities. Among the candidate challenges, the one explicitly focused on nuclear deterrence and integrating AI into design/production operations is “Integrating Design and Production Operations for Nuclear Deterrence,” making it the best fit. The other two challenges focus on business/management processes and acquisition, which are not indicated in the scope text. Confidence is medium because the description is high-level and references the overall Genesis Mission rather than a specific MiSTC by name.</data>
       <data key="d18">UFR</data>
       <data key="d19">9127000.0</data>
@@ -9292,14 +9292,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">14</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:14" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="classified_as_challenge:programming_record_programming_data_csv_14">
+    <edge source="programming_record:programming_data_csv:14" target="mstc_challenge:accelerating_materials_discovery_production_and:e89fa227cf" id="classified_as_challenge:programming_record_programming_data_csv_14">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">14</data>
       <data key="d15">high</data>
       <data key="d16">False</data>
-      <data key="d17">The scope focuses on AI/ML workflows and frontier-class AI models to reveal causal relationships between material response and expanded underground test (UGT) diagnostic and experimental datasets, under the Assessment Science / Primary Assessment Technologies WBS. This aligns with improving nuclear assessment and response capabilities rather than facility throughput or historical data digitization, matching the mission of accelerating nuclear threat assessment, preparedness, and response.</data>
+      <data key="d17">The scope focuses on AI/ML workflows and frontier-class AI models to reveal causal relationships between material response and expanded underground test (UGT) diagnostic and experimental datasets, under the Assessment Science / Primary Assessment Technologies WBS. This aligns with improving nuclear assessment and response capabilities rather than facility throughput or historical data digitization, matching the mission of accelerating nuclear threat assessment, preparedness, and response. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">36412500.0</data>
       <data key="d20">NA11</data>
@@ -9874,7 +9874,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">16</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">Scope centers on NA-11’s AI tools for nuclear deterrence within Stockpile Research, Technology, and Engineering / Assessment Science / Secondary Assessment Technologies, which aligns most directly with AI applied to weapons design, assessment, and production operations rather than business management or acquisition workflows. The prior UFR title “Developing Artificial Intelligence Tools for Nuclear Deterrence” and the technical WBS context support mapping to the design/production-focused Genesis Mission challenge, even though the scope text is high-level and references both platform and MiSTC objectives, lowering confidence slightly.</data>
       <data key="d18">UFR</data>
       <data key="d19">56442000.0</data>
@@ -10486,7 +10486,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">19</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope focuses on AI/ML tools to automatically index, catalog, extract metadata, and enable search across an increased number of digital repositories. This aligns directly with the challenge to digitize, structure, and make accessible historic nuclear data and records via AI-driven digitization and information extraction pipelines, rather than materials development or production-process optimization.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">77548915.0</data>
@@ -10864,7 +10864,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">20</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description emphasizes that the decrement primarily affects workforce (17 FTEs) and AI/ML tools across laboratories, plants, and sites, while noting that critical AI/ML endeavors remain a strategic priority. This points to AI being used to support cross-cutting activities and processes rather than a specific materials R&amp;D pipeline or facility safety-basis automation. The WBS and STAT hierarchy (Archiving &amp; Support under Engineering) and the A&amp;S (Assessment &amp; Support) decrement context suggest business/management and support functions. Among the options, this aligns best with the challenge focused on accelerating business and management processes for national security missions, which targets enterprise-wide AI-enabled efficiencies in planning, programming, and support workflows rather than materials discovery or detailed regulatory/safety process streamlining in production facilities.</data>
       <data key="d18">DECREMENT</data>
       <data key="d19">-10365000.0</data>
@@ -11020,7 +11020,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">21</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description focuses on expanding deployment of a tool suite to perform data conditioning, curation, and labeling for legacy weapons data across design agencies. This aligns directly with the challenge centered on digitizing, organizing, and making historic nuclear and weapons data usable for research and AI, rather than on integrating design/production workflows or accelerating materials development. The WBS category of Archiving &amp; Support further supports a data- and archive-focused mission, matching the historic data challenge.</data>
       <data key="d18">UFR</data>
       <data key="d19">153848000.0</data>
@@ -11608,7 +11608,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">24</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope focuses on developing experimental capabilities and support for target metrology in Fusion Yield Platforms within Inertial Confinement Fusion Facility Operations. This directly aligns with increasing experimental capacity and optimizing use of limited high-consequence experimental facilities, rather than integrating design/production workflows or primarily streamlining regulatory processes.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">19451000.0</data>
@@ -11950,7 +11950,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">25</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description explicitly references the NA-11 UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence,” which aligns most directly with the design/production-focused nuclear deterrence challenge rather than business management or acquisition. The WBS/STAT context (Stockpile Research, Technology, and Engineering; Inertial Confinement Fusion; Facility Operations) also points toward core weapons R&amp;D and production operations, consistent with integrating AI into nuclear deterrence design and production workflows, not primarily into business processes or acquisition systems. While the description is high-level Genesis-wide AI, the explicit nuclear deterrence framing makes the design/production challenge the best fit.</data>
       <data key="d18">UFR</data>
       <data key="d19">33690000.0</data>
@@ -12088,14 +12088,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">26</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:26" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="classified_as_challenge:programming_record_programming_data_csv_26">
+    <edge source="programming_record:programming_data_csv:26" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="classified_as_challenge:programming_record_programming_data_csv_26">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">26</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope centers on AI for ignition applications, double-shell experiment analysis, simulations, and pulse-shaping machine learning for stockpile-related inertial confinement fusion. This is operational, physics-informed AI for real-time or near-real-time analysis and decision support in a mission-critical nuclear context, aligning best with the challenge focused on deploying multimodal, continuously learning AI fusion systems for nuclear threat assessment and response. It does not primarily concern materials lifecycle workflows or digitization of historical archives, so the materials and historic-data challenges are less consistent with the described work.</data>
+      <data key="d17">The scope centers on AI for ignition applications, double-shell experiment analysis, simulations, and pulse-shaping machine learning for stockpile-related inertial confinement fusion. This is operational, physics-informed AI for real-time or near-real-time analysis and decision support in a mission-critical nuclear context, aligning best with the challenge focused on deploying multimodal, continuously learning AI fusion systems for nuclear threat assessment and response. It does not primarily concern materials lifecycle workflows or digitization of historical archives, so the materials and historic-data challenges are less consistent with the described work. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">76113000.0</data>
       <data key="d20">NA11</data>
@@ -12544,7 +12544,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">28</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description “Constraining Mix using radiochemistry on NIF” and the WBS/STAT context (ICF Diagnostics &amp; Instrumentation under Inertial Confinement Fusion and Stockpile Research, Technology, and Engineering) indicate work focused on experimental diagnostics and measurements at the National Ignition Facility. This aligns most directly with the challenge centered on increasing experimental capacity at nuclear research facilities, which emphasizes optimizing experiments, diagnostics, and facility throughput for stockpile stewardship. The other challenges focus on historical data digitization or nuclear threat response, which are less consistent with NIF radiochemistry and diagnostics work.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">2000000.0</data>
@@ -12982,7 +12982,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">30</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description focuses on applying AI/ML techniques for qualification of CT data for part acceptance, which directly aligns with AI-accelerated qualification and certification workflows for materials and components. The associated WBS and STAT levels emphasize Advanced Certification &amp; Qualification, matching the challenge centered on accelerating materials discovery, production, and especially qualification for strategic deterrence, rather than broader design/production integration or historic data digitization.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">1750000.0</data>
@@ -13708,7 +13708,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">33</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description is extremely sparse (“Critical Executable CE UFR: Genesis AI”), giving no direct indication of experimental facilities or regulatory/safety process streamlining. The STAT/WBS context is Multi-Weapon Systems under Stockpile Operations, which most closely aligns with the Genesis challenge focused on integrating design and production for nuclear deterrence and multi-weapon systems via an AI-enabled enterprise twin. Due to limited explicit evidence, confidence is low.</data>
       <data key="d18">UFR</data>
       <data key="d19">318269000.0</data>
@@ -13738,7 +13738,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">33</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description is extremely sparse (“Critical Executable CE UFR: Genesis AI”), giving no direct indication of experimental facilities or regulatory/safety process streamlining. The STAT/WBS context is Multi-Weapon Systems under Stockpile Operations, which most closely aligns with the Genesis challenge focused on integrating design and production for nuclear deterrence and multi-weapon systems via an AI-enabled enterprise twin. Due to limited explicit evidence, confidence is low.</data>
       <data key="d18">UFR</data>
       <data key="d19">318269000.0</data>
@@ -13750,7 +13750,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">34</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description is extremely terse (“Critical Executable CE UFR: Programmatic AI”) and provides almost no direct detail. Supporting context indicates this is a Multi-Weapon Systems (formerly MTP) effort under Stockpile Management / Stockpile Operations, with a focus on digital transformation and AI within the AI Genesis Mission. Among the candidate challenges, the one most closely aligned with multi-weapon, enterprise-level AI for deterrence and integrating across design/production and operations is “Integrating Design and Production Operations for Nuclear Deterrence.” However, because the description lacks explicit references to DA/PA integration, experimental facilities, or regulatory streamlining, the mapping is uncertain, so confidence is low.</data>
       <data key="d18">UFR</data>
       <data key="d19">165115000.0</data>
@@ -14104,7 +14104,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">34</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description is extremely terse (“Critical Executable CE UFR: Programmatic AI”) and provides almost no direct detail. Supporting context indicates this is a Multi-Weapon Systems (formerly MTP) effort under Stockpile Management / Stockpile Operations, with a focus on digital transformation and AI within the AI Genesis Mission. Among the candidate challenges, the one most closely aligned with multi-weapon, enterprise-level AI for deterrence and integrating across design/production and operations is “Integrating Design and Production Operations for Nuclear Deterrence.” However, because the description lacks explicit references to DA/PA integration, experimental facilities, or regulatory streamlining, the mapping is uncertain, so confidence is low.</data>
       <data key="d18">UFR</data>
       <data key="d19">165115000.0</data>
@@ -14548,7 +14548,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">36</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description is generic (“AI PROGRAM WORK”), so supporting fields drive the mapping. The STAT hierarchy is Defense Nuclear Nonproliferation R&amp;D with a focus on Proliferation Detection, directly aligning with AI-enabled monitoring and detection of nuclear proliferation activities. Among the candidate challenges, “Safeguarding Nuclear Materials from Proliferation Threats” explicitly targets nonproliferation and detection of proliferation-relevant anomalies, matching the Proliferation Detection WBS/STAT context, whereas the other options focus on AI-induced proliferation risk or materials discovery for deterrence rather than nonproliferation R&amp;D.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">165000000.0</data>
@@ -15016,14 +15016,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">38</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:38" target="mstc_challenge:accelerating_nuclear_enterprise_acquisition:5ed1760af3" id="classified_as_challenge:programming_record_programming_data_csv_38">
+    <edge source="programming_record:programming_data_csv:38" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_38">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">38</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope focuses on automation and AI/ML to enhance the e810 system and streamline the process for submitting civil nuclear technology transfer requests under 10 CFR Part 810. This is fundamentally an acquisition/authorization workflow and process-efficiency problem—improving how requests are submitted, processed, and managed—rather than directly detecting proliferation anomalies or digitizing historic nuclear data. Among the options, it best aligns with the acquisition-focused challenge that aims to apply AI to streamline complex, regulation-driven federal processes, even though this specific case is export/technology transfer rather than procurement. The nonproliferation context (NA-20, civil nuclear cooperation) supports the mission area but the primary activity is process streamlining, matching “Accelerating Nuclear Enterprise Acquisition” more closely than the other two challenges.</data>
+      <data key="d17">The scope focuses on automation and AI/ML to enhance the e810 system and streamline the process for submitting civil nuclear technology transfer requests under 10 CFR Part 810. This is fundamentally an acquisition/authorization workflow and process-efficiency problem—improving how requests are submitted, processed, and managed—rather than directly detecting proliferation anomalies or digitizing historic nuclear data. Among the options, it best aligns with the acquisition-focused challenge that aims to apply AI to streamline complex, regulation-driven federal processes, even though this specific case is export/technology transfer rather than procurement. The nonproliferation context (NA-20, civil nuclear cooperation) supports the mission area but the primary activity is process streamlining, matching “Accelerating Nuclear Enterprise Acquisition” more closely than the other two challenges. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">17500000.0</data>
       <data key="d20">NA20</data>
@@ -16336,14 +16336,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">43</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:43" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="classified_as_challenge:programming_record_programming_data_csv_43">
+    <edge source="programming_record:programming_data_csv:43" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_43">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">43</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope description focuses on using AI to enhance capabilities within the Security &amp; Safeguards (S&amp;S) program, addressing gaps and efficiencies, and ensuring efforts are integrated and complementary with the overall NNSA Genesis mission. This aligns with the business and management–oriented challenge that emphasizes integrating AI into workflows, improving efficiency, and unifying efforts across organizations, rather than with design/production of nuclear deterrence systems or nonproliferation monitoring. The WBS (Security Program Operations &amp; Planning) and STAT categories further support a business/operations improvement context.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description focuses on using AI to enhance capabilities within the Security &amp; Safeguards (S&amp;S) program, addressing gaps and efficiencies, and ensuring efforts are integrated and complementary with the overall NNSA Genesis mission. This aligns with the business and management–oriented challenge that emphasizes integrating AI into workflows, improving efficiency, and unifying efforts across organizations, rather than with design/production of nuclear deterrence systems or nonproliferation monitoring. The WBS (Security Program Operations &amp; Planning) and STAT categories further support a business/operations improvement context. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">10000000.0</data>
       <data key="d20">NA70</data>
@@ -16360,14 +16360,14 @@
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">5</data>
     </edge>
-    <edge source="sub_office:na70:15106c7dd3" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="funds_challenge_evidence:programming_record_programming_data_csv_43">
+    <edge source="sub_office:na70:15106c7dd3" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="funds_challenge_evidence:programming_record_programming_data_csv_43">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">43</data>
       <data key="d15">high</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope description focuses on using AI to enhance capabilities within the Security &amp; Safeguards (S&amp;S) program, addressing gaps and efficiencies, and ensuring efforts are integrated and complementary with the overall NNSA Genesis mission. This aligns with the business and management–oriented challenge that emphasizes integrating AI into workflows, improving efficiency, and unifying efforts across organizations, rather than with design/production of nuclear deterrence systems or nonproliferation monitoring. The WBS (Security Program Operations &amp; Planning) and STAT categories further support a business/operations improvement context.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description focuses on using AI to enhance capabilities within the Security &amp; Safeguards (S&amp;S) program, addressing gaps and efficiencies, and ensuring efforts are integrated and complementary with the overall NNSA Genesis mission. This aligns with the business and management–oriented challenge that emphasizes integrating AI into workflows, improving efficiency, and unifying efforts across organizations, rather than with design/production of nuclear deterrence systems or nonproliferation monitoring. The WBS (Security Program Operations &amp; Planning) and STAT categories further support a business/operations improvement context. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">10000000.0</data>
       <data key="d20">NA70</data>
@@ -16954,14 +16954,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">45</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:45" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="classified_as_challenge:programming_record_programming_data_csv_45">
+    <edge source="programming_record:programming_data_csv:45" target="mstc_challenge:cui_preventing_ai_induced_nuclear_proliferation:bbeffc2cf1" id="classified_as_challenge:programming_record_programming_data_csv_45">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">45</data>
       <data key="d15">high</data>
       <data key="d16">False</data>
-      <data key="d17">The scope description emphasizes advancing AI tools for rapid and effective response to nuclear and radiological events, detailed analysis of vast and varied data, and nuclear risk mitigation and response. These align directly with the challenge focused on shrinking detection-to-response times via a continuously learning, multimodal AI fusion system for real-time decision support in nuclear/radiological events. While the description also mentions improving nuclear forensics, the dominant focus is on event response and situational awareness rather than primary attribution, making the ‘Accelerating Nuclear Threat Assessment, Preparedness, and Response’ challenge the best fit.</data>
+      <data key="d17">The scope description emphasizes advancing AI tools for rapid and effective response to nuclear and radiological events, detailed analysis of vast and varied data, and nuclear risk mitigation and response. These align directly with the challenge focused on shrinking detection-to-response times via a continuously learning, multimodal AI fusion system for real-time decision support in nuclear/radiological events. While the description also mentions improving nuclear forensics, the dominant focus is on event response and situational awareness rather than primary attribution, making the ‘Accelerating Nuclear Threat Assessment, Preparedness, and Response’ challenge the best fit. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">40000000.0</data>
       <data key="d20">NA80</data>
@@ -17236,14 +17236,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">46</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:46" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="classified_as_challenge:programming_record_programming_data_csv_46">
+    <edge source="programming_record:programming_data_csv:46" target="mstc_challenge:strengthening_deterrence_through_attribution_of:12318fe125" id="classified_as_challenge:programming_record_programming_data_csv_46">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">46</data>
       <data key="d15">high</data>
       <data key="d16">False</data>
-      <data key="d17">The scope description emphasizes “rapid and effective response to nuclear and radiological events” and “detailed analysis of vast and varied data,” which directly mirrors the problem statement and proposed solution language of the Accelerating Nuclear Threat Assessment, Preparedness, and Response challenge. While the scope also mentions improving the speed and accuracy of nuclear forensics analyses (which relates to attribution), the primary framing is event response and risk mitigation, and the program request explicitly references “NUCLEAR RISK MITIGATION AND RESPONSE.” Therefore the dominant alignment is with the threat assessment, preparedness, and response challenge rather than the attribution-focused challenge.</data>
+      <data key="d17">The scope description emphasizes “rapid and effective response to nuclear and radiological events” and “detailed analysis of vast and varied data,” which directly mirrors the problem statement and proposed solution language of the Accelerating Nuclear Threat Assessment, Preparedness, and Response challenge. While the scope also mentions improving the speed and accuracy of nuclear forensics analyses (which relates to attribution), the primary framing is event response and risk mitigation, and the program request explicitly references “NUCLEAR RISK MITIGATION AND RESPONSE.” Therefore the dominant alignment is with the threat assessment, preparedness, and response challenge rather than the attribution-focused challenge. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">17500000.0</data>
       <data key="d20">NA80</data>
@@ -17842,10 +17842,22 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">49</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope focuses on upgrading electrical power capacity at LANL, including new distribution lines to the Supercomputing Center and between substations. This directly supports increased power and reliability for high-performance computing and experimental facilities, which aligns most closely with expanding experimental and computational throughput at nuclear research sites. While not materials- or acquisition-focused, it is clearly mission-enabling infrastructure for experiments and simulations, fitting best under Increasing Experimental Capacity at Nuclear Research Facilities.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">115104000.0</data>
+      <data key="d20">NA90</data>
+    </edge>
+    <edge source="sub_office:na90:e748b0fc5d" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_50">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">50</data>
+      <data key="d15">low</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope describes constructing a new central computing facility to ensure reliable classified and unclassified computing availability, providing space for network and data servers/hubs and personnel. This is a general-purpose computing and data infrastructure project rather than a materials workflow or design/production integration effort. Among the options, it most plausibly supports the data-centric, archival, and AI-accessible infrastructure envisioned in “Harnessing America’s Historic Nuclear Data and Research,” which depends on secure, scalable computing and data environments. However, the description is high-level and not explicitly tied to digitization or historical data, so confidence is low. SME correction: Corrected</data>
+      <data key="d18">BASELINE</data>
+      <data key="d19">183700000.0</data>
       <data key="d20">NA90</data>
     </edge>
     <edge source="sub_office:na90:e748b0fc5d" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_52">
@@ -17854,7 +17866,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">52</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description focuses on an Electrical Power Capacity Upgrade at LANL, which most directly supports increasing facility capacity and reliability. Among the options, this aligns best with “Increasing Experimental Capacity at Nuclear Research Facilities,” as enhanced electrical power infrastructure is a prerequisite for higher experimental throughput and more robust operations at nuclear research sites. The other two challenges center on acquisition process optimization and enterprise business/management platforms, which are less directly related to physical infrastructure upgrades.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">2824000.0</data>
@@ -17872,25 +17884,13 @@
       <data key="d19">3399000.0</data>
       <data key="d20">NA90</data>
     </edge>
-    <edge source="sub_office:na90:e748b0fc5d" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="funds_challenge_evidence:programming_record_programming_data_csv_50">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">50</data>
-      <data key="d15">low</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope describes constructing a new central computing facility to ensure reliable classified and unclassified computing availability, providing space for network and data servers/hubs and personnel. This is a general-purpose computing and data infrastructure project rather than a materials workflow or design/production integration effort. Among the options, it most plausibly supports the data-centric, archival, and AI-accessible infrastructure envisioned in “Harnessing America’s Historic Nuclear Data and Research,” which depends on secure, scalable computing and data environments. However, the description is high-level and not explicitly tied to digitization or historical data, so confidence is low.</data>
-      <data key="d18">BASELINE</data>
-      <data key="d19">183700000.0</data>
-      <data key="d20">NA90</data>
-    </edge>
     <edge source="sub_office:na90:e748b0fc5d" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="funds_challenge_evidence:programming_record_programming_data_csv_51">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">51</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description emphasizes “Telecommunication &amp; AI Infrastructure Program Integration” under an AI GENESIS PLATFORM with an OPS AND MAINTENANCE request, indicating enterprise-level AI/IT platform and infrastructure support rather than direct experimental facility operations or materials R&amp;D. This aligns best with the business and management challenge, which focuses on unified platforms and AI-enabled workflows to support planning, operations, and management processes across the enterprise. The WBS and STAT categories (Infrastructure and Operations / Operations of Facilities) further suggest enabling infrastructure for broader mission support, consistent with accelerating business and management processes rather than experimental capacity or materials qualification.</data>
       <data key="d18">UFR</data>
       <data key="d19">15220000.0</data>
@@ -18202,7 +18202,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">49</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope focuses on upgrading electrical power capacity at LANL, including new distribution lines to the Supercomputing Center and between substations. This directly supports increased power and reliability for high-performance computing and experimental facilities, which aligns most closely with expanding experimental and computational throughput at nuclear research sites. While not materials- or acquisition-focused, it is clearly mission-enabling infrastructure for experiments and simulations, fitting best under Increasing Experimental Capacity at Nuclear Research Facilities.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">115104000.0</data>
@@ -18478,14 +18478,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">50</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:50" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="classified_as_challenge:programming_record_programming_data_csv_50">
+    <edge source="programming_record:programming_data_csv:50" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="classified_as_challenge:programming_record_programming_data_csv_50">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">50</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope describes constructing a new central computing facility to ensure reliable classified and unclassified computing availability, providing space for network and data servers/hubs and personnel. This is a general-purpose computing and data infrastructure project rather than a materials workflow or design/production integration effort. Among the options, it most plausibly supports the data-centric, archival, and AI-accessible infrastructure envisioned in “Harnessing America’s Historic Nuclear Data and Research,” which depends on secure, scalable computing and data environments. However, the description is high-level and not explicitly tied to digitization or historical data, so confidence is low.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope describes constructing a new central computing facility to ensure reliable classified and unclassified computing availability, providing space for network and data servers/hubs and personnel. This is a general-purpose computing and data infrastructure project rather than a materials workflow or design/production integration effort. Among the options, it most plausibly supports the data-centric, archival, and AI-accessible infrastructure envisioned in “Harnessing America’s Historic Nuclear Data and Research,” which depends on secure, scalable computing and data environments. However, the description is high-level and not explicitly tied to digitization or historical data, so confidence is low. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">183700000.0</data>
       <data key="d20">NA90</data>
@@ -18754,7 +18754,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">51</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description emphasizes “Telecommunication &amp; AI Infrastructure Program Integration” under an AI GENESIS PLATFORM with an OPS AND MAINTENANCE request, indicating enterprise-level AI/IT platform and infrastructure support rather than direct experimental facility operations or materials R&amp;D. This aligns best with the business and management challenge, which focuses on unified platforms and AI-enabled workflows to support planning, operations, and management processes across the enterprise. The WBS and STAT categories (Infrastructure and Operations / Operations of Facilities) further suggest enabling infrastructure for broader mission support, consistent with accelerating business and management processes rather than experimental capacity or materials qualification.</data>
       <data key="d18">UFR</data>
       <data key="d19">15220000.0</data>
@@ -19030,7 +19030,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">52</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description focuses on an Electrical Power Capacity Upgrade at LANL, which most directly supports increasing facility capacity and reliability. Among the options, this aligns best with “Increasing Experimental Capacity at Nuclear Research Facilities,” as enhanced electrical power infrastructure is a prerequisite for higher experimental throughput and more robust operations at nuclear research sites. The other two challenges center on acquisition process optimization and enterprise business/management platforms, which are less directly related to physical infrastructure upgrades.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">2824000.0</data>
@@ -19486,14 +19486,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">54</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:54" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="classified_as_challenge:programming_record_programming_data_csv_54">
+    <edge source="programming_record:programming_data_csv:54" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="classified_as_challenge:programming_record_programming_data_csv_54">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">54</data>
       <data key="d15">low</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope description only notes “AI Data Center activities associated with SWEIS/NEPA,” tied to environmental and safety operations. There is no clear indication of business-process optimization or design/production integration, making the business and deterrence challenges a weaker fit. The most plausible link is to the historic data and research challenge, since AI data center activities for NEPA/SWEIS could support digitization, management, and AI-ready use of environmental and nuclear-related records, but the evidence is sparse and indirect, so confidence is low.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description only notes “AI Data Center activities associated with SWEIS/NEPA,” tied to environmental and safety operations. There is no clear indication of business-process optimization or design/production integration, making the business and deterrence challenges a weaker fit. The most plausible link is to the historic data and research challenge, since AI data center activities for NEPA/SWEIS could support digitization, management, and AI-ready use of environmental and nuclear-related records, but the evidence is sparse and indirect, so confidence is low. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">3100000.0</data>
       <data key="d20">NAESH</data>
@@ -19510,28 +19510,28 @@
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">5</data>
     </edge>
-    <edge source="sub_office:naesh:f480938f4a" target="mstc_challenge:harnessing_america_s_historic_nuclear_data_and_r:6cbae10ba9" id="funds_challenge_evidence:programming_record_programming_data_csv_54">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">54</data>
-      <data key="d15">low</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope description only notes “AI Data Center activities associated with SWEIS/NEPA,” tied to environmental and safety operations. There is no clear indication of business-process optimization or design/production integration, making the business and deterrence challenges a weaker fit. The most plausible link is to the historic data and research challenge, since AI data center activities for NEPA/SWEIS could support digitization, management, and AI-ready use of environmental and nuclear-related records, but the evidence is sparse and indirect, so confidence is low.</data>
-      <data key="d18">BASELINE</data>
-      <data key="d19">3100000.0</data>
-      <data key="d20">NAESH</data>
-    </edge>
-    <edge source="sub_office:naesh:f480938f4a" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="funds_challenge_evidence:programming_record_programming_data_csv_55">
+    <edge source="sub_office:naesh:f480938f4a" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="funds_challenge_evidence:programming_record_programming_data_csv_55">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">55</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope focuses on maintaining an NNSA decision and analytics platform and developing new data analysis, operational, and AI tools. This aligns most closely with the challenge centered on real-time nuclear threat assessment and response, which emphasizes multimodal data fusion, decision support, and operational analytics for NEST and emergency response. While safety and regulatory efficiency are relevant, the emphasis on decision platforms and analytics for operational use better matches the threat assessment and response challenge than the data-digitization or regulatory-streamlining challenges.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on maintaining an NNSA decision and analytics platform and developing new data analysis, operational, and AI tools. This aligns most closely with the challenge centered on real-time nuclear threat assessment and response, which emphasizes multimodal data fusion, decision support, and operational analytics for NEST and emergency response. While safety and regulatory efficiency are relevant, the emphasis on decision platforms and analytics for operational use better matches the threat assessment and response challenge than the data-digitization or regulatory-streamlining challenges. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">75000000.0</data>
+      <data key="d20">NAESH</data>
+    </edge>
+    <edge source="sub_office:naesh:f480938f4a" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_54">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">54</data>
+      <data key="d15">low</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description only notes “AI Data Center activities associated with SWEIS/NEPA,” tied to environmental and safety operations. There is no clear indication of business-process optimization or design/production integration, making the business and deterrence challenges a weaker fit. The most plausible link is to the historic data and research challenge, since AI data center activities for NEPA/SWEIS could support digitization, management, and AI-ready use of environmental and nuclear-related records, but the evidence is sparse and indirect, so confidence is low. SME correction: Corrected</data>
+      <data key="d18">BASELINE</data>
+      <data key="d19">3100000.0</data>
       <data key="d20">NAESH</data>
     </edge>
     <edge source="stat_l4:safety_and_environmental_operations:e9934e3d7f" target="stat_l5:environmental_operations:6d0fdd0261" id="has_stat_l5">
@@ -19792,14 +19792,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">55</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:55" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="classified_as_challenge:programming_record_programming_data_csv_55">
+    <edge source="programming_record:programming_data_csv:55" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_55">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">55</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope focuses on maintaining an NNSA decision and analytics platform and developing new data analysis, operational, and AI tools. This aligns most closely with the challenge centered on real-time nuclear threat assessment and response, which emphasizes multimodal data fusion, decision support, and operational analytics for NEST and emergency response. While safety and regulatory efficiency are relevant, the emphasis on decision platforms and analytics for operational use better matches the threat assessment and response challenge than the data-digitization or regulatory-streamlining challenges.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on maintaining an NNSA decision and analytics platform and developing new data analysis, operational, and AI tools. This aligns most closely with the challenge centered on real-time nuclear threat assessment and response, which emphasizes multimodal data fusion, decision support, and operational analytics for NEST and emergency response. While safety and regulatory efficiency are relevant, the emphasis on decision platforms and analytics for operational use better matches the threat assessment and response challenge than the data-digitization or regulatory-streamlining challenges. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">75000000.0</data>
       <data key="d20">NAESH</data>
@@ -20098,14 +20098,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">56</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:56" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="classified_as_challenge:programming_record_programming_data_csv_56">
+    <edge source="programming_record:programming_data_csv:56" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_56">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">56</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope focuses on maintaining an NNSA decision and analytics platform and developing new data analysis, operational, and AI tools for safety analytics, forecasting, evaluation, and reporting (SAFER). This aligns most closely with the challenge centered on real-time nuclear threat assessment and response, which emphasizes multimodal data fusion, decision support, and risk metrics for emergency and safety operations. While there is some overlap with the production/safety-streamlining challenge, the emphasis on analytics, forecasting, and decision platforms for safety and environmental operations better matches the threat assessment and response context.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope focuses on maintaining an NNSA decision and analytics platform and developing new data analysis, operational, and AI tools for safety analytics, forecasting, evaluation, and reporting (SAFER). This aligns most closely with the challenge centered on real-time nuclear threat assessment and response, which emphasizes multimodal data fusion, decision support, and risk metrics for emergency and safety operations. While there is some overlap with the production/safety-streamlining challenge, the emphasis on analytics, forecasting, and decision platforms for safety and environmental operations better matches the threat assessment and response context. SME correction: Corrected</data>
       <data key="d18">DECREMENT</data>
       <data key="d19">-22500000.0</data>
       <data key="d20">NAESH</data>
@@ -20242,14 +20242,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">57</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:57" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="classified_as_challenge:programming_record_programming_data_csv_57">
+    <edge source="programming_record:programming_data_csv:57" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_57">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">57</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope description focuses on “AI-enabled cybersecurity tools that support the enterprise,” and the STAT/WBS context is Enterprise Operations under Information Technology &amp; Cybersecurity. This aligns best with improving and securing enterprise-wide business/management platforms and workflows rather than directly targeting acquisition processes or production/safety in nuclear facilities. Among the options, the business and management challenge is the closest fit to enterprise IT and cybersecurity enablement for national security missions, though the evidence is somewhat general, so confidence is medium.</data>
+      <data key="d17">The scope description focuses on “AI-enabled cybersecurity tools that support the enterprise,” and the STAT/WBS context is Enterprise Operations under Information Technology &amp; Cybersecurity. This aligns best with improving and securing enterprise-wide business/management platforms and workflows rather than directly targeting acquisition processes or production/safety in nuclear facilities. Among the options, the business and management challenge is the closest fit to enterprise IT and cybersecurity enablement for national security missions, though the evidence is somewhat general, so confidence is medium. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">467378982.0</data>
       <data key="d20">NAIM</data>
@@ -20278,35 +20278,11 @@
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">10</data>
     </edge>
-    <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:accelerating_nuclear_enterprise_acquisition:5ed1760af3" id="funds_challenge_evidence:programming_record_programming_data_csv_61">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">61</data>
-      <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope emphasizes enterprise connectivity, secure AI models and tools, data governance, cybersecurity, and AI workforce readiness as foundational capabilities for current operations and future Genesis AI initiatives. Among the challenges, this most closely aligns with the acquisition-focused mission, which explicitly calls for an AI platform integrated with enterprise acquisition systems, strong data governance, secure infrastructure, and auditable AI tools to improve operational efficiency across the nuclear enterprise. The funding appears to underwrite broad AI platform and infrastructure capabilities that would directly enable the Accelerating Nuclear Enterprise Acquisition challenge and related acquisition operations, even though the description is general rather than acquisition-specific, hence medium confidence.</data>
-      <data key="d18">UFR</data>
-      <data key="d19">636625000.0</data>
-      <data key="d20">NAIM</data>
-    </edge>
     <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="partners_on_challenge">
       <data key="d11">partners_on_challenge</data>
       <data key="d12">1</data>
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">11</data>
-    </edge>
-    <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="funds_challenge_evidence:programming_record_programming_data_csv_57">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">57</data>
-      <data key="d15">medium</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope description focuses on “AI-enabled cybersecurity tools that support the enterprise,” and the STAT/WBS context is Enterprise Operations under Information Technology &amp; Cybersecurity. This aligns best with improving and securing enterprise-wide business/management platforms and workflows rather than directly targeting acquisition processes or production/safety in nuclear facilities. Among the options, the business and management challenge is the closest fit to enterprise IT and cybersecurity enablement for national security missions, though the evidence is somewhat general, so confidence is medium.</data>
-      <data key="d18">BASELINE</data>
-      <data key="d19">467378982.0</data>
-      <data key="d20">NAIM</data>
     </edge>
     <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:accelerating_business_and_management_processes_f:1739dbeef6" id="funds_challenge_evidence:programming_record_programming_data_csv_58">
       <data key="d11">funds_challenge_evidence</data>
@@ -20326,20 +20302,44 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">59</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description is broad—funding all labor and equipment for Artificial Intelligence investments—and the WBS name is simply “Artificial Intelligence - Program Work,” with STAT codes under Information Technology. The only additional clue is the program interest area “AI GENESIS PLATFORM,” which most closely aligns with the business and management–focused Genesis platform described in the “Accelerating Business and Management Processes for National Security Missions” challenge (unified business and management platform with integrated AI tools). There is no indication of historic nuclear data digitization or acquisition-specific tooling, so the business and management processes challenge is the best fit, though the generic wording limits confidence to medium.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">15148200.0</data>
       <data key="d20">NAIM</data>
     </edge>
-    <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="funds_challenge_evidence:programming_record_programming_data_csv_60">
+    <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="funds_challenge_evidence:programming_record_programming_data_csv_57">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">57</data>
+      <data key="d15">medium</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description focuses on “AI-enabled cybersecurity tools that support the enterprise,” and the STAT/WBS context is Enterprise Operations under Information Technology &amp; Cybersecurity. This aligns best with improving and securing enterprise-wide business/management platforms and workflows rather than directly targeting acquisition processes or production/safety in nuclear facilities. Among the options, the business and management challenge is the closest fit to enterprise IT and cybersecurity enablement for national security missions, though the evidence is somewhat general, so confidence is medium. SME correction: Corrected</data>
+      <data key="d18">BASELINE</data>
+      <data key="d19">467378982.0</data>
+      <data key="d20">NAIM</data>
+    </edge>
+    <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="funds_challenge_evidence:programming_record_programming_data_csv_61">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">61</data>
+      <data key="d15">medium</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope emphasizes enterprise connectivity, secure AI models and tools, data governance, cybersecurity, and AI workforce readiness as foundational capabilities for current operations and future Genesis AI initiatives. Among the challenges, this most closely aligns with the acquisition-focused mission, which explicitly calls for an AI platform integrated with enterprise acquisition systems, strong data governance, secure infrastructure, and auditable AI tools to improve operational efficiency across the nuclear enterprise. The funding appears to underwrite broad AI platform and infrastructure capabilities that would directly enable the Accelerating Nuclear Enterprise Acquisition challenge and related acquisition operations, even though the description is general rather than acquisition-specific, hence medium confidence. SME correction: Corrected</data>
+      <data key="d18">UFR</data>
+      <data key="d19">636625000.0</data>
+      <data key="d20">NAIM</data>
+    </edge>
+    <edge source="sub_office:naim:e600e447ad" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="funds_challenge_evidence:programming_record_programming_data_csv_60">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">60</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope describes a mixed-classification high-performance computing resource to support NNSA’s growing mission demand, with emphasis on efficient use of HPC across classifications. Among the options, this aligns best with the nuclear threat assessment challenge, which explicitly calls out leveraging NNSA’s HPC resources and cross-classification data governance for mission-critical, physics-informed AI in nuclear emergency and threat-response contexts. The other two challenges focus on business/management workflows or design–production integration for deterrence rather than a generalized mixed-classification HPC platform. Because the description is generic and references an NA-114 whitepaper for details, confidence is medium rather than high.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope describes a mixed-classification high-performance computing resource to support NNSA’s growing mission demand, with emphasis on efficient use of HPC across classifications. Among the options, this aligns best with the nuclear threat assessment challenge, which explicitly calls out leveraging NNSA’s HPC resources and cross-classification data governance for mission-critical, physics-informed AI in nuclear emergency and threat-response contexts. The other two challenges focus on business/management workflows or design–production integration for deterrence rather than a generalized mixed-classification HPC platform. Because the description is generic and references an NA-114 whitepaper for details, confidence is medium rather than high. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">45000000.0</data>
       <data key="d20">NAIM</data>
@@ -20854,7 +20854,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">59</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
+      <data key="d16">False</data>
       <data key="d17">The scope description is broad—funding all labor and equipment for Artificial Intelligence investments—and the WBS name is simply “Artificial Intelligence - Program Work,” with STAT codes under Information Technology. The only additional clue is the program interest area “AI GENESIS PLATFORM,” which most closely aligns with the business and management–focused Genesis platform described in the “Accelerating Business and Management Processes for National Security Missions” challenge (unified business and management platform with integrated AI tools). There is no indication of historic nuclear data digitization or acquisition-specific tooling, so the business and management processes challenge is the best fit, though the generic wording limits confidence to medium.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">15148200.0</data>
@@ -21190,14 +21190,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">60</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:60" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="classified_as_challenge:programming_record_programming_data_csv_60">
+    <edge source="programming_record:programming_data_csv:60" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="classified_as_challenge:programming_record_programming_data_csv_60">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">60</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope describes a mixed-classification high-performance computing resource to support NNSA’s growing mission demand, with emphasis on efficient use of HPC across classifications. Among the options, this aligns best with the nuclear threat assessment challenge, which explicitly calls out leveraging NNSA’s HPC resources and cross-classification data governance for mission-critical, physics-informed AI in nuclear emergency and threat-response contexts. The other two challenges focus on business/management workflows or design–production integration for deterrence rather than a generalized mixed-classification HPC platform. Because the description is generic and references an NA-114 whitepaper for details, confidence is medium rather than high.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope describes a mixed-classification high-performance computing resource to support NNSA’s growing mission demand, with emphasis on efficient use of HPC across classifications. Among the options, this aligns best with the nuclear threat assessment challenge, which explicitly calls out leveraging NNSA’s HPC resources and cross-classification data governance for mission-critical, physics-informed AI in nuclear emergency and threat-response contexts. The other two challenges focus on business/management workflows or design–production integration for deterrence rather than a generalized mixed-classification HPC platform. Because the description is generic and references an NA-114 whitepaper for details, confidence is medium rather than high. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">45000000.0</data>
       <data key="d20">NAIM</data>
@@ -21346,14 +21346,14 @@
       <data key="d13">programming_data.csv</data>
       <data key="d14">61</data>
     </edge>
-    <edge source="programming_record:programming_data_csv:61" target="mstc_challenge:accelerating_nuclear_enterprise_acquisition:5ed1760af3" id="classified_as_challenge:programming_record_programming_data_csv_61">
+    <edge source="programming_record:programming_data_csv:61" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="classified_as_challenge:programming_record_programming_data_csv_61">
       <data key="d11">classified_as_challenge</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">61</data>
       <data key="d15">medium</data>
-      <data key="d16">True</data>
-      <data key="d17">The scope emphasizes enterprise connectivity, secure AI models and tools, data governance, cybersecurity, and AI workforce readiness as foundational capabilities for current operations and future Genesis AI initiatives. Among the challenges, this most closely aligns with the acquisition-focused mission, which explicitly calls for an AI platform integrated with enterprise acquisition systems, strong data governance, secure infrastructure, and auditable AI tools to improve operational efficiency across the nuclear enterprise. The funding appears to underwrite broad AI platform and infrastructure capabilities that would directly enable the Accelerating Nuclear Enterprise Acquisition challenge and related acquisition operations, even though the description is general rather than acquisition-specific, hence medium confidence.</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope emphasizes enterprise connectivity, secure AI models and tools, data governance, cybersecurity, and AI workforce readiness as foundational capabilities for current operations and future Genesis AI initiatives. Among the challenges, this most closely aligns with the acquisition-focused mission, which explicitly calls for an AI platform integrated with enterprise acquisition systems, strong data governance, secure infrastructure, and auditable AI tools to improve operational efficiency across the nuclear enterprise. The funding appears to underwrite broad AI platform and infrastructure capabilities that would directly enable the Accelerating Nuclear Enterprise Acquisition challenge and related acquisition operations, even though the description is general rather than acquisition-specific, hence medium confidence. SME correction: Corrected</data>
       <data key="d18">UFR</data>
       <data key="d19">636625000.0</data>
       <data key="d20">NAIM</data>
@@ -21520,7 +21520,7 @@
       <data key="d13">classification_pipeline</data>
       <data key="d14">36</data>
       <data key="d15">medium</data>
-      <data key="d16">False</data>
+      <data key="d16">True</data>
       <data key="d17">The scope description is generic (“AI PROGRAM WORK”), so supporting fields drive the mapping. The STAT hierarchy is Defense Nuclear Nonproliferation R&amp;D with a focus on Proliferation Detection, directly aligning with AI-enabled monitoring and detection of nuclear proliferation activities. Among the candidate challenges, “Safeguarding Nuclear Materials from Proliferation Threats” explicitly targets nonproliferation and detection of proliferation-relevant anomalies, matching the Proliferation Detection WBS/STAT context, whereas the other options focus on AI-induced proliferation risk or materials discovery for deterrence rather than nonproliferation R&amp;D.</data>
       <data key="d18">BASELINE</data>
       <data key="d19">165000000.0</data>
@@ -21592,14 +21592,14 @@
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">9</data>
     </edge>
-    <edge source="sub_office:na20:3f63a5531c" target="mstc_challenge:accelerating_nuclear_enterprise_acquisition:5ed1760af3" id="funds_challenge_evidence:programming_record_programming_data_csv_38">
+    <edge source="sub_office:na20:3f63a5531c" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="funds_challenge_evidence:programming_record_programming_data_csv_38">
       <data key="d11">funds_challenge_evidence</data>
       <data key="d12">1</data>
       <data key="d13">classification_pipeline</data>
       <data key="d14">38</data>
       <data key="d15">medium</data>
       <data key="d16">False</data>
-      <data key="d17">The scope focuses on automation and AI/ML to enhance the e810 system and streamline the process for submitting civil nuclear technology transfer requests under 10 CFR Part 810. This is fundamentally an acquisition/authorization workflow and process-efficiency problem—improving how requests are submitted, processed, and managed—rather than directly detecting proliferation anomalies or digitizing historic nuclear data. Among the options, it best aligns with the acquisition-focused challenge that aims to apply AI to streamline complex, regulation-driven federal processes, even though this specific case is export/technology transfer rather than procurement. The nonproliferation context (NA-20, civil nuclear cooperation) supports the mission area but the primary activity is process streamlining, matching “Accelerating Nuclear Enterprise Acquisition” more closely than the other two challenges.</data>
+      <data key="d17">The scope focuses on automation and AI/ML to enhance the e810 system and streamline the process for submitting civil nuclear technology transfer requests under 10 CFR Part 810. This is fundamentally an acquisition/authorization workflow and process-efficiency problem—improving how requests are submitted, processed, and managed—rather than directly detecting proliferation anomalies or digitizing historic nuclear data. Among the options, it best aligns with the acquisition-focused challenge that aims to apply AI to streamline complex, regulation-driven federal processes, even though this specific case is export/technology transfer rather than procurement. The nonproliferation context (NA-20, civil nuclear cooperation) supports the mission area but the primary activity is process streamlining, matching “Accelerating Nuclear Enterprise Acquisition” more closely than the other two challenges. SME correction: Corrected</data>
       <data key="d18">BASELINE</data>
       <data key="d19">17500000.0</data>
       <data key="d20">NA20</data>
@@ -21628,6 +21628,18 @@
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">7</data>
     </edge>
+    <edge source="sub_office:na80:b7721cf532" target="mstc_challenge:strengthening_deterrence_through_attribution_of:12318fe125" id="funds_challenge_evidence:programming_record_programming_data_csv_46">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">46</data>
+      <data key="d15">high</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description emphasizes “rapid and effective response to nuclear and radiological events” and “detailed analysis of vast and varied data,” which directly mirrors the problem statement and proposed solution language of the Accelerating Nuclear Threat Assessment, Preparedness, and Response challenge. While the scope also mentions improving the speed and accuracy of nuclear forensics analyses (which relates to attribution), the primary framing is event response and risk mitigation, and the program request explicitly references “NUCLEAR RISK MITIGATION AND RESPONSE.” Therefore the dominant alignment is with the threat assessment, preparedness, and response challenge rather than the attribution-focused challenge. SME correction: Corrected</data>
+      <data key="d18">UFR</data>
+      <data key="d19">17500000.0</data>
+      <data key="d20">NA80</data>
+    </edge>
     <edge source="sub_office:na80:b7721cf532" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="leads_challenge">
       <data key="d11">leads_challenge</data>
       <data key="d12">1</data>
@@ -21644,30 +21656,6 @@
       <data key="d17">The scope description emphasizes advancing AI tools for rapid and effective response to nuclear and radiological events, detailed analysis of vast and varied data, and nuclear risk mitigation and response. This aligns directly with the first challenge’s focus on shrinking detection-to-response times, multimodal AI fusion for real-time situational awareness, and crisis-time decision support. While the scope also mentions improving nuclear forensics (which relates to attribution), the primary thrust is broader threat assessment and response, matching the Accelerating Nuclear Threat Assessment, Preparedness, and Response challenge most closely.</data>
       <data key="d18">UFR</data>
       <data key="d19">5000000.0</data>
-      <data key="d20">NA80</data>
-    </edge>
-    <edge source="sub_office:na80:b7721cf532" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="funds_challenge_evidence:programming_record_programming_data_csv_45">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">45</data>
-      <data key="d15">high</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope description emphasizes advancing AI tools for rapid and effective response to nuclear and radiological events, detailed analysis of vast and varied data, and nuclear risk mitigation and response. These align directly with the challenge focused on shrinking detection-to-response times via a continuously learning, multimodal AI fusion system for real-time decision support in nuclear/radiological events. While the description also mentions improving nuclear forensics, the dominant focus is on event response and situational awareness rather than primary attribution, making the ‘Accelerating Nuclear Threat Assessment, Preparedness, and Response’ challenge the best fit.</data>
-      <data key="d18">UFR</data>
-      <data key="d19">40000000.0</data>
-      <data key="d20">NA80</data>
-    </edge>
-    <edge source="sub_office:na80:b7721cf532" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="funds_challenge_evidence:programming_record_programming_data_csv_46">
-      <data key="d11">funds_challenge_evidence</data>
-      <data key="d12">1</data>
-      <data key="d13">classification_pipeline</data>
-      <data key="d14">46</data>
-      <data key="d15">high</data>
-      <data key="d16">False</data>
-      <data key="d17">The scope description emphasizes “rapid and effective response to nuclear and radiological events” and “detailed analysis of vast and varied data,” which directly mirrors the problem statement and proposed solution language of the Accelerating Nuclear Threat Assessment, Preparedness, and Response challenge. While the scope also mentions improving the speed and accuracy of nuclear forensics analyses (which relates to attribution), the primary framing is event response and risk mitigation, and the program request explicitly references “NUCLEAR RISK MITIGATION AND RESPONSE.” Therefore the dominant alignment is with the threat assessment, preparedness, and response challenge rather than the attribution-focused challenge.</data>
-      <data key="d18">UFR</data>
-      <data key="d19">17500000.0</data>
       <data key="d20">NA80</data>
     </edge>
     <edge source="sub_office:na80:b7721cf532" target="mstc_challenge:accelerating_nuclear_threat_assessment_preparedn:b962e35516" id="funds_challenge_evidence:programming_record_programming_data_csv_47">
@@ -21687,6 +21675,18 @@
       <data key="d12">1</data>
       <data key="d13">ProgramOffice_Mapping.csv</data>
       <data key="d14">9</data>
+    </edge>
+    <edge source="sub_office:na80:b7721cf532" target="mstc_challenge:cui_preventing_ai_induced_nuclear_proliferation:bbeffc2cf1" id="funds_challenge_evidence:programming_record_programming_data_csv_45">
+      <data key="d11">funds_challenge_evidence</data>
+      <data key="d12">1</data>
+      <data key="d13">classification_pipeline</data>
+      <data key="d14">45</data>
+      <data key="d15">high</data>
+      <data key="d16">False</data>
+      <data key="d17">The scope description emphasizes advancing AI tools for rapid and effective response to nuclear and radiological events, detailed analysis of vast and varied data, and nuclear risk mitigation and response. These align directly with the challenge focused on shrinking detection-to-response times via a continuously learning, multimodal AI fusion system for real-time decision support in nuclear/radiological events. While the description also mentions improving nuclear forensics, the dominant focus is on event response and situational awareness rather than primary attribution, making the ‘Accelerating Nuclear Threat Assessment, Preparedness, and Response’ challenge the best fit. SME correction: Corrected</data>
+      <data key="d18">UFR</data>
+      <data key="d19">40000000.0</data>
+      <data key="d20">NA80</data>
     </edge>
     <edge source="program_office_mapping_record:programoffice_mapping_csv:3" target="mstc_challenge:increasing_experimental_capacity_at_nuclear_rese:e9a4a1153b" id="maps_challenge">
       <data key="d11">maps_challenge</data>

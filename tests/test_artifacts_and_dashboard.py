@@ -90,6 +90,32 @@ def test_classified_graph_uses_evidence_edges_only() -> None:
     assert "assigned_support_program_office" not in relations
 
 
+def test_classified_graph_uses_sme_corrected_challenges() -> None:
+    graph = nx.read_graphml(paths.CLASSIFIED_ONTOLOGY_GRAPH_PATH)
+    review = pd.read_csv(paths.SME_REVIEW_OVERRIDES_PATH, dtype=str).fillna("")
+    corrections = review.loc[review["corrected_challenge"].str.strip().ne("")]
+    assert not corrections.empty
+
+    graph_challenges_by_record = {
+        source: graph.nodes[target].get("label", target)
+        for source, target, data in graph.edges(data=True)
+        if data.get("relation") == "classified_as_challenge"
+    }
+    mismatches = [
+        (
+            row.programming_record_id,
+            row.source_row_number,
+            row.corrected_challenge,
+            graph_challenges_by_record.get(row.programming_record_id),
+        )
+        for row in corrections.itertuples(index=False)
+        if graph_challenges_by_record.get(row.programming_record_id)
+        != row.corrected_challenge
+    ]
+
+    assert mismatches == []
+
+
 def test_classification_dashboard_code_cells_execute() -> None:
     matplotlib.use("Agg", force=True)
     notebook = json.loads(paths.NOTEBOOK_DIR.joinpath("classification_dashboard.ipynb").read_text(encoding="utf-8"))
