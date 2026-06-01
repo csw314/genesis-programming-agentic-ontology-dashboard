@@ -12,17 +12,23 @@ from typing import Any, Mapping
 from urllib.parse import urlsplit, urlunsplit
 
 from .llm_classifier_common import (
+    AI_DIRECTNESS_SYSTEM_PROMPT,
     DEFAULT_LLM_TIMEOUT_SECONDS,
     DEFAULT_REASONING_EFFORT,
     SYSTEM_PROMPT,
     VALID_REASONING_EFFORTS,
+    ai_directness_api_payload,
+    ai_directness_schema,
     api_payload,
     decision_schema,
     get_value,
+    load_ai_directness_audit_cache,
     load_audit_cache,
     request_payload_hash,
     response_id,
+    validate_ai_directness_decision,
     validate_decision,
+    write_ai_directness_audit_entry,
     write_audit_entry,
 )
 
@@ -490,6 +496,143 @@ class AskSageChallengeClassifier:
             handle.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
 
 
+class AskSageAIDirectnessClassifier:
+    """Callable classifier for row-level AI/ML workload directness."""
+
+    def __init__(
+        self,
+        *,
+        model: str | None = None,
+        reasoning_effort: str = DEFAULT_REASONING_EFFORT,
+        base_url: str | None = None,
+        openai_url: str | None = None,
+        api_key: str | None = None,
+        email: str | None = None,
+        credentials_path: str | Path | None = None,
+        user_base_url: str | None = None,
+        server_base_url: str | None = None,
+        client: Any | None = None,
+        audit_cache_path: str | Path | None = None,
+        resume_cache: bool = False,
+        use_truststore: bool = DEFAULT_ASKSAGE_OPENAI_USE_TRUSTSTORE,
+        timeout_seconds: float = DEFAULT_ASKSAGE_TIMEOUT_SECONDS,
+    ) -> None:
+        if reasoning_effort not in VALID_REASONING_EFFORTS:
+            raise ValueError(
+                "reasoning_effort must be one of: "
+                + ", ".join(sorted(VALID_REASONING_EFFORTS))
+            )
+
+        self.model = resolve_asksage_model(model, credentials_path=credentials_path)
+        self.reasoning_effort = reasoning_effort
+        self.base_url = base_url
+        self.api_key = api_key
+        self.email = email
+        self.credentials_path = Path(credentials_path) if credentials_path else None
+        self.user_base_url = user_base_url
+        self.server_base_url = server_base_url
+        self.openai_url = openai_url
+        self.audit_cache_path = Path(audit_cache_path) if audit_cache_path else None
+        self.resume_cache = resume_cache
+        self.use_truststore = use_truststore
+        self.timeout_seconds = timeout_seconds
+        self.client = client if client is not None else self._build_client()
+        self._cache = self._load_cache() if resume_cache and self.audit_cache_path else {}
+
+    def __call__(self, payload: dict[str, Any]) -> Mapping[str, Any]:
+        """Return a structured AI-directness decision for one payload."""
+
+        request_hash = request_payload_hash(payload, model=self.model)
+        cached = self._cache.get(request_hash)
+        if cached is not None:
+            return cached["decision"]
+
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": _query_ai_directness_system_prompt()},
+                {"role": "user", "content": _query_ai_directness_message(payload)},
+            ],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "programming_ai_directness",
+                    "strict": True,
+                    "schema": ai_directness_schema(),
+                },
+            },
+            temperature=0,
+        )
+        try:
+            decision = parse_asksage_chat_completion_ai_directness_decision(response)
+            validate_ai_directness_decision(decision, provider_name="Ask Sage")
+        except Exception as error:
+            self._write_failure_audit_entry(payload, response, request_hash, error)
+            raise
+        self._write_audit_entry(payload, response, request_hash, decision)
+        return decision
+
+    def _build_client(self) -> Any:
+        return build_asksage_openai_client(
+            api_key=self.api_key,
+            base_url=self.base_url,
+            openai_url=self.openai_url,
+            credentials_path=self.credentials_path,
+            server_base_url=self.server_base_url,
+            use_truststore=self.use_truststore,
+            timeout_seconds=self.timeout_seconds,
+        )
+
+    def _load_cache(self) -> dict[str, dict[str, Any]]:
+        if self.audit_cache_path is None or not self.audit_cache_path.exists():
+            return {}
+        return load_ai_directness_audit_cache(self.audit_cache_path)
+
+    def _write_audit_entry(
+        self,
+        payload: dict[str, Any],
+        response: Any,
+        request_hash: str,
+        decision: Mapping[str, Any],
+    ) -> None:
+        write_ai_directness_audit_entry(
+            audit_cache_path=self.audit_cache_path,
+            cache=self._cache,
+            payload=payload,
+            response=response,
+            request_hash=request_hash,
+            decision=decision,
+            model=self.model,
+        )
+
+    def _write_failure_audit_entry(
+        self,
+        payload: dict[str, Any],
+        response: Any,
+        request_hash: str,
+        error: Exception,
+    ) -> None:
+        if self.audit_cache_path is None:
+            return
+
+        evidence = payload.get("programming_evidence", {})
+        entry = {
+            "request_hash": request_hash,
+            "model": self.model,
+            "response_id": response_id(response),
+            "programming_record_id": evidence.get("programming_record_id", ""),
+            "source_row_number": evidence.get("source_row_number", ""),
+            "wbs_name": evidence.get("wbs_name", ""),
+            "predicted_challenge": payload.get("predicted_challenge", ""),
+            "error_type": type(error).__name__,
+            "error": str(error),
+            "response_preview": response_preview(response),
+        }
+        self.audit_cache_path.parent.mkdir(parents=True, exist_ok=True)
+        with self.audit_cache_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
+
+
 def parse_asksage_chat_completion_decision(response: Any) -> dict[str, Any]:
     """Parse an Ask Sage OpenAI-compatible Chat Completions response."""
 
@@ -508,6 +651,28 @@ def parse_asksage_chat_completion_decision(response: Any) -> dict[str, Any]:
     raise ValueError(
         "Ask Sage response JSON must include predicted_challenge, confidence, "
         f"and rationale. Response preview: {response_preview(response)}"
+    )
+
+
+def parse_asksage_chat_completion_ai_directness_decision(response: Any) -> dict[str, Any]:
+    """Parse an Ask Sage AI-directness Chat Completions response."""
+
+    content = _extract_chat_completion_content(response)
+    try:
+        parsed = _loads_jsonish(content)
+    except ValueError as error:
+        raise ValueError(
+            "Ask Sage AI-directness response did not contain valid JSON. "
+            f"Response preview: {response_preview(response)}"
+        ) from error
+
+    direct = _find_ai_directness_mapping(parsed)
+    if direct is not None:
+        return direct
+    raise ValueError(
+        "Ask Sage response JSON must include ai_directness_score, "
+        "ai_directness_label, confidence, and rationale. "
+        f"Response preview: {response_preview(response)}"
     )
 
 
@@ -593,6 +758,17 @@ def _query_message(payload: Mapping[str, Any]) -> str:
     return json.dumps(api_payload(payload), ensure_ascii=False, sort_keys=True)
 
 
+def _query_ai_directness_system_prompt() -> str:
+    return (
+        AI_DIRECTNESS_SYSTEM_PROMPT
+        + "\nReturn only the JSON object required by the supplied schema."
+    )
+
+
+def _query_ai_directness_message(payload: Mapping[str, Any]) -> str:
+    return json.dumps(ai_directness_api_payload(payload), ensure_ascii=False, sort_keys=True)
+
+
 def _query_reasoning_effort(reasoning_effort: str) -> str:
     if reasoning_effort == "xhigh":
         return "high"
@@ -611,6 +787,28 @@ def _find_decision_mapping(value: Any) -> dict[str, Any] | None:
     if isinstance(value, list):
         for item in value:
             found = _find_decision_mapping(item)
+            if found is not None:
+                return found
+    return None
+
+
+def _find_ai_directness_mapping(value: Any) -> dict[str, Any] | None:
+    if isinstance(value, Mapping):
+        if {
+            "ai_directness_score",
+            "ai_directness_label",
+            "confidence",
+            "rationale",
+        }.issubset(value):
+            return dict(value)
+        for key in ("response", "message", "answer", "content", "text", "output", "data"):
+            nested = value.get(key)
+            found = _find_ai_directness_mapping(nested)
+            if found is not None:
+                return found
+    if isinstance(value, list):
+        for item in value:
+            found = _find_ai_directness_mapping(item)
             if found is not None:
                 return found
     return None

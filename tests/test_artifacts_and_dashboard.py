@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from html import escape
 import json
+import re
 from zipfile import ZipFile
 
 import matplotlib
 import networkx as nx
 import pandas as pd
+import pytest
 
 from programming_ontology import paths
 from programming_ontology._dashboard_report import build_classification_dashboard_html
@@ -41,6 +43,10 @@ def test_processed_artifacts_have_expected_row_level_schema() -> None:
         "scope_description",
         "five_year_total",
         "predicted_challenge",
+        "ai_directness_score",
+        "ai_directness_label",
+        "ai_directness_confidence",
+        "ai_directness_rationale",
     }
     assert required_classification_columns.issubset(classifications.columns)
     assert len(classifications) == len(reviewed)
@@ -137,7 +143,7 @@ def test_classification_dashboard_code_cells_execute() -> None:
     assert "Genesis Mission Funding and Collaboration Dashboard" in html
     assert "Mission Funding Mix" in html
     assert "Challenge-by-Office Contribution Matrix" in html
-    assert "Office Pair Collaboration Opportunities" in html
+    assert "Project Funding Disruptiveness" in html
     assert "Office Portfolios" in html
     assert "Appendix: Validation and Traceability" in html
 
@@ -148,6 +154,7 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
     for expected in [
         "Executive Mission Funding Snapshot",
         "Mission Funding Mix",
+        "Project Funding Disruptiveness",
         "Challenge Collaboration Groups",
         "Lead Office Funding by Claimed Mission",
         "Challenge Coverage",
@@ -160,6 +167,18 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
     assert 'data-office="NA-PAS"' in html
     assert "NA-MB</td><td>Accelerating Business and Management Processes for National Security Missions" in html
     assert "NA-PAS</td><td>Accelerating Nuclear Enterprise Acquisition" in html
+    assert html.find("Project Funding Disruptiveness") < html.find("Appendix: Validation and Traceability")
+    assert html.find("Office Pair Collaboration Opportunities") > html.find("Appendix: Validation and Traceability")
+    assert 'id="disruptiveness-data"' in html
+    assert 'data-tile-layout="packed-grid"' in html
+    assert 'data-x-axis="ai-directness-reversed"' in html
+    assert "AI-directness score (more directly AI to the left)" in html
+    assert "nearestOpenCell" in html
+    assert "targetCell" in html
+    assert 'data-disruptiveness-mode="BASELINE"' in html
+    assert 'data-disruptiveness-mode="UFR"' in html
+    assert '<text x="78" y="510" text-anchor="middle">100</text>' in html
+    assert '<text x="974" y="510" text-anchor="middle">0</text>' in html
 
 
 def test_dashboard_challenge_totals_match_baseline_ufr_rows() -> None:
@@ -204,6 +223,60 @@ def test_dashboard_office_counts_match_funded_challenges() -> None:
             f'data-office="{office_attr}" '
             f'data-funded-challenge-count="{int(challenge_count)}"'
         ) in html
+
+
+def test_dashboard_disruptiveness_payload_matches_baseline_ufr_rows() -> None:
+    html = _render_dashboard_html()
+    match = re.search(
+        r'<script type="application/json" id="disruptiveness-data">(.*?)</script>',
+        html,
+        flags=re.DOTALL,
+    )
+    assert match is not None
+    payload = json.loads(match.group(1).replace("<\\/", "</"))
+    rows = payload["rows"]
+    reviewed = pd.read_csv(paths.REVIEWED_PROGRAMMING_CHALLENGE_CLASSIFICATIONS_PATH)
+    eligible = reviewed.loc[
+        reviewed["funding_level"].astype(str).str.upper().isin(["BASELINE", "UFR"])
+    ].copy()
+
+    assert len(rows) == len(eligible)
+    assert {row["funding_level"] for row in rows}.issubset({"BASELINE", "UFR"})
+
+    eligible["five_year_total"] = pd.to_numeric(
+        eligible["five_year_total"], errors="coerce"
+    ).fillna(0.0)
+    office_totals = eligible.pivot_table(
+        index="normalized_funding_office",
+        columns="funding_level",
+        values="five_year_total",
+        aggfunc="sum",
+        fill_value=0.0,
+    )
+    for level in ["BASELINE", "UFR"]:
+        if level not in office_totals.columns:
+            office_totals[level] = 0.0
+    office_totals["ALL"] = office_totals["BASELINE"] + office_totals["UFR"]
+
+    by_id = {row["id"]: row for row in rows}
+    for source_row in eligible.itertuples(index=False):
+        payload_row = by_id[source_row.programming_record_id]
+        office_totals_row = office_totals.loc[source_row.normalized_funding_office]
+        amount = float(source_row.five_year_total)
+        all_total = float(office_totals_row["ALL"])
+        assert payload_row["office_share_all"] == pytest.approx(
+            0.0 if all_total <= 0 else amount / all_total
+        )
+        if source_row.funding_level == "BASELINE":
+            baseline_total = float(office_totals_row["BASELINE"])
+            assert payload_row["office_share_baseline"] == pytest.approx(
+                0.0 if baseline_total <= 0 else amount / baseline_total
+            )
+        if source_row.funding_level == "UFR":
+            ufr_total = float(office_totals_row["UFR"])
+            assert payload_row["office_share_ufr"] == pytest.approx(
+                0.0 if ufr_total <= 0 else amount / ufr_total
+            )
 
 
 def test_publish_dashboard_writes_sanitized_shareable_html(tmp_path) -> None:

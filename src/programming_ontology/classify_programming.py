@@ -26,6 +26,7 @@ from .openai_classifier import DEFAULT_OPENAI_MODEL
 
 
 LLMClassifier = Callable[[dict[str, Any]], Mapping[str, Any] | str]
+AIDirectnessClassifier = Callable[[dict[str, Any]], Mapping[str, Any] | str]
 
 CLASSIFICATION_SOURCE = "classification_pipeline"
 CONFIDENCE_LEVELS = {"high", "medium", "low"}
@@ -53,6 +54,14 @@ CLASSIFICATION_CONTEXT_COLUMNS = {
 }
 
 BUDGET_COLUMNS = ("FY2028", "FY2029", "FY2030", "FY2031", "FY2032")
+AI_DIRECTNESS_LABELS = {
+    "direct_ai_ml",
+    "ai_enabled_workflow",
+    "ai_infrastructure",
+    "data_foundation",
+    "weak_ai_link",
+    "not_ai_ml",
+}
 
 STOPWORDS = {
     "a",
@@ -193,6 +202,10 @@ class ClassificationResult:
     confidence: str
     review_flag: bool
     rationale: str
+    ai_directness_score: int
+    ai_directness_label: str
+    ai_directness_confidence: str
+    ai_directness_rationale: str
     top_candidate_challenges: tuple[str, ...]
     additional_programming_context: tuple[str, ...]
     evidence_node_ids: tuple[str, ...]
@@ -539,6 +552,7 @@ def classify_programming_records(
     challenges: Mapping[str, ChallengeProfile],
     offices: Mapping[str, OfficeMapping] | None = None,
     llm_classifier: LLMClassifier | None = None,
+    ai_directness_classifier: AIDirectnessClassifier | None = None,
     *,
     top_k: int = 5,
 ) -> list[ClassificationResult]:
@@ -563,12 +577,21 @@ def classify_programming_records(
             raw_decision = _lexical_classifier(payload)
         else:
             raw_decision = llm_classifier(payload)
+        decision = _parse_classifier_response(raw_decision)
+        selected_challenge = _selected_challenge_name(candidates, decision)
+        ai_payload = _ai_directness_payload(evidence, selected_challenge)
+
+        if ai_directness_classifier is None:
+            raw_ai_directness = _lexical_ai_directness_classifier(ai_payload)
+        else:
+            raw_ai_directness = ai_directness_classifier(ai_payload)
 
         results.append(
             _build_result_from_decision(
                 evidence,
                 candidates,
-                _parse_classifier_response(raw_decision),
+                decision,
+                _parse_ai_directness_response(raw_ai_directness),
                 challenges=eligible_challenges,
             )
         )
@@ -643,6 +666,7 @@ def classify_graph(
     reasoning_effort: str = "medium",
     limit: int | None = None,
     audit_cache_path: str | Path | None = None,
+    ai_directness_audit_cache_path: str | Path | None = None,
     resume_cache: bool = False,
     openai_client: Any | None = None,
     asksage_client: Any | None = None,
@@ -664,8 +688,9 @@ def classify_graph(
         evidence_rows = evidence_rows[:limit]
 
     llm_classifier: LLMClassifier | None = None
+    ai_directness_classifier: AIDirectnessClassifier | None = None
     if classifier == "openai":
-        from .openai_classifier import OpenAIChallengeClassifier
+        from .openai_classifier import OpenAIAIDirectnessClassifier, OpenAIChallengeClassifier
 
         llm_classifier = OpenAIChallengeClassifier(
             model=model or DEFAULT_OPENAI_MODEL,
@@ -674,8 +699,15 @@ def classify_graph(
             audit_cache_path=audit_cache_path,
             resume_cache=resume_cache,
         )
+        ai_directness_classifier = OpenAIAIDirectnessClassifier(
+            model=model or DEFAULT_OPENAI_MODEL,
+            reasoning_effort=reasoning_effort,
+            client=openai_client,
+            audit_cache_path=ai_directness_audit_cache_path,
+            resume_cache=resume_cache,
+        )
     elif classifier == "asksage":
-        from .asksage_classifier import AskSageChallengeClassifier
+        from .asksage_classifier import AskSageAIDirectnessClassifier, AskSageChallengeClassifier
 
         llm_classifier = AskSageChallengeClassifier(
             model=model,
@@ -686,6 +718,15 @@ def classify_graph(
             audit_cache_path=audit_cache_path,
             resume_cache=resume_cache,
         )
+        ai_directness_classifier = AskSageAIDirectnessClassifier(
+            model=model,
+            reasoning_effort=reasoning_effort,
+            base_url=asksage_base_url,
+            openai_url=asksage_openai_url,
+            client=asksage_client,
+            audit_cache_path=ai_directness_audit_cache_path,
+            resume_cache=resume_cache,
+        )
     elif classifier != "lexical":
         raise ValueError("classifier must be 'lexical', 'openai', or 'asksage'")
 
@@ -694,6 +735,7 @@ def classify_graph(
         challenges,
         offices=offices,
         llm_classifier=llm_classifier,
+        ai_directness_classifier=ai_directness_classifier,
         top_k=top_k,
     )
 
@@ -706,6 +748,7 @@ def classify_graph_with_openai(
     reasoning_effort: str = "medium",
     limit: int | None = None,
     audit_cache_path: str | Path | None = None,
+    ai_directness_audit_cache_path: str | Path | None = None,
     resume_cache: bool = False,
     openai_client: Any | None = None,
 ) -> list[ClassificationResult]:
@@ -719,6 +762,7 @@ def classify_graph_with_openai(
         reasoning_effort=reasoning_effort,
         limit=limit,
         audit_cache_path=audit_cache_path,
+        ai_directness_audit_cache_path=ai_directness_audit_cache_path,
         resume_cache=resume_cache,
         openai_client=openai_client,
     )
@@ -732,6 +776,7 @@ def classify_graph_with_asksage(
     reasoning_effort: str = "medium",
     limit: int | None = None,
     audit_cache_path: str | Path | None = None,
+    ai_directness_audit_cache_path: str | Path | None = None,
     resume_cache: bool = False,
     asksage_client: Any | None = None,
     asksage_base_url: str | None = None,
@@ -747,6 +792,7 @@ def classify_graph_with_asksage(
         reasoning_effort=reasoning_effort,
         limit=limit,
         audit_cache_path=audit_cache_path,
+        ai_directness_audit_cache_path=ai_directness_audit_cache_path,
         resume_cache=resume_cache,
         asksage_client=asksage_client,
         asksage_base_url=asksage_base_url,
@@ -798,6 +844,14 @@ def build_review_template(classifications_df: pd.DataFrame) -> pd.DataFrame:
             "current_predicted_challenge": classifications_df["predicted_challenge"],
             "current_confidence": classifications_df["confidence"],
             "current_review_flag": classifications_df["review_flag"].map(_bool_text),
+            "current_ai_directness_score": classifications_df.get(
+                "ai_directness_score",
+                pd.Series([0] * len(classifications_df)),
+            ),
+            "current_ai_directness_label": classifications_df.get(
+                "ai_directness_label",
+                pd.Series(["not_ai_ml"] * len(classifications_df)),
+            ),
             "review_decision": classifications_df["review_flag"].map(
                 lambda value: "needs_discussion" if _truthy(value) else "accept"
             ),
@@ -1042,6 +1096,7 @@ def run_classification_pipeline(
     limit: int | None = None,
     resume_cache: bool = False,
     audit_cache_path: str | Path | None = None,
+    ai_directness_audit_cache_path: str | Path | None = None,
     openai_client: Any | None = None,
     asksage_client: Any | None = None,
     asksage_base_url: str | None = None,
@@ -1068,12 +1123,16 @@ def run_classification_pipeline(
         evidence_rows = evidence_rows[:limit]
 
     llm_classifier: LLMClassifier | None = None
+    ai_directness_classifier: AIDirectnessClassifier | None = None
     resolved_audit_cache_path = audit_cache_path
+    resolved_ai_directness_audit_cache_path = ai_directness_audit_cache_path
     if classifier == "openai":
-        from .openai_classifier import OpenAIChallengeClassifier
+        from .openai_classifier import OpenAIAIDirectnessClassifier, OpenAIChallengeClassifier
 
         if resolved_audit_cache_path is None:
             resolved_audit_cache_path = paths.OPENAI_CLASSIFICATION_AUDIT_PATH
+        if resolved_ai_directness_audit_cache_path is None:
+            resolved_ai_directness_audit_cache_path = paths.OPENAI_AI_DIRECTNESS_AUDIT_PATH
         llm_classifier = OpenAIChallengeClassifier(
             model=model or DEFAULT_OPENAI_MODEL,
             reasoning_effort=reasoning_effort,
@@ -1081,11 +1140,20 @@ def run_classification_pipeline(
             audit_cache_path=resolved_audit_cache_path,
             resume_cache=resume_cache,
         )
+        ai_directness_classifier = OpenAIAIDirectnessClassifier(
+            model=model or DEFAULT_OPENAI_MODEL,
+            reasoning_effort=reasoning_effort,
+            client=openai_client,
+            audit_cache_path=resolved_ai_directness_audit_cache_path,
+            resume_cache=resume_cache,
+        )
     elif classifier == "asksage":
-        from .asksage_classifier import AskSageChallengeClassifier
+        from .asksage_classifier import AskSageAIDirectnessClassifier, AskSageChallengeClassifier
 
         if resolved_audit_cache_path is None:
             resolved_audit_cache_path = paths.ASKSAGE_CLASSIFICATION_AUDIT_PATH
+        if resolved_ai_directness_audit_cache_path is None:
+            resolved_ai_directness_audit_cache_path = paths.ASKSAGE_AI_DIRECTNESS_AUDIT_PATH
         llm_classifier = AskSageChallengeClassifier(
             model=model,
             reasoning_effort=reasoning_effort,
@@ -1093,6 +1161,15 @@ def run_classification_pipeline(
             openai_url=asksage_openai_url,
             client=asksage_client,
             audit_cache_path=resolved_audit_cache_path,
+            resume_cache=resume_cache,
+        )
+        ai_directness_classifier = AskSageAIDirectnessClassifier(
+            model=model,
+            reasoning_effort=reasoning_effort,
+            base_url=asksage_base_url,
+            openai_url=asksage_openai_url,
+            client=asksage_client,
+            audit_cache_path=resolved_ai_directness_audit_cache_path,
             resume_cache=resume_cache,
         )
     elif classifier != "lexical":
@@ -1103,6 +1180,7 @@ def run_classification_pipeline(
         challenges,
         offices=offices,
         llm_classifier=llm_classifier,
+        ai_directness_classifier=ai_directness_classifier,
         top_k=top_k,
     )
     classification_df = classification_results_to_dataframe(results)
@@ -1155,6 +1233,7 @@ def run_classification_pipeline(
         "reviewed_classifications": reviewed_classifications,
         "validation_outputs": validation_outputs,
         "audit_cache_path": resolved_audit_cache_path,
+        "ai_directness_audit_cache_path": resolved_ai_directness_audit_cache_path,
     }
 
 
@@ -1208,6 +1287,7 @@ def _build_result_from_decision(
     evidence: EvidenceProfile,
     candidates: list[CandidateChallenge],
     decision: dict[str, Any],
+    ai_directness_decision: dict[str, Any],
     *,
     challenges: Mapping[str, ChallengeProfile],
 ) -> ClassificationResult:
@@ -1235,6 +1315,7 @@ def _build_result_from_decision(
     rationale = str(decision.get("rationale", "")).strip()
     if not rationale:
         rationale = _fallback_rationale(evidence, top_candidate)
+    ai_directness = _normalize_ai_directness_decision(ai_directness_decision)
 
     return ClassificationResult(
         programming_record_id=evidence.programming_record_id,
@@ -1267,6 +1348,10 @@ def _build_result_from_decision(
         confidence=confidence,
         review_flag=bool(review_reasons),
         rationale=rationale,
+        ai_directness_score=ai_directness["ai_directness_score"],
+        ai_directness_label=ai_directness["ai_directness_label"],
+        ai_directness_confidence=ai_directness["ai_directness_confidence"],
+        ai_directness_rationale=ai_directness["ai_directness_rationale"],
         top_candidate_challenges=tuple(
             f"{candidate.challenge_name} ({candidate.score:.2f})"
             for candidate in candidates
@@ -1303,6 +1388,28 @@ def _classification_payload(
     }
 
 
+def _ai_directness_payload(
+    evidence: EvidenceProfile,
+    predicted_challenge: str,
+) -> dict[str, Any]:
+    return {
+        "instructions": (
+            "Assess how directly this programming row supports an AI/ML "
+            "workload. Use scope_description as the primary evidence. Treat "
+            "WBS, STAT, program context, dollars, funding office, and the "
+            "selected Genesis Mission Challenge as supporting context only. "
+            "Return ai_directness_score from 0 to 100, ai_directness_label, "
+            "confidence, and rationale. Do not let Genesis wording alone "
+            "increase the AI score. Use the full score range and separate "
+            "named AI tools/models, generic AI program work, AI readiness, "
+            "compute infrastructure, data curation, and weak digital "
+            "modernization into meaningfully different scores."
+        ),
+        "predicted_challenge": predicted_challenge,
+        "programming_evidence": asdict(evidence),
+    }
+
+
 def _lexical_classifier(payload: dict[str, Any]) -> dict[str, Any]:
     candidates = payload["candidate_challenges"]
     if not candidates:
@@ -1331,6 +1438,202 @@ def _lexical_classifier(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _lexical_ai_directness_classifier(payload: dict[str, Any]) -> dict[str, Any]:
+    evidence = payload.get("programming_evidence", {})
+    scope = str(evidence.get("scope_description", "") or "")
+    text = " ".join(
+        str(evidence.get(field, ""))
+        for field in [
+            "scope_description",
+            "wbs_name",
+            "stat_l3",
+            "stat_l4",
+            "stat_l5",
+            "program_interest_area",
+            "process_improvement_area",
+            "program_request",
+            "acquisition_context",
+            "additional_context",
+        ]
+    ).casefold()
+
+    has_ai_word = bool(re.search(r"\bai\b|artificial intelligence|machine learning|\bml\b", text))
+    direct_score = _weighted_phrase_score(
+        text,
+        {
+            "machine learning": 16,
+            "federated model": 16,
+            "ai tools": 14,
+            "ai tool": 13,
+            "secure ai": 12,
+            "ai-driven": 12,
+            "ai driven": 12,
+            "ai-enabled": 11,
+            "ai enabled": 11,
+            "digital twin": 11,
+            "productionize": 10,
+            "prototype": 8,
+            "modeling": 7,
+            "model": 6,
+            "models": 6,
+            "simulation workflow": 7,
+            "workflow": 5,
+            "automation": 6,
+            "algorithm": 7,
+            "autonomous": 8,
+            "decision": 5,
+            "software": 5,
+            "deploy": 5,
+            "deployment": 5,
+            "dnn": 9,
+            "neural": 9,
+        },
+    )
+    infrastructure_score = _weighted_phrase_score(
+        text,
+        {
+            "gpu": 10,
+            "gpus": 10,
+            "cloud": 8,
+            "storage": 7,
+            "compute": 8,
+            "computing": 6,
+            "infrastructure": 7,
+            "platform": 7,
+            "hosting": 6,
+            "server": 5,
+            "network": 5,
+            "classified network": 5,
+        },
+    )
+    data_score = _weighted_phrase_score(
+        text,
+        {
+            "data conditioning": 13,
+            "curation": 12,
+            "labeling": 10,
+            "data management": 10,
+            "data governance": 9,
+            "data collection": 9,
+            "data platform": 9,
+            "data engineering": 9,
+            "dataset": 7,
+            "data set": 7,
+            "analytics": 7,
+            "database": 6,
+            "archiving": 5,
+        },
+    )
+    readiness_score = _weighted_phrase_score(
+        text,
+        {
+            "readiness": 10,
+            "workforce": 9,
+            "training": 9,
+            "collaboration": 5,
+            "innovation": 5,
+            "governance": 5,
+        },
+    )
+    weak_score = _weighted_phrase_score(
+        text,
+        {
+            "cybersecurity": 8,
+            "cyber": 6,
+            "modernization": 6,
+            "digital transformation": 7,
+            "instrumentation": 6,
+            "sensor": 5,
+            "facility": 5,
+            "office space": 4,
+        },
+    )
+
+    score = 4
+    reasons = []
+    if has_ai_word:
+        score += 26
+        reasons.append("AI/ML wording")
+    if "artificial intelligence" in text:
+        score += 8
+        reasons.append("explicit artificial intelligence wording")
+    if direct_score:
+        score += min(42, direct_score)
+        reasons.append("AI work-product terms")
+    if infrastructure_score:
+        score += min(22 if has_ai_word else 12, infrastructure_score)
+        reasons.append("compute/infrastructure terms")
+    if data_score:
+        score += min(18 if has_ai_word else 28, data_score)
+        reasons.append("data foundation terms")
+    if readiness_score:
+        score += min(15, readiness_score)
+        reasons.append("readiness/governance terms")
+    if weak_score:
+        score += min(10, weak_score)
+        reasons.append("general digital/infrastructure terms")
+
+    scope_tokens = _tokens(scope)
+    generic_short_ai = has_ai_word and len(scope_tokens) <= 9
+    generic_genesis_ai = bool(
+        re.fullmatch(
+            r"[\w\s:/-]*(genesis|programmatic|program|critical executable|ce ufr)[\w\s:/-]*\bai\b[\w\s:/-]*",
+            scope.strip().casefold(),
+        )
+    )
+    if generic_short_ai or generic_genesis_ai:
+        score = max(score, 55)
+        score = min(score, 72)
+        reasons.append("generic short AI scope")
+
+    if not has_ai_word:
+        if data_score:
+            score = min(max(score, 30), 54)
+        elif infrastructure_score or weak_score:
+            score = min(max(score, 12), 35)
+        else:
+            score = min(score, 9)
+
+    if has_ai_word and direct_score >= 28 and len(scope_tokens) >= 12:
+        score = max(score, 84)
+    if has_ai_word and direct_score >= 45 and len(scope_tokens) >= 12:
+        score = max(score, 92)
+    if has_ai_word and readiness_score and infrastructure_score and direct_score < 35:
+        score = min(max(score, 62), 82)
+
+    score += _score_tiebreaker(evidence, spread=5)
+    score = max(0, min(98, int(round(score))))
+    label = _ai_label_for_score(score)
+    confidence = "high" if has_ai_word and direct_score >= 30 and len(scope_tokens) >= 25 else "medium" if has_ai_word or data_score or infrastructure_score else "low"
+    rationale = (
+        "Deterministic fallback weighted "
+        + (", ".join(dict.fromkeys(reasons)) if reasons else "no clear AI/ML indicators")
+        + f"; component scores direct={direct_score}, infrastructure={infrastructure_score}, data={data_score}, readiness={readiness_score}."
+    )
+
+    return {
+        "ai_directness_score": score,
+        "ai_directness_label": label,
+        "confidence": confidence,
+        "rationale": rationale,
+    }
+
+
+def _weighted_phrase_score(text: str, weights: Mapping[str, int]) -> int:
+    return sum(weight for phrase, weight in weights.items() if phrase in text)
+
+
+def _score_tiebreaker(evidence: Mapping[str, Any], *, spread: int) -> int:
+    basis = "|".join(
+        str(evidence.get(field, ""))
+        for field in ["programming_record_id", "source_row_number", "wbs_name", "scope_description"]
+    )
+    if not basis.strip():
+        return 0
+    digest = int(sha1(basis.encode("utf-8")).hexdigest()[:8], 16)
+    return digest % (2 * spread + 1) - spread
+
+
 def _parse_classifier_response(response: Mapping[str, Any] | str) -> dict[str, Any]:
     if isinstance(response, str):
         try:
@@ -1351,6 +1654,92 @@ def _parse_classifier_response(response: Mapping[str, Any] | str) -> dict[str, A
         )
 
     return dict(response)
+
+
+def _parse_ai_directness_response(response: Mapping[str, Any] | str) -> dict[str, Any]:
+    if isinstance(response, str):
+        try:
+            parsed = json.loads(response)
+        except json.JSONDecodeError:
+            return {
+                "ai_directness_score": 0,
+                "ai_directness_label": "not_ai_ml",
+                "confidence": "low",
+                "rationale": response,
+            }
+        if isinstance(parsed, dict):
+            return parsed
+        return {
+            "ai_directness_score": 0,
+            "ai_directness_label": "not_ai_ml",
+            "confidence": "low",
+            "rationale": str(parsed),
+        }
+
+    if response is None:
+        return {
+            "ai_directness_score": 0,
+            "ai_directness_label": "not_ai_ml",
+            "confidence": "low",
+            "rationale": "",
+        }
+
+    if not isinstance(response, Mapping):
+        raise TypeError(
+            "ai_directness_classifier must return a mapping or JSON string with "
+            "ai_directness_score, ai_directness_label, confidence, and rationale"
+        )
+
+    return dict(response)
+
+
+def _selected_challenge_name(
+    candidates: list[CandidateChallenge],
+    decision: Mapping[str, Any],
+) -> str:
+    candidate_names = {candidate.challenge_name for candidate in candidates}
+    selected_name = str(decision.get("predicted_challenge", "")).strip()
+    if selected_name not in candidate_names:
+        return candidates[0].challenge_name
+    return selected_name
+
+
+def _normalize_ai_directness_decision(decision: Mapping[str, Any]) -> dict[str, Any]:
+    try:
+        score = int(float(str(decision.get("ai_directness_score", 0)).strip()))
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(100, score))
+
+    label = _scalar_text(decision.get("ai_directness_label"))
+    if label not in AI_DIRECTNESS_LABELS:
+        label = _ai_label_for_score(score)
+
+    confidence = _normalize_confidence(decision.get("confidence", "low"))
+    rationale = _scalar_text(decision.get("rationale"))
+    if not rationale:
+        rationale = "No AI-directness rationale was provided."
+
+    return {
+        "ai_directness_score": score,
+        "ai_directness_label": label,
+        "ai_directness_confidence": confidence,
+        "ai_directness_rationale": rationale,
+    }
+
+
+def _ai_label_for_score(score: int) -> str:
+    if score >= 90:
+        return "direct_ai_ml"
+    if score >= 70:
+        return "ai_enabled_workflow"
+    if score >= 50:
+        return "ai_infrastructure"
+    if score >= 30:
+        return "data_foundation"
+    if score >= 10:
+        return "weak_ai_link"
+    return "not_ai_ml"
 
 
 def _candidate_score(
@@ -2000,13 +2389,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--resume-cache",
         action="store_true",
-        help="Reuse matching decisions from the provider audit JSONL cache.",
+        help="Reuse matching decisions from provider audit JSONL caches.",
     )
     parser.add_argument(
         "--audit-cache",
         type=Path,
         default=None,
         help="Path for provider classification audit/cache JSONL.",
+    )
+    parser.add_argument(
+        "--ai-directness-audit-cache",
+        type=Path,
+        default=None,
+        help="Path for provider AI-directness audit/cache JSONL.",
     )
     parser.add_argument(
         "--asksage-base-url",
@@ -2034,6 +2429,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         limit=args.limit,
         resume_cache=args.resume_cache,
         audit_cache_path=args.audit_cache,
+        ai_directness_audit_cache_path=args.ai_directness_audit_cache,
         asksage_base_url=args.asksage_base_url,
         asksage_openai_url=args.asksage_openai_url,
     )
@@ -2046,6 +2442,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Office claims validated: {len(validation)}")
     if outputs["audit_cache_path"]:
         print(f"LLM audit cache: {outputs['audit_cache_path']}")
+    if outputs["ai_directness_audit_cache_path"]:
+        print(f"AI-directness audit cache: {outputs['ai_directness_audit_cache_path']}")
     return 0
 
 

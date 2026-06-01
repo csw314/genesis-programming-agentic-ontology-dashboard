@@ -6,6 +6,7 @@ import pytest
 
 from programming_ontology.asksage_classifier import (
     DEFAULT_ASKSAGE_MODEL,
+    AskSageAIDirectnessClassifier,
     AskSageChallengeClassifier,
     build_asksage_client,
     build_asksage_openai_client,
@@ -35,9 +36,28 @@ class FakeCompletions:
         if self.raises:
             raise AssertionError("unexpected Ask Sage API call")
         self.calls.append(kwargs)
-        enum = kwargs["response_format"]["json_schema"]["schema"]["properties"][
-            "predicted_challenge"
-        ]["enum"]
+        properties = kwargs["response_format"]["json_schema"]["schema"]["properties"]
+        if "ai_directness_score" in properties:
+            return {
+                "id": "asksage-ai-directness-test",
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(
+                                {
+                                    "ai_directness_score": 87,
+                                    "ai_directness_label": "ai_enabled_workflow",
+                                    "confidence": "high",
+                                    "rationale": (
+                                        "The row describes an AI-enabled workflow."
+                                    ),
+                                }
+                            )
+                        }
+                    }
+                ],
+            }
+        enum = properties["predicted_challenge"]["enum"]
         challenge_name = self.challenge_name or enum[0]
         return {
             "id": "asksage-chatcmpl-test",
@@ -268,6 +288,47 @@ def test_asksage_classifier_resume_cache_avoids_api_call(tmp_path) -> None:
     assert cached(payload)["predicted_challenge"] == "Challenge A"
 
 
+def test_asksage_ai_directness_classifier_uses_structured_outputs_and_cache(tmp_path) -> None:
+    audit_path = tmp_path / "ai-directness-audit.jsonl"
+    completions = FakeCompletions()
+    classifier = AskSageAIDirectnessClassifier(
+        model=ASKSAGE_MODEL,
+        client=FakeOpenAIClient(completions),
+        audit_cache_path=audit_path,
+    )
+    payload = {
+        "instructions": "score AI directness",
+        "predicted_challenge": "Challenge A",
+        "programming_evidence": {
+            "programming_record_id": "programming_record:test",
+            "source_row_number": 1,
+            "wbs_name": "AI workflow",
+            "scope_description": "Build an AI-enabled workflow.",
+        },
+    }
+
+    decision = classifier(payload)
+    call = completions.calls[0]
+
+    assert decision["ai_directness_score"] == 87
+    assert decision["ai_directness_label"] == "ai_enabled_workflow"
+    assert call["response_format"]["json_schema"]["name"] == "programming_ai_directness"
+    assert (
+        "ai_directness_score"
+        in call["response_format"]["json_schema"]["schema"]["properties"]
+    )
+    assert audit_path.exists()
+
+    cached = AskSageAIDirectnessClassifier(
+        model=ASKSAGE_MODEL,
+        client=FakeOpenAIClient(FakeCompletions(raises=True)),
+        audit_cache_path=audit_path,
+        resume_cache=True,
+    )
+
+    assert cached(payload)["ai_directness_score"] == 87
+
+
 def test_asksage_classifier_uses_credentials_model_when_present(tmp_path) -> None:
     credentials_path = tmp_path / "credentials.json"
     credentials_path.write_text(json.dumps(_credentials_payload()), encoding="utf-8")
@@ -334,3 +395,4 @@ def test_graph_asksage_entry_point_preserves_row_level_outputs(tmp_path) -> None
     assert results[0].programming_record_id.startswith("programming_record:")
     assert results[0].source_sub_office == "NA11"
     assert results[0].normalized_funding_office == "NA11"
+    assert 0 <= results[0].ai_directness_score <= 100

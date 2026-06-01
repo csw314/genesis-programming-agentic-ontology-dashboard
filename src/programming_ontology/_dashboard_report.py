@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from html import escape
 from itertools import combinations
+import json
 from math import sqrt
 from typing import Any
 
@@ -62,6 +63,7 @@ def build_classification_dashboard_html(
     office_challenge = _office_challenge_portfolio(positive, role_map, claims)
     lead_summary = _lead_claim_funding_summary(positive, claims, contributions)
     pair_opportunities = _office_pair_opportunities(contributions)
+    disruptiveness_rows = _disruptiveness_rows(positive)
     unclaimed_evidence = _unclaimed_evidence(office_challenge_evidence)
     appendix_claims = _appendix_claim_validation(office_claim_validation)
     appendix_rows = _appendix_reviewed_rows(reviewed_classifications)
@@ -156,6 +158,86 @@ def build_classification_dashboard_html(
       padding: 14px;
       margin: 12px 0 24px;
       overflow-x: auto;
+    }}
+    .tool-controls {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: end;
+      margin-bottom: 12px;
+    }}
+    .tool-control {{
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }}
+    .tool-control label {{
+      font-weight: 650;
+      color: #102a43;
+    }}
+    .tool-control select {{
+      min-width: 210px;
+      border: 1px solid #bcccdc;
+      border-radius: 6px;
+      padding: 6px 8px;
+      background: #fff;
+      color: #102a43;
+    }}
+    .segmented {{
+      display: inline-flex;
+      border: 1px solid #bcccdc;
+      border-radius: 7px;
+      overflow: hidden;
+      background: #fff;
+    }}
+    .segmented button {{
+      border: 0;
+      border-right: 1px solid #bcccdc;
+      border-radius: 0;
+      padding: 7px 10px;
+      font-weight: 650;
+    }}
+    .segmented button:last-child {{ border-right: 0; }}
+    .segmented button.active {{
+      background: #102a43;
+      color: #fff;
+    }}
+    .disruptiveness-layout {{
+      display: grid;
+      grid-template-columns: minmax(760px, 1fr) minmax(250px, 320px);
+      gap: 14px;
+      align-items: stretch;
+    }}
+    .disruptiveness-svg {{
+      width: 100%;
+      min-width: 760px;
+      height: auto;
+      display: block;
+      background: #fff;
+    }}
+    .detail-panel {{
+      border-left: 3px solid #627d98;
+      background: var(--soft);
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.38;
+    }}
+    .detail-panel h3 {{ margin: 0 0 8px; }}
+    .detail-grid {{
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 5px 8px;
+    }}
+    .detail-grid .label {{
+      color: var(--muted);
+      font-weight: 650;
+    }}
+    .tile-baseline {{ fill: var(--baseline); }}
+    .tile-ufr {{ fill: var(--ufr); }}
+    .tile-selected {{
+      stroke: #102a43;
+      stroke-width: 2.5;
     }}
     .data-table {{
       border-collapse: collapse;
@@ -331,6 +413,7 @@ def build_classification_dashboard_html(
     @media (max-width: 760px) {{
       .page {{ padding: 20px 14px 34px; }}
       .portfolio-row {{ grid-template-columns: 1fr; }}
+      .disruptiveness-layout {{ grid-template-columns: 1fr; }}
       .data-table {{ font-size: 12px; }}
     }}
   </style>
@@ -379,9 +462,9 @@ def build_classification_dashboard_html(
   </section>
 
   <section>
-    <h2>Office Pair Collaboration Opportunities</h2>
-    <p class="section-note">Ranked pairs show offices already funding the same challenge areas and therefore likely candidates for joint execution planning.</p>
-    {_office_pair_opportunities_html(pair_opportunities)}
+    <h2>Project Funding Disruptiveness</h2>
+    <p class="section-note">Each square is one programming row. Higher tiles capture a larger share of the selected funding mode for their office; farther-right tiles are more directly AI/ML work. High-share, low-AI rows are the most disruptive candidates to tax or rescope.</p>
+    {_project_disruptiveness_html(disruptiveness_rows)}
   </section>
 
   <section>
@@ -416,6 +499,10 @@ def build_classification_dashboard_html(
     <details>
       <summary>Unclaimed Positive Evidence</summary>
       {_table_html(unclaimed_evidence)}
+    </details>
+    <details>
+      <summary>Office Pair Collaboration Opportunities</summary>
+      {_office_pair_opportunities_html(pair_opportunities)}
     </details>
     <details>
       <summary>Reviewed Row-Level Classifications</summary>
@@ -919,6 +1006,10 @@ def _appendix_reviewed_rows(reviewed_classifications: pd.DataFrame) -> pd.DataFr
         "predicted_challenge",
         "confidence",
         "review_flag",
+        "ai_directness_score",
+        "ai_directness_label",
+        "ai_directness_confidence",
+        "ai_directness_rationale",
         "sme_review_decision",
         "sme_override_applied",
         "sme_notes",
@@ -930,6 +1021,400 @@ def _appendix_reviewed_rows(reviewed_classifications: pd.DataFrame) -> pd.DataFr
     return frame[[column for column in columns if column in frame.columns]].sort_values(
         [column for column in ["predicted_challenge", "normalized_funding_office", "wbs_name"] if column in frame.columns]
     )
+
+
+def _disruptiveness_rows(positive: pd.DataFrame) -> pd.DataFrame:
+    columns = [
+        "programming_record_id",
+        "source_file",
+        "source_row_number",
+        "wbs_name",
+        "normalized_funding_office",
+        "funding_level",
+        "predicted_challenge",
+        "five_year_total",
+        "ai_directness_score",
+        "ai_directness_label",
+        "ai_directness_confidence",
+        "ai_directness_rationale",
+        "scope_description",
+    ]
+    if positive.empty:
+        return pd.DataFrame(columns=columns)
+
+    frame = positive.copy()
+    frame = frame.loc[
+        frame["funding_level"].astype(str).str.upper().isin(FUNDING_LEVELS)
+    ].copy()
+    frame["five_year_total"] = pd.to_numeric(
+        frame["five_year_total"],
+        errors="coerce",
+    ).fillna(0.0)
+    for column, default in {
+        "ai_directness_score": 0,
+        "ai_directness_label": "not_ai_ml",
+        "ai_directness_confidence": "low",
+        "ai_directness_rationale": "AI-directness classification was not available.",
+        "scope_description": "",
+    }.items():
+        if column not in frame.columns:
+            frame[column] = default
+
+    frame["ai_directness_score"] = (
+        pd.to_numeric(frame["ai_directness_score"], errors="coerce")
+        .fillna(0)
+        .clip(lower=0, upper=100)
+        .astype(int)
+    )
+    for column in [
+        "ai_directness_label",
+        "ai_directness_confidence",
+        "ai_directness_rationale",
+    ]:
+        frame[column] = frame[column].map(_clean_text)
+    frame["ai_directness_label"] = frame["ai_directness_label"].replace(
+        {"": "not_ai_ml"}
+    )
+    return frame[[column for column in columns if column in frame.columns]].sort_values(
+        ["normalized_funding_office", "funding_level", "five_year_total"],
+        ascending=[True, True, False],
+    )
+
+
+def _project_disruptiveness_html(rows: pd.DataFrame) -> str:
+    if rows.empty:
+        return "<p>No BASELINE or UFR programming rows were found for disruptiveness scoring.</p>"
+
+    payload = _disruptiveness_payload(rows)
+    data_json = json.dumps(payload, ensure_ascii=False, sort_keys=True).replace(
+        "</",
+        "<\\/",
+    )
+    office_options = _select_options(
+        sorted({row["office"] for row in payload["rows"] if row["office"]})
+    )
+    challenge_options = _select_options(
+        sorted({row["challenge"] for row in payload["rows"] if row["challenge"]})
+    )
+    tile_count = len(payload["rows"])
+    return f"""
+    <div class="viz-block disruptiveness-tool" data-disruptiveness-row-count="{tile_count}" data-tile-layout="packed-grid" data-x-axis="ai-directness-reversed">
+      <div class="tool-controls">
+        <div class="tool-control">
+          <label>Funding Mode</label>
+          <div class="segmented" role="group" aria-label="Funding mode">
+            <button type="button" class="active" data-disruptiveness-mode="ALL">ALL FUNDS</button>
+            <button type="button" data-disruptiveness-mode="BASELINE">BASELINE</button>
+            <button type="button" data-disruptiveness-mode="UFR">UFR</button>
+          </div>
+        </div>
+        <div class="tool-control">
+          <label for="disruptiveness-office-filter">Program Office</label>
+          <select id="disruptiveness-office-filter">
+            <option value="">All offices</option>
+            {office_options}
+          </select>
+        </div>
+        <div class="tool-control">
+          <label for="disruptiveness-challenge-filter">Genesis Mission Challenge</label>
+          <select id="disruptiveness-challenge-filter">
+            <option value="">All challenges</option>
+            {challenge_options}
+          </select>
+        </div>
+      </div>
+      <div class="legend">
+        <span><span class="legend-swatch" style="background:var(--baseline)"></span>BASELINE tile</span>
+        <span><span class="legend-swatch" style="background:var(--ufr)"></span>UFR tile</span>
+        <span id="disruptiveness-count">{tile_count:,} visible projects</span>
+      </div>
+      <div class="disruptiveness-layout">
+        <svg id="disruptiveness-svg" class="disruptiveness-svg" viewBox="0 0 1040 570" role="img" aria-label="Packed tilemap of project funding disruptiveness">
+          <rect x="78" y="36" width="896" height="448" fill="#ffffff" stroke="#d9e2ec"></rect>
+          <g stroke="#edf2f7" stroke-width="1">
+            <line x1="78" y1="372" x2="974" y2="372"></line>
+            <line x1="78" y1="260" x2="974" y2="260"></line>
+            <line x1="78" y1="148" x2="974" y2="148"></line>
+            <line x1="302" y1="36" x2="302" y2="484"></line>
+            <line x1="526" y1="36" x2="526" y2="484"></line>
+            <line x1="750" y1="36" x2="750" y2="484"></line>
+          </g>
+          <g fill="#52606d" font-size="12">
+            <text x="72" y="488" text-anchor="end">0%</text>
+            <text x="72" y="376" text-anchor="end">25%</text>
+            <text x="72" y="264" text-anchor="end">50%</text>
+            <text x="72" y="152" text-anchor="end">75%</text>
+            <text x="72" y="40" text-anchor="end">100%</text>
+            <text x="78" y="510" text-anchor="middle">100</text>
+            <text x="302" y="510" text-anchor="middle">75</text>
+            <text x="526" y="510" text-anchor="middle">50</text>
+            <text x="750" y="510" text-anchor="middle">25</text>
+            <text x="974" y="510" text-anchor="middle">0</text>
+            <text x="526" y="544" text-anchor="middle">AI-directness score (more directly AI to the left)</text>
+            <text x="18" y="256" transform="rotate(-90 18 256)" text-anchor="middle">Share of office funding in selected mode</text>
+          </g>
+          <g fill="#102a43" font-size="12" font-weight="650">
+            <text x="604" y="58">Highest disruption risk: large office share, weak AI fit</text>
+            <text x="98" y="466">Lower disruption: small share, direct AI/ML fit</text>
+          </g>
+          <g id="disruptiveness-tiles"></g>
+        </svg>
+        <aside class="detail-panel" aria-live="polite">
+          <h3 id="disruptiveness-detail-title">Select a project tile</h3>
+          <div class="detail-grid">
+            <span class="label">Office</span><span id="disruptiveness-detail-office">-</span>
+            <span class="label">Funding</span><span id="disruptiveness-detail-funding">-</span>
+            <span class="label">Amount</span><span id="disruptiveness-detail-amount">-</span>
+            <span class="label">Office share</span><span id="disruptiveness-detail-share">-</span>
+            <span class="label">AI score</span><span id="disruptiveness-detail-score">-</span>
+            <span class="label">AI label</span><span id="disruptiveness-detail-label">-</span>
+            <span class="label">Challenge</span><span id="disruptiveness-detail-challenge">-</span>
+            <span class="label">Source</span><span id="disruptiveness-detail-source">-</span>
+          </div>
+          <p class="muted" id="disruptiveness-detail-rationale">Use the filters to isolate an office, challenge, or funding mode.</p>
+        </aside>
+      </div>
+      <script type="application/json" id="disruptiveness-data">{data_json}</script>
+      {_project_disruptiveness_script()}
+    </div>
+    """
+
+
+def _disruptiveness_payload(rows: pd.DataFrame) -> dict[str, Any]:
+    frame = rows.copy()
+    office_level_totals = (
+        frame.pivot_table(
+            index="normalized_funding_office",
+            columns="funding_level",
+            values="five_year_total",
+            aggfunc="sum",
+            fill_value=0.0,
+        )
+        if not frame.empty
+        else pd.DataFrame()
+    )
+    for level in FUNDING_LEVELS:
+        if level not in office_level_totals.columns:
+            office_level_totals[level] = 0.0
+    office_level_totals["ALL"] = office_level_totals["BASELINE"] + office_level_totals["UFR"]
+
+    payload_rows = []
+    for _, row in frame.iterrows():
+        office = _clean_text(row.get("normalized_funding_office"))
+        funding_level = _clean_text(row.get("funding_level")).upper()
+        amount = float(row.get("five_year_total") or 0.0)
+        totals = office_level_totals.loc[office] if office in office_level_totals.index else {}
+        baseline_total = float(totals.get("BASELINE", 0.0)) if hasattr(totals, "get") else 0.0
+        ufr_total = float(totals.get("UFR", 0.0)) if hasattr(totals, "get") else 0.0
+        all_total = float(totals.get("ALL", 0.0)) if hasattr(totals, "get") else 0.0
+        payload_rows.append(
+            {
+                "id": _clean_text(row.get("programming_record_id")),
+                "source_file": _clean_text(row.get("source_file")) or "programming_data.csv",
+                "source_row_number": _clean_text(row.get("source_row_number")),
+                "wbs_name": _clean_text(row.get("wbs_name")) or "Unnamed WBS",
+                "office": office,
+                "funding_level": funding_level,
+                "challenge": _clean_text(row.get("predicted_challenge")),
+                "five_year_total": amount,
+                "ai_directness_score": int(row.get("ai_directness_score") or 0),
+                "ai_directness_label": _clean_text(row.get("ai_directness_label")) or "not_ai_ml",
+                "ai_directness_confidence": _clean_text(row.get("ai_directness_confidence")) or "low",
+                "ai_directness_rationale": _clean_text(row.get("ai_directness_rationale")),
+                "office_total_all": all_total,
+                "office_total_baseline": baseline_total,
+                "office_total_ufr": ufr_total,
+                "office_share_all": 0.0 if all_total <= 0 else amount / all_total,
+                "office_share_baseline": (
+                    amount / baseline_total
+                    if funding_level == "BASELINE" and baseline_total > 0
+                    else 0.0
+                ),
+                "office_share_ufr": (
+                    amount / ufr_total
+                    if funding_level == "UFR" and ufr_total > 0
+                    else 0.0
+                ),
+            }
+        )
+    return {"rows": payload_rows}
+
+
+def _select_options(values: list[str]) -> str:
+    return "".join(f"<option value=\"{_ha(value)}\">{_h(value)}</option>" for value in values)
+
+
+def _project_disruptiveness_script() -> str:
+    return """
+      <script>
+        (function () {
+          const dataElement = document.getElementById('disruptiveness-data');
+          const payload = JSON.parse(dataElement.textContent || '{"rows": []}');
+          const rows = payload.rows || [];
+          const svg = document.getElementById('disruptiveness-svg');
+          const layer = document.getElementById('disruptiveness-tiles');
+          const count = document.getElementById('disruptiveness-count');
+          const officeFilter = document.getElementById('disruptiveness-office-filter');
+          const challengeFilter = document.getElementById('disruptiveness-challenge-filter');
+          const modeButtons = Array.from(document.querySelectorAll('[data-disruptiveness-mode]'));
+          const detail = {
+            title: document.getElementById('disruptiveness-detail-title'),
+            office: document.getElementById('disruptiveness-detail-office'),
+            funding: document.getElementById('disruptiveness-detail-funding'),
+            amount: document.getElementById('disruptiveness-detail-amount'),
+            share: document.getElementById('disruptiveness-detail-share'),
+            score: document.getElementById('disruptiveness-detail-score'),
+            label: document.getElementById('disruptiveness-detail-label'),
+            challenge: document.getElementById('disruptiveness-detail-challenge'),
+            source: document.getElementById('disruptiveness-detail-source'),
+            rationale: document.getElementById('disruptiveness-detail-rationale')
+          };
+          const chart = { left: 78, top: 36, cols: 32, rows: 16, tileSize: 28 };
+          let mode = 'ALL';
+          let selectedId = '';
+
+          function money(value) {
+            const number = Number(value || 0);
+            if (Math.abs(number) >= 1000000000) return '$' + (number / 1000000000).toFixed(2) + 'B';
+            if (Math.abs(number) >= 1000000) return '$' + (number / 1000000).toFixed(1) + 'M';
+            return '$' + Math.round(number).toLocaleString();
+          }
+          function percent(value) {
+            return (100 * Number(value || 0)).toFixed(1) + '%';
+          }
+          function labelText(value) {
+            return String(value || '').replaceAll('_', ' ');
+          }
+          function rowShare(row) {
+            if (mode === 'BASELINE') return row.office_share_baseline || 0;
+            if (mode === 'UFR') return row.office_share_ufr || 0;
+            return row.office_share_all || 0;
+          }
+          function rowVisible(row) {
+            if (mode !== 'ALL' && row.funding_level !== mode) return false;
+            if (officeFilter.value && row.office !== officeFilter.value) return false;
+            if (challengeFilter.value && row.challenge !== challengeFilter.value) return false;
+            return true;
+          }
+          function targetCell(row) {
+            const score = Math.max(0, Math.min(100, Number(row.ai_directness_score || 0)));
+            const share = Math.max(0, Math.min(1, Number(rowShare(row) || 0)));
+            return {
+              col: Math.round(((100 - score) / 100) * (chart.cols - 1)),
+              row: Math.round((1 - share) * (chart.rows - 1))
+            };
+          }
+          function nearestOpenCell(target, occupied) {
+            let best = null;
+            let bestDistance = Infinity;
+            for (let row = 0; row < chart.rows; row += 1) {
+              for (let col = 0; col < chart.cols; col += 1) {
+                const key = col + ',' + row;
+                if (occupied.has(key)) continue;
+                const distance = Math.pow(col - target.col, 2) + Math.pow(row - target.row, 2);
+                if (
+                  distance < bestDistance ||
+                  (distance === bestDistance && best && row < best.row) ||
+                  (distance === bestDistance && best && row === best.row && col > best.col)
+                ) {
+                  best = { col: col, row: row, key: key };
+                  bestDistance = distance;
+                }
+              }
+            }
+            return best || { col: target.col, row: target.row, key: target.col + ',' + target.row };
+          }
+          function packTiles(visible) {
+            const occupied = new Set();
+            return visible
+              .slice()
+              .sort(function (left, right) {
+                const leftShare = rowShare(left);
+                const rightShare = rowShare(right);
+                if (rightShare !== leftShare) return rightShare - leftShare;
+                if (left.ai_directness_score !== right.ai_directness_score) return left.ai_directness_score - right.ai_directness_score;
+                return Number(right.five_year_total || 0) - Number(left.five_year_total || 0);
+              })
+              .map(function (row) {
+                const target = targetCell(row);
+                const placed = nearestOpenCell(target, occupied);
+                occupied.add(placed.key);
+                return { row: row, target: target, placed: placed };
+              });
+          }
+          function setDetail(row) {
+            const share = rowShare(row);
+            detail.title.textContent = row.wbs_name || 'Unnamed WBS';
+            detail.office.textContent = row.office || '-';
+            detail.funding.textContent = row.funding_level || '-';
+            detail.amount.textContent = money(row.five_year_total);
+            detail.share.textContent = percent(share);
+            detail.score.textContent = String(row.ai_directness_score || 0);
+            detail.label.textContent = labelText(row.ai_directness_label);
+            detail.challenge.textContent = row.challenge || '-';
+            detail.source.textContent = (row.source_file || 'programming_data.csv') + ' row ' + (row.source_row_number || '-');
+            detail.rationale.textContent = row.ai_directness_rationale || 'No AI-directness rationale available.';
+          }
+          function render() {
+            layer.replaceChildren();
+            const visible = rows.filter(rowVisible);
+            const packed = packTiles(visible);
+            count.textContent = visible.length.toLocaleString() + ' visible project' + (visible.length === 1 ? '' : 's');
+            if (visible.length && !visible.some(function (row) { return row.id === selectedId; })) {
+              selectedId = visible[0].id || '';
+              setDetail(visible[0]);
+            }
+            packed.forEach(function (tile) {
+              const row = tile.row;
+              const score = Math.max(0, Math.min(100, Number(row.ai_directness_score || 0)));
+              const share = Math.max(0, Math.min(1, Number(rowShare(row) || 0)));
+              const x = chart.left + tile.placed.col * chart.tileSize;
+              const y = chart.top + tile.placed.row * chart.tileSize;
+              const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+              rect.setAttribute('x', x.toFixed(1));
+              rect.setAttribute('y', y.toFixed(1));
+              rect.setAttribute('width', String(chart.tileSize));
+              rect.setAttribute('height', String(chart.tileSize));
+              rect.setAttribute('rx', '2');
+              rect.setAttribute('tabindex', '0');
+              rect.setAttribute('role', 'button');
+              rect.setAttribute('class', (row.funding_level === 'UFR' ? 'tile-ufr' : 'tile-baseline') + (row.id === selectedId ? ' tile-selected' : ''));
+              rect.setAttribute('opacity', '0.82');
+              rect.dataset.projectId = row.id || '';
+              rect.dataset.targetCol = String(tile.target.col);
+              rect.dataset.targetRow = String(tile.target.row);
+              rect.dataset.placedCol = String(tile.placed.col);
+              rect.dataset.placedRow = String(tile.placed.row);
+              const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+              title.textContent = row.wbs_name + ': ' + money(row.five_year_total) + ', ' + percent(share) + ' of office ' + mode + ', true AI score ' + score;
+              rect.appendChild(title);
+              rect.addEventListener('click', function () {
+                selectedId = row.id || '';
+                setDetail(row);
+                render();
+              });
+              rect.addEventListener('focus', function () {
+                selectedId = row.id || '';
+                setDetail(row);
+                render();
+              });
+              layer.appendChild(rect);
+            });
+          }
+          modeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+              mode = button.dataset.disruptivenessMode || 'ALL';
+              modeButtons.forEach(function (item) { item.classList.toggle('active', item === button); });
+              render();
+            });
+          });
+          officeFilter.addEventListener('change', render);
+          challengeFilter.addEventListener('change', render);
+          if (rows.length) setDetail(rows[0]);
+          render();
+        })();
+      </script>
+    """
 
 
 def _mission_funding_mix_html(challenge_summary: pd.DataFrame) -> str:

@@ -28,6 +28,8 @@ def test_path_constants_resolve_to_project_structure() -> None:
     assert paths.WBS_CHALLENGE_SUMMARY_PATH.name == "wbs_challenge_summary.csv"
     assert paths.OPENAI_CLASSIFICATION_AUDIT_PATH.name == "openai_classification_audit.jsonl"
     assert paths.ASKSAGE_CLASSIFICATION_AUDIT_PATH.name == "asksage_classification_audit.jsonl"
+    assert paths.OPENAI_AI_DIRECTNESS_AUDIT_PATH.name == "openai_ai_directness_audit.jsonl"
+    assert paths.ASKSAGE_AI_DIRECTNESS_AUDIT_PATH.name == "asksage_ai_directness_audit.jsonl"
 
 
 def test_raw_csv_files_are_loadable() -> None:

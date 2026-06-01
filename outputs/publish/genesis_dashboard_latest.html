@@ -67,6 +67,86 @@
       margin: 12px 0 24px;
       overflow-x: auto;
     }
+    .tool-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+    .tool-control {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .tool-control label {
+      font-weight: 650;
+      color: #102a43;
+    }
+    .tool-control select {
+      min-width: 210px;
+      border: 1px solid #bcccdc;
+      border-radius: 6px;
+      padding: 6px 8px;
+      background: #fff;
+      color: #102a43;
+    }
+    .segmented {
+      display: inline-flex;
+      border: 1px solid #bcccdc;
+      border-radius: 7px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .segmented button {
+      border: 0;
+      border-right: 1px solid #bcccdc;
+      border-radius: 0;
+      padding: 7px 10px;
+      font-weight: 650;
+    }
+    .segmented button:last-child { border-right: 0; }
+    .segmented button.active {
+      background: #102a43;
+      color: #fff;
+    }
+    .disruptiveness-layout {
+      display: grid;
+      grid-template-columns: minmax(760px, 1fr) minmax(250px, 320px);
+      gap: 14px;
+      align-items: stretch;
+    }
+    .disruptiveness-svg {
+      width: 100%;
+      min-width: 760px;
+      height: auto;
+      display: block;
+      background: #fff;
+    }
+    .detail-panel {
+      border-left: 3px solid #627d98;
+      background: var(--soft);
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.38;
+    }
+    .detail-panel h3 { margin: 0 0 8px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 5px 8px;
+    }
+    .detail-grid .label {
+      color: var(--muted);
+      font-weight: 650;
+    }
+    .tile-baseline { fill: var(--baseline); }
+    .tile-ufr { fill: var(--ufr); }
+    .tile-selected {
+      stroke: #102a43;
+      stroke-width: 2.5;
+    }
     .data-table {
       border-collapse: collapse;
       width: 100%;
@@ -241,6 +321,7 @@
     @media (max-width: 760px) {
       .page { padding: 20px 14px 34px; }
       .portfolio-row { grid-template-columns: 1fr; }
+      .disruptiveness-layout { grid-template-columns: 1fr; }
       .data-table { font-size: 12px; }
     }
   </style>
@@ -248,7 +329,7 @@
 <body>
 <div class="page">
   <h1>Genesis Mission Funding and Collaboration Dashboard</h1>
-  <p class="meta">Generated from Programming Ontology data snapshot on 2026-05-28 10:35. Executive views use BASELINE and UFR rows only.</p>
+  <p class="meta">Generated from Programming Ontology data snapshot on 2026-06-01 08:40. Executive views use BASELINE and UFR rows only.</p>
 
   <section>
     <h2>Executive Mission Funding Snapshot</h2>
@@ -289,9 +370,258 @@
   </section>
 
   <section>
-    <h2>Office Pair Collaboration Opportunities</h2>
-    <p class="section-note">Ranked pairs show offices already funding the same challenge areas and therefore likely candidates for joint execution planning.</p>
-    <div class="viz-block"><table class="data-table"><thead><tr><th>Office Pair</th><th>Shared Challenges</th><th>Mission Areas</th><th>Relative Combined Funding</th><th>Combined Funding</th></tr></thead><tbody><tr data-office-a="NA20" data-office-b="NA80" data-shared-challenge-count="5"><td><strong>NA20 + NA80</strong></td><td class="num">5</td><td>(CUI) Preventing AI-Induced Nuclear Proliferation; Accelerating Nuclear Threat Assessment, Preparedness, and Response; Increasing Experimental Capacity at Nuclear Research Facilities; Safeguarding Nuclear Materials from Proliferation Threats; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td><div class="bar-wrap"><div class="bar-fill" style="width:31.8%; background:#627d98"></div></div></td><td class="num">$827.0M</td></tr><tr data-office-a="NA11" data-office-b="NAIM" data-shared-challenge-count="4"><td><strong>NA11 + NAIM</strong></td><td class="num">4</td><td>Accelerating Business and Management Processes for National Security Missions; Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100.0%; background:#627d98"></div></div></td><td class="num">$2.60B</td></tr><tr data-office-a="NA11" data-office-b="NA12" data-shared-challenge-count="4"><td><strong>NA11 + NA12</strong></td><td class="num">4</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:80.7%; background:#627d98"></div></div></td><td class="num">$2.10B</td></tr><tr data-office-a="NA20" data-office-b="NAIM" data-shared-challenge-count="4"><td><strong>NA20 + NAIM</strong></td><td class="num">4</td><td>Accelerating Nuclear Enterprise Acquisition; Increasing Experimental Capacity at Nuclear Research Facilities; Safeguarding Nuclear Materials from Proliferation Threats; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:59.3%; background:#627d98"></div></div></td><td class="num">$1.54B</td></tr><tr data-office-a="NA11" data-office-b="NA90" data-shared-challenge-count="3"><td><strong>NA11 + NA90</strong></td><td class="num">3</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:77.4%; background:#627d98"></div></div></td><td class="num">$2.01B</td></tr><tr data-office-a="NA11" data-office-b="NA20" data-shared-challenge-count="3"><td><strong>NA11 + NA20</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:54.1%; background:#627d98"></div></div></td><td class="num">$1.41B</td></tr><tr data-office-a="NA11" data-office-b="NA19" data-shared-challenge-count="3"><td><strong>NA11 + NA19</strong></td><td class="num">3</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:37.5%; background:#627d98"></div></div></td><td class="num">$973.0M</td></tr><tr data-office-a="NA12" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NA12 + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:62.8%; background:#627d98"></div></div></td><td class="num">$1.63B</td></tr><tr data-office-a="NA90" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NA90 + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:58.2%; background:#627d98"></div></div></td><td class="num">$1.51B</td></tr><tr data-office-a="NA11" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA11 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:54.0%; background:#627d98"></div></div></td><td class="num">$1.40B</td></tr><tr data-office-a="NAESH" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NAESH + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:47.2%; background:#627d98"></div></div></td><td class="num">$1.23B</td></tr><tr data-office-a="NA11" data-office-b="NA80" data-shared-challenge-count="2"><td><strong>NA11 + NA80</strong></td><td class="num">2</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:37.0%; background:#627d98"></div></div></td><td class="num">$959.9M</td></tr><tr data-office-a="NA12" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA12 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:21.6%; background:#627d98"></div></div></td><td class="num">$561.5M</td></tr><tr data-office-a="NA12" data-office-b="NA20" data-shared-challenge-count="2"><td><strong>NA12 + NA20</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20.1%; background:#627d98"></div></div></td><td class="num">$520.9M</td></tr><tr data-office-a="NA90" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA90 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:17.0%; background:#627d98"></div></div></td><td class="num">$441.3M</td></tr><tr data-office-a="NA20" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA20 + NA90</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15.4%; background:#627d98"></div></div></td><td class="num">$400.7M</td></tr><tr data-office-a="NA20" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA20 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$115.6M</td></tr><tr data-office-a="NA70" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA70 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42.9%; background:#627d98"></div></div></td><td class="num">$1.11B</td></tr><tr data-office-a="NA19" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA19 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42.5%; background:#627d98"></div></div></td><td class="num">$1.10B</td></tr><tr data-office-a="NA12" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA12 + NA90</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:32.6%; background:#627d98"></div></div></td><td class="num">$846.6M</td></tr><tr data-office-a="NA12" data-office-b="NA80" data-shared-challenge-count="1"><td><strong>NA12 + NA80</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18.6%; background:#627d98"></div></div></td><td class="num">$483.4M</td></tr><tr data-office-a="NA11" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA11 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:16.1%; background:#627d98"></div></div></td><td class="num">$418.8M</td></tr><tr data-office-a="NA80" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA80 + NA90</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14.0%; background:#627d98"></div></div></td><td class="num">$363.2M</td></tr><tr data-office-a="NA11" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA11 + NA30</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9.6%; background:#627d98"></div></div></td><td class="num">$249.5M</td></tr><tr data-office-a="NA70" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA70 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$85.0M</td></tr><tr data-office-a="NA19" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA19 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$75.0M</td></tr><tr data-office-a="NA-MB" data-office-b="NA11" data-shared-challenge-count="1"><td><strong>NA-MB + NA11</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$64.5M</td></tr><tr data-office-a="NA80" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA80 + NAIM</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$45.0M</td></tr><tr data-office-a="NA20" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA20 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$27.5M</td></tr><tr data-office-a="NA20" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA20 + NA30</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$24.2M</td></tr><tr data-office-a="NA30" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA30 + NAIM</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$18.7M</td></tr><tr data-office-a="NA19" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA19 + NA20</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.5M</td></tr><tr data-office-a="NA-PAS" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA-PAS + NA30</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$16.2M</td></tr><tr data-office-a="NA-MB" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-MB + NAIM</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$15.1M</td></tr><tr data-office-a="NA12" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA12 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA19" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA19 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA70" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA70 + NA90</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA-PAS" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA-PAS + NA20</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$8.0M</td></tr><tr data-office-a="NA12" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA12 + NA30</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA19" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA19 + NA30</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA19" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA19 + NA90</strong></td><td class="num">1</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$3.4M</td></tr><tr data-office-a="NA80" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA80 + NAESH</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$3.1M</td></tr><tr data-office-a="NA-PAS" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-PAS + NAIM</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$2.5M</td></tr></tbody></table></div>
+    <h2>Project Funding Disruptiveness</h2>
+    <p class="section-note">Each square is one programming row. Higher tiles capture a larger share of the selected funding mode for their office; farther-right tiles are more directly AI/ML work. High-share, low-AI rows are the most disruptive candidates to tax or rescope.</p>
+    
+    <div class="viz-block disruptiveness-tool" data-disruptiveness-row-count="54" data-tile-layout="packed-grid" data-x-axis="ai-directness-reversed">
+      <div class="tool-controls">
+        <div class="tool-control">
+          <label>Funding Mode</label>
+          <div class="segmented" role="group" aria-label="Funding mode">
+            <button type="button" class="active" data-disruptiveness-mode="ALL">ALL FUNDS</button>
+            <button type="button" data-disruptiveness-mode="BASELINE">BASELINE</button>
+            <button type="button" data-disruptiveness-mode="UFR">UFR</button>
+          </div>
+        </div>
+        <div class="tool-control">
+          <label for="disruptiveness-office-filter">Program Office</label>
+          <select id="disruptiveness-office-filter">
+            <option value="">All offices</option>
+            <option value="NA11">NA11</option><option value="NA12">NA12</option><option value="NA20">NA20</option><option value="NA30">NA30</option><option value="NA70">NA70</option><option value="NA80">NA80</option><option value="NA90">NA90</option><option value="NAESH">NAESH</option><option value="NAIM">NAIM</option>
+          </select>
+        </div>
+        <div class="tool-control">
+          <label for="disruptiveness-challenge-filter">Genesis Mission Challenge</label>
+          <select id="disruptiveness-challenge-filter">
+            <option value="">All challenges</option>
+            <option value="(CUI) Preventing AI-Induced Nuclear Proliferation">(CUI) Preventing AI-Induced Nuclear Proliferation</option><option value="Accelerating Business and Management Processes for National Security Missions">Accelerating Business and Management Processes for National Security Missions</option><option value="Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence">Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</option><option value="Accelerating Nuclear Enterprise Acquisition">Accelerating Nuclear Enterprise Acquisition</option><option value="Accelerating Nuclear Threat Assessment, Preparedness, and Response">Accelerating Nuclear Threat Assessment, Preparedness, and Response</option><option value="Harnessing America’s Historic Nuclear Data and Research">Harnessing America’s Historic Nuclear Data and Research</option><option value="Increasing Experimental Capacity at Nuclear Research Facilities">Increasing Experimental Capacity at Nuclear Research Facilities</option><option value="Integrating Design and Production Operations for Nuclear Deterrence">Integrating Design and Production Operations for Nuclear Deterrence</option><option value="Safeguarding Nuclear Materials from Proliferation Threats">Safeguarding Nuclear Materials from Proliferation Threats</option><option value="Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise">Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</option><option value="Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures">Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</option>
+          </select>
+        </div>
+      </div>
+      <div class="legend">
+        <span><span class="legend-swatch" style="background:var(--baseline)"></span>BASELINE tile</span>
+        <span><span class="legend-swatch" style="background:var(--ufr)"></span>UFR tile</span>
+        <span id="disruptiveness-count">54 visible projects</span>
+      </div>
+      <div class="disruptiveness-layout">
+        <svg id="disruptiveness-svg" class="disruptiveness-svg" viewBox="0 0 1040 570" role="img" aria-label="Packed tilemap of project funding disruptiveness">
+          <rect x="78" y="36" width="896" height="448" fill="#ffffff" stroke="#d9e2ec"></rect>
+          <g stroke="#edf2f7" stroke-width="1">
+            <line x1="78" y1="372" x2="974" y2="372"></line>
+            <line x1="78" y1="260" x2="974" y2="260"></line>
+            <line x1="78" y1="148" x2="974" y2="148"></line>
+            <line x1="302" y1="36" x2="302" y2="484"></line>
+            <line x1="526" y1="36" x2="526" y2="484"></line>
+            <line x1="750" y1="36" x2="750" y2="484"></line>
+          </g>
+          <g fill="#52606d" font-size="12">
+            <text x="72" y="488" text-anchor="end">0%</text>
+            <text x="72" y="376" text-anchor="end">25%</text>
+            <text x="72" y="264" text-anchor="end">50%</text>
+            <text x="72" y="152" text-anchor="end">75%</text>
+            <text x="72" y="40" text-anchor="end">100%</text>
+            <text x="78" y="510" text-anchor="middle">100</text>
+            <text x="302" y="510" text-anchor="middle">75</text>
+            <text x="526" y="510" text-anchor="middle">50</text>
+            <text x="750" y="510" text-anchor="middle">25</text>
+            <text x="974" y="510" text-anchor="middle">0</text>
+            <text x="526" y="544" text-anchor="middle">AI-directness score (more directly AI to the left)</text>
+            <text x="18" y="256" transform="rotate(-90 18 256)" text-anchor="middle">Share of office funding in selected mode</text>
+          </g>
+          <g fill="#102a43" font-size="12" font-weight="650">
+            <text x="604" y="58">Highest disruption risk: large office share, weak AI fit</text>
+            <text x="98" y="466">Lower disruption: small share, direct AI/ML fit</text>
+          </g>
+          <g id="disruptiveness-tiles"></g>
+        </svg>
+        <aside class="detail-panel" aria-live="polite">
+          <h3 id="disruptiveness-detail-title">Select a project tile</h3>
+          <div class="detail-grid">
+            <span class="label">Office</span><span id="disruptiveness-detail-office">-</span>
+            <span class="label">Funding</span><span id="disruptiveness-detail-funding">-</span>
+            <span class="label">Amount</span><span id="disruptiveness-detail-amount">-</span>
+            <span class="label">Office share</span><span id="disruptiveness-detail-share">-</span>
+            <span class="label">AI score</span><span id="disruptiveness-detail-score">-</span>
+            <span class="label">AI label</span><span id="disruptiveness-detail-label">-</span>
+            <span class="label">Challenge</span><span id="disruptiveness-detail-challenge">-</span>
+            <span class="label">Source</span><span id="disruptiveness-detail-source">-</span>
+          </div>
+          <p class="muted" id="disruptiveness-detail-rationale">Use the filters to isolate an office, challenge, or funding mode.</p>
+        </aside>
+      </div>
+      <script type="application/json" id="disruptiveness-data">{"rows": [{"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=13, data=0, readiness=0.", "ai_directness_score": 50, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 216804000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:2", "office": "NA11", "office_share_all": 0.10854235171904265, "office_share_baseline": 0.2450917880695455, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "2", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=6, data=0, readiness=0.", "ai_directness_score": 44, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 192000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:1", "office": "NA11", "office_share_all": 0.09612429443209622, "office_share_baseline": 0.21705145342960802, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "1", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 52, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 110903334.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:6", "office": "NA11", "office_share_all": 0.05552346214019327, "office_share_baseline": 0.12537359289004826, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "6", "wbs_name": "Dynamic Materials Properties"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms, data foundation terms, general digital/infrastructure terms; component scores direct=5, infrastructure=0, data=5, readiness=0.", "ai_directness_score": 46, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 77548915.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:19", "office": "NA11", "office_share_all": 0.03882466009557085, "office_share_baseline": 0.08766721204499547, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "19", "wbs_name": "Archiving & Support"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=16, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 44, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 76113000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:26", "office": "NA11", "office_share_all": 0.03810577303182364, "office_share_baseline": 0.0860439441400404, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "26", "wbs_name": "HED & Ignition Science for Stockpile Applications (formerly Ignition)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=13, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 39, "challenge": "Harnessing America’s Historic Nuclear Data and Research", "five_year_total": 44130500.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:15", "office": "NA11", "office_share_all": 0.022093818622060533, "office_share_baseline": 0.049888485237371445, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "15", "wbs_name": "Secondary Assessment Technologies"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms, data foundation terms; component scores direct=24, infrastructure=0, data=7, readiness=0.", "ai_directness_score": 65, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 36412500.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:14", "office": "NA11", "office_share_all": 0.018229822244836998, "office_share_baseline": 0.04116346900002918, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "14", "wbs_name": "Primary Assessment Technologies"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 60, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 29440823.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:18", "office": "NA11", "office_share_all": 0.01473947051237099, "office_share_baseline": 0.03328215324121788, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "18", "wbs_name": "Aging & Lifetimes (formerly Enhanced Surveillance)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms, generic short AI scope; component scores direct=16, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 55, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 24666363.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:17", "office": "NA11", "office_share_all": 0.012349149685317522, "office_share_baseline": 0.0278847392706891, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "17", "wbs_name": "Aging & Lifetimes (formerly Enhanced Surveillance)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=12, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 38, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 22175000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:22", "office": "NA11", "office_share_all": 0.01110185535954028, "office_share_baseline": 0.025068312394799782, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "22", "wbs_name": "Delivery Environments (formerly WSEAT)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 39, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 19451000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:24", "office": "NA11", "office_share_all": 0.009738091932284915, "office_share_baseline": 0.021988894899267218, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "24", "wbs_name": "Facility Operations (formerly also Target Production)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms, general digital/infrastructure terms; component scores direct=13, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 48, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 13900000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:23", "office": "NA11", "office_share_all": 0.006958998398990299, "office_share_baseline": 0.015713620847247665, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "23", "wbs_name": "Delivery Environments (formerly WSEAT)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=6, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 31, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 11537446.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:32", "office": "NA11", "office_share_all": 0.0057761919598875566, "office_share_baseline": 0.013042809495654258, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "32", "wbs_name": "Advanced Manufacturing Development"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms, general digital/infrastructure terms, generic short AI scope; component scores direct=28, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 62, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 5750000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:31", "office": "NA11", "office_share_all": 0.0028787223592945483, "office_share_baseline": 0.006500238839688782, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "31", "wbs_name": "Advanced Manufacturing Development"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, readiness/governance terms, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=9.", "ai_directness_score": 59, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 2000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:28", "office": "NA11", "office_share_all": 0.001001294733667669, "office_share_baseline": 0.0022609526398917504, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "28", "wbs_name": "ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 54, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 1750000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:30", "office": "NA11", "office_share_all": 0.0008761328919592103, "office_share_baseline": 0.0019783335599052815, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "30", "wbs_name": "Advanced Certification & Qualification (formerly Advanced Certification)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms; component scores direct=103, infrastructure=58, data=0, readiness=0.", "ai_directness_score": 98, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 346644000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:3", "office": "NA11", "office_share_all": 0.17354640582874772, "office_share_baseline": 0.0, "office_share_ufr": 0.3114974331232685, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "3", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms; component scores direct=108, infrastructure=65, data=0, readiness=0.", "ai_directness_score": 98, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 338521000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:5", "office": "NA11", "office_share_all": 0.16947964726795647, "office_share_baseline": 0.0, "office_share_ufr": 0.3041980318664739, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "5", "wbs_name": "Computational Systems & Software Environment"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, data foundation terms; component scores direct=10, infrastructure=0, data=40, readiness=0.", "ai_directness_score": 67, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 153848000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:21", "office": "NA11", "office_share_all": 0.07702359609265176, "office_share_baseline": 0.0, "office_share_ufr": 0.1382492040570401, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "21", "wbs_name": "Archiving & Support"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms; component scores direct=103, infrastructure=65, data=0, readiness=0.", "ai_directness_score": 98, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 119159000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:4", "office": "NA11", "office_share_all": 0.05965663958455288, "office_share_baseline": 0.0, "office_share_ufr": 0.10707735496225393, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "4", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 45, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 56442000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:16", "office": "NA11", "office_share_all": 0.028257538678835285, "office_share_baseline": 0.0, "office_share_ufr": 0.05071929160851917, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "16", "wbs_name": "Secondary Assessment Technologies"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 52, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 33690000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:25", "office": "NA11", "office_share_all": 0.016866809788631882, "office_share_baseline": 0.0, "office_share_ufr": 0.030274138660767, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "25", "wbs_name": "Facility Operations (formerly also Target Production)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 46, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 30000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:13", "office": "NA11", "office_share_all": 0.015019421005015035, "office_share_baseline": 0.0, "office_share_ufr": 0.026958271291867317, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "13", "wbs_name": "Hydrodynamic & Subcritical Execution Support (formerly RDC&S)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 44, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 20400000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:27", "office": "NA11", "office_share_all": 0.010213206283410223, "office_share_baseline": 0.0, "office_share_ufr": 0.018331624478469775, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "27", "wbs_name": "HED & Ignition Science for Stockpile Applications (formerly Ignition)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 47, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 9127000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:12", "office": "NA11", "office_share_all": 0.004569408517092408, "office_share_baseline": 0.0, "office_share_ufr": 0.0082016047360291, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "12", "wbs_name": "Dynamic Materials Properties"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 50, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 5000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:29", "office": "NA11", "office_share_all": 0.0025032368341691724, "office_share_baseline": 0.0, "office_share_ufr": 0.00449304521531122, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "29", "wbs_name": "ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 50, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 318269000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:33", "office": "NA12", "office_share_all": 0.6584185657779322, "office_share_baseline": 0.0, "office_share_ufr": 0.6584185657779322, "office_total_all": 483384000.0, "office_total_baseline": 0.0, "office_total_ufr": 483384000.0, "source_file": "programming_data.csv", "source_row_number": "33", "wbs_name": "Multi-Weapon Systems (formerly MTP)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 50, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 165115000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:34", "office": "NA12", "office_share_all": 0.34158143422206777, "office_share_baseline": 0.0, "office_share_ufr": 0.34158143422206777, "office_total_all": 483384000.0, "office_total_baseline": 0.0, "office_total_ufr": 483384000.0, "source_file": "programming_data.csv", "source_row_number": "34", "wbs_name": "Multi-Weapon Systems (formerly MTP)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 55, "challenge": "(CUI) Preventing AI-Induced Nuclear Proliferation", "five_year_total": 165000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:36", "office": "NA20", "office_share_all": 0.23487544483985764, "office_share_baseline": 0.9041095890410958, "office_share_ufr": 0.0, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "36", "wbs_name": "PD"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=6, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 39, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 17500000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:38", "office": "NA20", "office_share_all": 0.02491103202846975, "office_share_baseline": 0.0958904109589041, "office_share_ufr": 0.0, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "38", "wbs_name": "Civil Nuclear Cooperation & Engagement"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms, data foundation terms, general digital/infrastructure terms; component scores direct=66, infrastructure=0, data=10, readiness=0.", "ai_directness_score": 88, "challenge": "Safeguarding Nuclear Materials from Proliferation Threats", "five_year_total": 342000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:37", "office": "NA20", "office_share_all": 0.48683274021352313, "office_share_baseline": 0.0, "office_share_ufr": 0.6576923076923077, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "37", "wbs_name": "PD"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 32, "challenge": "Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures", "five_year_total": 150000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:35", "office": "NA20", "office_share_all": 0.21352313167259787, "office_share_baseline": 0.0, "office_share_ufr": 0.28846153846153844, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "35", "wbs_name": "FRD"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 33, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 20000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:39", "office": "NA20", "office_share_all": 0.028469750889679714, "office_share_baseline": 0.0, "office_share_ufr": 0.038461538461538464, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "39", "wbs_name": "Civil Nuclear Cooperation & Engagement"}, {"ai_directness_confidence": "medium", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 29, "challenge": "Accelerating Nuclear Enterprise Acquisition", "five_year_total": 8000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:40", "office": "NA20", "office_share_all": 0.011387900355871887, "office_share_baseline": 0.0, "office_share_ufr": 0.015384615384615385, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "40", "wbs_name": "Export Control"}, {"ai_directness_confidence": "medium", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 26, "challenge": "Accelerating Nuclear Enterprise Acquisition", "five_year_total": 16200000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:41", "office": "NA30", "office_share_all": 0.7465437788018433, "office_share_baseline": 0.7465437788018433, "office_share_ufr": 0.0, "office_total_all": 21700000.0, "office_total_baseline": 21700000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "41", "wbs_name": "Reactor Systems & Component Technology"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 44, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 5500000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:42", "office": "NA30", "office_share_all": 0.2534562211981567, "office_share_baseline": 0.2534562211981567, "office_share_ufr": 0.0, "office_total_all": 21700000.0, "office_total_baseline": 21700000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "42", "wbs_name": "Laboratory Facility Regulation, Compliance, & Protection"}, {"ai_directness_confidence": "medium", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 28, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 10000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:43", "office": "NA70", "office_share_all": 1.0, "office_share_baseline": 1.0, "office_share_ufr": 0.0, "office_total_all": 10000000.0, "office_total_baseline": 10000000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "43", "wbs_name": "Security Program Operations & Planning"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms; component scores direct=32, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 83, "challenge": "Accelerating Nuclear Threat Assessment, Preparedness, and Response", "five_year_total": 87500000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:47", "office": "NA80", "office_share_all": 0.5833333333333334, "office_share_baseline": 0.0, "office_share_ufr": 0.5833333333333334, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "47", "wbs_name": "Nuclear Incident Response (NA-84)"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms; component scores direct=32, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 89, "challenge": "(CUI) Preventing AI-Induced Nuclear Proliferation", "five_year_total": 40000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:45", "office": "NA80", "office_share_all": 0.26666666666666666, "office_share_baseline": 0.0, "office_share_ufr": 0.26666666666666666, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "45", "wbs_name": "Nuclear Threat Science (NA-82)"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms; component scores direct=32, infrastructure=0, data=0, readiness=0.", "ai_directness_score": 89, "challenge": "Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures", "five_year_total": 17500000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:46", "office": "NA80", "office_share_all": 0.11666666666666667, "office_share_baseline": 0.0, "office_share_ufr": 0.11666666666666667, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "46", "wbs_name": "National Technical Nuclear Forensics (NA-83)"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, readiness/governance terms; component scores direct=32, infrastructure=0, data=0, readiness=5.", "ai_directness_score": 87, "challenge": "Accelerating Nuclear Threat Assessment, Preparedness, and Response", "five_year_total": 5000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:44", "office": "NA80", "office_share_all": 0.03333333333333333, "office_share_baseline": 0.0, "office_share_ufr": 0.03333333333333333, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "44", "wbs_name": "Nuclear Incident Preparedness and Collaboration (NA-81)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=30, data=0, readiness=0.", "ai_directness_score": 62, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 183700000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:50", "office": "NA90", "office_share_all": 0.5010268732595657, "office_share_baseline": 0.6022417687614539, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "50", "wbs_name": "32-D-XXX New Central Computing Facility, Y-12"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms; component scores direct=0, infrastructure=20, data=0, readiness=0.", "ai_directness_score": 54, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 115104000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:49", "office": "NA90", "office_share_all": 0.3139368384304249, "office_share_baseline": 0.37735675858202716, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "49", "wbs_name": "LANL - 23-D-517 Electrical Power Capacity Upgrade"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=20, data=0, readiness=0.", "ai_directness_score": 51, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 3399000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:53", "office": "NA90", "office_share_all": 0.009270497235760827, "office_share_baseline": 0.011143275841155046, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "53", "wbs_name": "Other Project Costs"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=14, data=0, readiness=0.", "ai_directness_score": 59, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 2824000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:52", "office": "NA90", "office_share_all": 0.00770223130149708, "office_share_baseline": 0.009258196815363886, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "52", "wbs_name": "Other Project Costs"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms; component scores direct=0, infrastructure=14, data=0, readiness=0.", "ai_directness_score": 40, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 46400000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:48", "office": "NA90", "office_share_all": 0.12655224234754409, "office_share_baseline": 0.0, "office_share_ufr": 0.7530022719896138, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "48", "wbs_name": "Maintenance at Working Facilities"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=14, data=0, readiness=0.", "ai_directness_score": 59, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 15220000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:51", "office": "NA90", "office_share_all": 0.041511317425207354, "office_share_baseline": 0.0, "office_share_ufr": 0.24699772801038625, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "51", "wbs_name": "Operations of Facilties"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms, data foundation terms, general digital/infrastructure terms; component scores direct=5, infrastructure=14, data=7, readiness=0.", "ai_directness_score": 73, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 75000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:55", "office": "NAESH", "office_share_all": 0.9603072983354674, "office_share_baseline": 0.9603072983354674, "office_share_ufr": 0.0, "office_total_all": 78100000.0, "office_total_baseline": 78100000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "55", "wbs_name": "Safety Analytics, Forecasting, Evaluation and Reporting (SAFER)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=14, data=0, readiness=0.", "ai_directness_score": 50, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 3100000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:54", "office": "NAESH", "office_share_all": 0.03969270166453265, "office_share_baseline": 0.03969270166453265, "office_share_ufr": 0.0, "office_total_all": 78100000.0, "office_total_baseline": 78100000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "54", "wbs_name": "Site-Wide Environmental Impact Statement (SWEIS)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, AI work-product terms, compute/infrastructure terms, general digital/infrastructure terms, generic short AI scope; component scores direct=11, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 59, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 467378982.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:57", "office": "NAIM", "office_share_all": 0.400615529813495, "office_share_baseline": 0.963613998029496, "office_share_ufr": 0.0, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "57", "wbs_name": "Enterprise Operations"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 60, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 15148200.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:59", "office": "NAIM", "office_share_all": 0.012984332634625801, "office_share_baseline": 0.031231651672668524, "office_share_ufr": 0.0, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "59", "wbs_name": "Artificial Intelligence - Program Work"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=7, data=0, readiness=0.", "ai_directness_score": 55, "challenge": "Accelerating Nuclear Enterprise Acquisition", "five_year_total": 2500000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:58", "office": "NAIM", "office_share_all": 0.002142883747677249, "office_share_baseline": 0.005154350297835473, "office_share_ufr": 0.0, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "58", "wbs_name": "Mission Contract Tasks"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms, data foundation terms, readiness/governance terms, general digital/infrastructure terms; component scores direct=29, infrastructure=20, data=9, readiness=43.", "ai_directness_score": 86, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 636625000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:61", "office": "NAIM", "office_share_all": 0.5456853463460115, "office_share_baseline": 0.0, "office_share_ufr": 0.933981294700165, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "61", "wbs_name": "Artificial Intelligence - Program Work"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=13, data=0, readiness=0.", "ai_directness_score": 59, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 45000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:60", "office": "NAIM", "office_share_all": 0.03857190745819048, "office_share_baseline": 0.0, "office_share_ufr": 0.06601870529983496, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "60", "wbs_name": "Artificial Intelligence - Program Work"}]}</script>
+      
+      <script>
+        (function () {
+          const dataElement = document.getElementById('disruptiveness-data');
+          const payload = JSON.parse(dataElement.textContent || '{"rows": []}');
+          const rows = payload.rows || [];
+          const svg = document.getElementById('disruptiveness-svg');
+          const layer = document.getElementById('disruptiveness-tiles');
+          const count = document.getElementById('disruptiveness-count');
+          const officeFilter = document.getElementById('disruptiveness-office-filter');
+          const challengeFilter = document.getElementById('disruptiveness-challenge-filter');
+          const modeButtons = Array.from(document.querySelectorAll('[data-disruptiveness-mode]'));
+          const detail = {
+            title: document.getElementById('disruptiveness-detail-title'),
+            office: document.getElementById('disruptiveness-detail-office'),
+            funding: document.getElementById('disruptiveness-detail-funding'),
+            amount: document.getElementById('disruptiveness-detail-amount'),
+            share: document.getElementById('disruptiveness-detail-share'),
+            score: document.getElementById('disruptiveness-detail-score'),
+            label: document.getElementById('disruptiveness-detail-label'),
+            challenge: document.getElementById('disruptiveness-detail-challenge'),
+            source: document.getElementById('disruptiveness-detail-source'),
+            rationale: document.getElementById('disruptiveness-detail-rationale')
+          };
+          const chart = { left: 78, top: 36, cols: 32, rows: 16, tileSize: 28 };
+          let mode = 'ALL';
+          let selectedId = '';
+
+          function money(value) {
+            const number = Number(value || 0);
+            if (Math.abs(number) >= 1000000000) return '$' + (number / 1000000000).toFixed(2) + 'B';
+            if (Math.abs(number) >= 1000000) return '$' + (number / 1000000).toFixed(1) + 'M';
+            return '$' + Math.round(number).toLocaleString();
+          }
+          function percent(value) {
+            return (100 * Number(value || 0)).toFixed(1) + '%';
+          }
+          function labelText(value) {
+            return String(value || '').replaceAll('_', ' ');
+          }
+          function rowShare(row) {
+            if (mode === 'BASELINE') return row.office_share_baseline || 0;
+            if (mode === 'UFR') return row.office_share_ufr || 0;
+            return row.office_share_all || 0;
+          }
+          function rowVisible(row) {
+            if (mode !== 'ALL' && row.funding_level !== mode) return false;
+            if (officeFilter.value && row.office !== officeFilter.value) return false;
+            if (challengeFilter.value && row.challenge !== challengeFilter.value) return false;
+            return true;
+          }
+          function targetCell(row) {
+            const score = Math.max(0, Math.min(100, Number(row.ai_directness_score || 0)));
+            const share = Math.max(0, Math.min(1, Number(rowShare(row) || 0)));
+            return {
+              col: Math.round(((100 - score) / 100) * (chart.cols - 1)),
+              row: Math.round((1 - share) * (chart.rows - 1))
+            };
+          }
+          function nearestOpenCell(target, occupied) {
+            let best = null;
+            let bestDistance = Infinity;
+            for (let row = 0; row < chart.rows; row += 1) {
+              for (let col = 0; col < chart.cols; col += 1) {
+                const key = col + ',' + row;
+                if (occupied.has(key)) continue;
+                const distance = Math.pow(col - target.col, 2) + Math.pow(row - target.row, 2);
+                if (
+                  distance < bestDistance ||
+                  (distance === bestDistance && best && row < best.row) ||
+                  (distance === bestDistance && best && row === best.row && col > best.col)
+                ) {
+                  best = { col: col, row: row, key: key };
+                  bestDistance = distance;
+                }
+              }
+            }
+            return best || { col: target.col, row: target.row, key: target.col + ',' + target.row };
+          }
+          function packTiles(visible) {
+            const occupied = new Set();
+            return visible
+              .slice()
+              .sort(function (left, right) {
+                const leftShare = rowShare(left);
+                const rightShare = rowShare(right);
+                if (rightShare !== leftShare) return rightShare - leftShare;
+                if (left.ai_directness_score !== right.ai_directness_score) return left.ai_directness_score - right.ai_directness_score;
+                return Number(right.five_year_total || 0) - Number(left.five_year_total || 0);
+              })
+              .map(function (row) {
+                const target = targetCell(row);
+                const placed = nearestOpenCell(target, occupied);
+                occupied.add(placed.key);
+                return { row: row, target: target, placed: placed };
+              });
+          }
+          function setDetail(row) {
+            const share = rowShare(row);
+            detail.title.textContent = row.wbs_name || 'Unnamed WBS';
+            detail.office.textContent = row.office || '-';
+            detail.funding.textContent = row.funding_level || '-';
+            detail.amount.textContent = money(row.five_year_total);
+            detail.share.textContent = percent(share);
+            detail.score.textContent = String(row.ai_directness_score || 0);
+            detail.label.textContent = labelText(row.ai_directness_label);
+            detail.challenge.textContent = row.challenge || '-';
+            detail.source.textContent = (row.source_file || 'programming_data.csv') + ' row ' + (row.source_row_number || '-');
+            detail.rationale.textContent = row.ai_directness_rationale || 'No AI-directness rationale available.';
+          }
+          function render() {
+            layer.replaceChildren();
+            const visible = rows.filter(rowVisible);
+            const packed = packTiles(visible);
+            count.textContent = visible.length.toLocaleString() + ' visible project' + (visible.length === 1 ? '' : 's');
+            if (visible.length && !visible.some(function (row) { return row.id === selectedId; })) {
+              selectedId = visible[0].id || '';
+              setDetail(visible[0]);
+            }
+            packed.forEach(function (tile) {
+              const row = tile.row;
+              const score = Math.max(0, Math.min(100, Number(row.ai_directness_score || 0)));
+              const share = Math.max(0, Math.min(1, Number(rowShare(row) || 0)));
+              const x = chart.left + tile.placed.col * chart.tileSize;
+              const y = chart.top + tile.placed.row * chart.tileSize;
+              const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+              rect.setAttribute('x', x.toFixed(1));
+              rect.setAttribute('y', y.toFixed(1));
+              rect.setAttribute('width', String(chart.tileSize));
+              rect.setAttribute('height', String(chart.tileSize));
+              rect.setAttribute('rx', '2');
+              rect.setAttribute('tabindex', '0');
+              rect.setAttribute('role', 'button');
+              rect.setAttribute('class', (row.funding_level === 'UFR' ? 'tile-ufr' : 'tile-baseline') + (row.id === selectedId ? ' tile-selected' : ''));
+              rect.setAttribute('opacity', '0.82');
+              rect.dataset.projectId = row.id || '';
+              rect.dataset.targetCol = String(tile.target.col);
+              rect.dataset.targetRow = String(tile.target.row);
+              rect.dataset.placedCol = String(tile.placed.col);
+              rect.dataset.placedRow = String(tile.placed.row);
+              const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+              title.textContent = row.wbs_name + ': ' + money(row.five_year_total) + ', ' + percent(share) + ' of office ' + mode + ', true AI score ' + score;
+              rect.appendChild(title);
+              rect.addEventListener('click', function () {
+                selectedId = row.id || '';
+                setDetail(row);
+                render();
+              });
+              rect.addEventListener('focus', function () {
+                selectedId = row.id || '';
+                setDetail(row);
+                render();
+              });
+              layer.appendChild(rect);
+            });
+          }
+          modeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+              mode = button.dataset.disruptivenessMode || 'ALL';
+              modeButtons.forEach(function (item) { item.classList.toggle('active', item === button); });
+              render();
+            });
+          });
+          officeFilter.addEventListener('change', render);
+          challengeFilter.addEventListener('change', render);
+          if (rows.length) setDetail(rows[0]);
+          render();
+        })();
+      </script>
+    
+    </div>
+    
   </section>
 
   <section>
@@ -896,6 +1226,10 @@
 </table>
     </details>
     <details>
+      <summary>Office Pair Collaboration Opportunities</summary>
+      <div class="viz-block"><table class="data-table"><thead><tr><th>Office Pair</th><th>Shared Challenges</th><th>Mission Areas</th><th>Relative Combined Funding</th><th>Combined Funding</th></tr></thead><tbody><tr data-office-a="NA20" data-office-b="NA80" data-shared-challenge-count="5"><td><strong>NA20 + NA80</strong></td><td class="num">5</td><td>(CUI) Preventing AI-Induced Nuclear Proliferation; Accelerating Nuclear Threat Assessment, Preparedness, and Response; Increasing Experimental Capacity at Nuclear Research Facilities; Safeguarding Nuclear Materials from Proliferation Threats; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td><div class="bar-wrap"><div class="bar-fill" style="width:31.8%; background:#627d98"></div></div></td><td class="num">$827.0M</td></tr><tr data-office-a="NA11" data-office-b="NAIM" data-shared-challenge-count="4"><td><strong>NA11 + NAIM</strong></td><td class="num">4</td><td>Accelerating Business and Management Processes for National Security Missions; Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100.0%; background:#627d98"></div></div></td><td class="num">$2.60B</td></tr><tr data-office-a="NA11" data-office-b="NA12" data-shared-challenge-count="4"><td><strong>NA11 + NA12</strong></td><td class="num">4</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:80.7%; background:#627d98"></div></div></td><td class="num">$2.10B</td></tr><tr data-office-a="NA20" data-office-b="NAIM" data-shared-challenge-count="4"><td><strong>NA20 + NAIM</strong></td><td class="num">4</td><td>Accelerating Nuclear Enterprise Acquisition; Increasing Experimental Capacity at Nuclear Research Facilities; Safeguarding Nuclear Materials from Proliferation Threats; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:59.3%; background:#627d98"></div></div></td><td class="num">$1.54B</td></tr><tr data-office-a="NA11" data-office-b="NA90" data-shared-challenge-count="3"><td><strong>NA11 + NA90</strong></td><td class="num">3</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:77.4%; background:#627d98"></div></div></td><td class="num">$2.01B</td></tr><tr data-office-a="NA11" data-office-b="NA20" data-shared-challenge-count="3"><td><strong>NA11 + NA20</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:54.1%; background:#627d98"></div></div></td><td class="num">$1.41B</td></tr><tr data-office-a="NA11" data-office-b="NA19" data-shared-challenge-count="3"><td><strong>NA11 + NA19</strong></td><td class="num">3</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:37.5%; background:#627d98"></div></div></td><td class="num">$973.0M</td></tr><tr data-office-a="NA12" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NA12 + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:62.8%; background:#627d98"></div></div></td><td class="num">$1.63B</td></tr><tr data-office-a="NA90" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NA90 + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:58.2%; background:#627d98"></div></div></td><td class="num">$1.51B</td></tr><tr data-office-a="NA11" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA11 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:54.0%; background:#627d98"></div></div></td><td class="num">$1.40B</td></tr><tr data-office-a="NAESH" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NAESH + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:47.2%; background:#627d98"></div></div></td><td class="num">$1.23B</td></tr><tr data-office-a="NA11" data-office-b="NA80" data-shared-challenge-count="2"><td><strong>NA11 + NA80</strong></td><td class="num">2</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:37.0%; background:#627d98"></div></div></td><td class="num">$959.9M</td></tr><tr data-office-a="NA12" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA12 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:21.6%; background:#627d98"></div></div></td><td class="num">$561.5M</td></tr><tr data-office-a="NA12" data-office-b="NA20" data-shared-challenge-count="2"><td><strong>NA12 + NA20</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:20.1%; background:#627d98"></div></div></td><td class="num">$520.9M</td></tr><tr data-office-a="NA90" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA90 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:17.0%; background:#627d98"></div></div></td><td class="num">$441.3M</td></tr><tr data-office-a="NA20" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA20 + NA90</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15.4%; background:#627d98"></div></div></td><td class="num">$400.7M</td></tr><tr data-office-a="NA20" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA20 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$115.6M</td></tr><tr data-office-a="NA70" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA70 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42.9%; background:#627d98"></div></div></td><td class="num">$1.11B</td></tr><tr data-office-a="NA19" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA19 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:42.5%; background:#627d98"></div></div></td><td class="num">$1.10B</td></tr><tr data-office-a="NA12" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA12 + NA90</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:32.6%; background:#627d98"></div></div></td><td class="num">$846.6M</td></tr><tr data-office-a="NA12" data-office-b="NA80" data-shared-challenge-count="1"><td><strong>NA12 + NA80</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18.6%; background:#627d98"></div></div></td><td class="num">$483.4M</td></tr><tr data-office-a="NA11" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA11 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:16.1%; background:#627d98"></div></div></td><td class="num">$418.8M</td></tr><tr data-office-a="NA80" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA80 + NA90</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:14.0%; background:#627d98"></div></div></td><td class="num">$363.2M</td></tr><tr data-office-a="NA11" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA11 + NA30</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:9.6%; background:#627d98"></div></div></td><td class="num">$249.5M</td></tr><tr data-office-a="NA70" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA70 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$85.0M</td></tr><tr data-office-a="NA19" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA19 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$75.0M</td></tr><tr data-office-a="NA-MB" data-office-b="NA11" data-shared-challenge-count="1"><td><strong>NA-MB + NA11</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$64.5M</td></tr><tr data-office-a="NA80" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA80 + NAIM</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$45.0M</td></tr><tr data-office-a="NA20" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA20 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$27.5M</td></tr><tr data-office-a="NA20" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA20 + NA30</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$24.2M</td></tr><tr data-office-a="NA30" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA30 + NAIM</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$18.7M</td></tr><tr data-office-a="NA19" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA19 + NA20</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.5M</td></tr><tr data-office-a="NA-PAS" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA-PAS + NA30</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$16.2M</td></tr><tr data-office-a="NA-MB" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-MB + NAIM</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$15.1M</td></tr><tr data-office-a="NA12" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA12 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA19" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA19 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA70" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA70 + NA90</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA-PAS" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA-PAS + NA20</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$8.0M</td></tr><tr data-office-a="NA12" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA12 + NA30</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA19" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA19 + NA30</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA19" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA19 + NA90</strong></td><td class="num">1</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$3.4M</td></tr><tr data-office-a="NA80" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA80 + NAESH</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$3.1M</td></tr><tr data-office-a="NA-PAS" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-PAS + NAIM</strong></td><td class="num">1</td><td>Accelerating Nuclear Enterprise Acquisition</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$2.5M</td></tr></tbody></table></div>
+    </details>
+    <details>
       <summary>Reviewed Row-Level Classifications</summary>
       <table class="dataframe data-table">
   <thead>
@@ -909,6 +1243,10 @@
       <th>predicted_challenge</th>
       <th>confidence</th>
       <th>review_flag</th>
+      <th>ai_directness_score</th>
+      <th>ai_directness_label</th>
+      <th>ai_directness_confidence</th>
+      <th>ai_directness_rationale</th>
       <th>sme_review_decision</th>
       <th>sme_override_applied</th>
       <th>sme_notes</th>
@@ -929,6 +1267,10 @@
       <td>(CUI) Preventing AI-Induced Nuclear Proliferation</td>
       <td>high</td>
       <td>True</td>
+      <td>55</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -947,6 +1289,10 @@
       <td>(CUI) Preventing AI-Induced Nuclear Proliferation</td>
       <td>high</td>
       <td>False</td>
+      <td>89</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms; component scores direct=32, infrastructure=0, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -965,6 +1311,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>low</td>
       <td>False</td>
+      <td>47</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -983,6 +1333,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>low</td>
       <td>True</td>
+      <td>44</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1001,6 +1355,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>low</td>
       <td>True</td>
+      <td>46</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1019,6 +1377,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>low</td>
       <td>True</td>
+      <td>50</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1037,6 +1399,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>low</td>
       <td>False</td>
+      <td>60</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1055,6 +1421,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>54</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1073,6 +1443,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>62</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, general digital/infrastructure terms, generic short AI scope; component scores direct=28, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1091,6 +1465,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>31</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=6, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1109,6 +1487,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>True</td>
+      <td>55</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, generic short AI scope; component scores direct=16, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1127,6 +1509,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>True</td>
+      <td>60</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1145,6 +1531,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>46</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, data foundation terms, general digital/infrastructure terms; component scores direct=5, infrastructure=0, data=5, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1163,6 +1553,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>45</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, data foundation terms, readiness/governance terms; component scores direct=0, infrastructure=0, data=5, readiness=9.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1181,6 +1575,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>True</td>
+      <td>38</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=12, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1199,6 +1597,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>52</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1217,6 +1619,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>55</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, data foundation terms, generic short AI scope; component scores direct=13, infrastructure=0, data=7, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1235,6 +1641,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>26</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1253,6 +1663,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>32</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1271,6 +1685,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>50</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1289,6 +1707,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>65</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, data foundation terms; component scores direct=24, infrastructure=0, data=7, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1307,6 +1729,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>low</td>
       <td>True</td>
+      <td>51</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=20, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1325,6 +1751,10 @@
       <td>Accelerating Nuclear Enterprise Acquisition</td>
       <td>low</td>
       <td>True</td>
+      <td>29</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1343,6 +1773,10 @@
       <td>Accelerating Nuclear Enterprise Acquisition</td>
       <td>low</td>
       <td>True</td>
+      <td>26</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1361,6 +1795,10 @@
       <td>Accelerating Nuclear Enterprise Acquisition</td>
       <td>low</td>
       <td>True</td>
+      <td>55</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1379,6 +1817,10 @@
       <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
       <td>high</td>
       <td>False</td>
+      <td>87</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, readiness/governance terms; component scores direct=32, infrastructure=0, data=0, readiness=5.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1397,6 +1839,10 @@
       <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
       <td>high</td>
       <td>False</td>
+      <td>83</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms; component scores direct=32, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1415,6 +1861,10 @@
       <td>Harnessing America’s Historic Nuclear Data and Research</td>
       <td>medium</td>
       <td>False</td>
+      <td>39</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=13, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1433,6 +1883,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>98</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms; component scores direct=103, infrastructure=58, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1451,6 +1905,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>98</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms; component scores direct=103, infrastructure=65, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1469,6 +1927,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>98</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms; component scores direct=108, infrastructure=65, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1487,6 +1949,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>48</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, general digital/infrastructure terms; component scores direct=13, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1505,6 +1971,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>39</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1523,6 +1993,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>44</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=16, infrastructure=0, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1541,6 +2015,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>59</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, readiness/governance terms, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=9.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1559,6 +2037,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>50</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1577,6 +2059,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>50</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, general digital/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1595,6 +2081,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>33</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1613,6 +2103,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>62</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=30, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1631,6 +2125,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>54</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms; component scores direct=0, infrastructure=20, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1649,6 +2147,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>40</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms; component scores direct=0, infrastructure=14, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1667,6 +2169,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>59</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=14, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1685,6 +2191,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>59</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=14, data=0, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1703,6 +2213,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>50</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, generic short AI scope; component scores direct=0, infrastructure=14, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1721,6 +2235,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>59</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=13, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1739,6 +2257,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>67</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, data foundation terms; component scores direct=10, infrastructure=0, data=40, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1757,6 +2279,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>34</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1775,6 +2301,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>52</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1793,6 +2323,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>45</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1811,6 +2345,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>44</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, compute/infrastructure terms, general digital/infrastructure terms; component scores direct=0, infrastructure=7, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1829,6 +2367,10 @@
       <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
       <td>low</td>
       <td>True</td>
+      <td>88</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, data foundation terms, general digital/infrastructure terms; component scores direct=66, infrastructure=0, data=10, readiness=0.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1847,6 +2389,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>high</td>
       <td>False</td>
+      <td>44</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=6, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1865,6 +2411,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>high</td>
       <td>False</td>
+      <td>50</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, compute/infrastructure terms; component scores direct=0, infrastructure=13, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1883,6 +2433,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>39</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms; component scores direct=6, infrastructure=0, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1901,6 +2455,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>low</td>
       <td>False</td>
+      <td>28</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1919,6 +2477,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>low</td>
       <td>False</td>
+      <td>73</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms, data foundation terms, general digital/infrastructure terms; component scores direct=5, infrastructure=14, data=7, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1937,6 +2499,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>low</td>
       <td>False</td>
+      <td>61</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms, data foundation terms; component scores direct=5, infrastructure=14, data=7, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1955,6 +2521,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>low</td>
       <td>False</td>
+      <td>86</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms, compute/infrastructure terms, data foundation terms, readiness/governance terms, general digital/infrastructure terms; component scores direct=29, infrastructure=20, data=9, readiness=43.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1973,6 +2543,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>59</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording, AI work-product terms, compute/infrastructure terms, general digital/infrastructure terms, generic short AI scope; component scores direct=11, infrastructure=7, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1991,6 +2565,10 @@
       <td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td>
       <td>high</td>
       <td>False</td>
+      <td>32</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>Deterministic fallback weighted AI/ML wording; component scores direct=0, infrastructure=0, data=0, readiness=0.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -2009,6 +2587,10 @@
       <td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td>
       <td>high</td>
       <td>False</td>
+      <td>89</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Deterministic fallback weighted AI/ML wording, explicit artificial intelligence wording, AI work-product terms; component scores direct=32, infrastructure=0, data=0, readiness=0.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>

@@ -67,6 +67,86 @@
       margin: 12px 0 24px;
       overflow-x: auto;
     }
+    .tool-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+    .tool-control {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .tool-control label {
+      font-weight: 650;
+      color: #102a43;
+    }
+    .tool-control select {
+      min-width: 210px;
+      border: 1px solid #bcccdc;
+      border-radius: 6px;
+      padding: 6px 8px;
+      background: #fff;
+      color: #102a43;
+    }
+    .segmented {
+      display: inline-flex;
+      border: 1px solid #bcccdc;
+      border-radius: 7px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .segmented button {
+      border: 0;
+      border-right: 1px solid #bcccdc;
+      border-radius: 0;
+      padding: 7px 10px;
+      font-weight: 650;
+    }
+    .segmented button:last-child { border-right: 0; }
+    .segmented button.active {
+      background: #102a43;
+      color: #fff;
+    }
+    .disruptiveness-layout {
+      display: grid;
+      grid-template-columns: minmax(760px, 1fr) minmax(250px, 320px);
+      gap: 14px;
+      align-items: stretch;
+    }
+    .disruptiveness-svg {
+      width: 100%;
+      min-width: 760px;
+      height: auto;
+      display: block;
+      background: #fff;
+    }
+    .detail-panel {
+      border-left: 3px solid #627d98;
+      background: var(--soft);
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.38;
+    }
+    .detail-panel h3 { margin: 0 0 8px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 5px 8px;
+    }
+    .detail-grid .label {
+      color: var(--muted);
+      font-weight: 650;
+    }
+    .tile-baseline { fill: var(--baseline); }
+    .tile-ufr { fill: var(--ufr); }
+    .tile-selected {
+      stroke: #102a43;
+      stroke-width: 2.5;
+    }
     .data-table {
       border-collapse: collapse;
       width: 100%;
@@ -241,6 +321,7 @@
     @media (max-width: 760px) {
       .page { padding: 20px 14px 34px; }
       .portfolio-row { grid-template-columns: 1fr; }
+      .disruptiveness-layout { grid-template-columns: 1fr; }
       .data-table { font-size: 12px; }
     }
   </style>
@@ -289,9 +370,206 @@
   </section>
 
   <section>
-    <h2>Office Pair Collaboration Opportunities</h2>
-    <p class="section-note">Ranked pairs show offices already funding the same challenge areas and therefore likely candidates for joint execution planning.</p>
-    <div class="viz-block"><table class="data-table"><thead><tr><th>Office Pair</th><th>Shared Challenges</th><th>Mission Areas</th><th>Relative Combined Funding</th><th>Combined Funding</th></tr></thead><tbody><tr data-office-a="NA20" data-office-b="NA80" data-shared-challenge-count="4"><td><strong>NA20 + NA80</strong></td><td class="num">4</td><td>(CUI) Preventing AI-Induced Nuclear Proliferation; Accelerating Nuclear Threat Assessment, Preparedness, and Response; Safeguarding Nuclear Materials from Proliferation Threats; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td><div class="bar-wrap"><div class="bar-fill" style="width:30.4%; background:#627d98"></div></div></td><td class="num">$835.0M</td></tr><tr data-office-a="NA11" data-office-b="NAIM" data-shared-challenge-count="3"><td><strong>NA11 + NAIM</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100.0%; background:#627d98"></div></div></td><td class="num">$2.75B</td></tr><tr data-office-a="NA20" data-office-b="NAIM" data-shared-challenge-count="3"><td><strong>NA20 + NAIM</strong></td><td class="num">3</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Safeguarding Nuclear Materials from Proliferation Threats; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:61.9%; background:#627d98"></div></div></td><td class="num">$1.70B</td></tr><tr data-office-a="NA11" data-office-b="NA20" data-shared-challenge-count="3"><td><strong>NA11 + NA20</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:58.8%; background:#627d98"></div></div></td><td class="num">$1.62B</td></tr><tr data-office-a="NA90" data-office-b="NAIM" data-shared-challenge-count="3"><td><strong>NA90 + NAIM</strong></td><td class="num">3</td><td>Accelerating Business and Management Processes for National Security Missions; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:55.8%; background:#627d98"></div></div></td><td class="num">$1.53B</td></tr><tr data-office-a="NA11" data-office-b="NA12" data-shared-challenge-count="3"><td><strong>NA11 + NA12</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:46.5%; background:#627d98"></div></div></td><td class="num">$1.28B</td></tr><tr data-office-a="NA11" data-office-b="NA19" data-shared-challenge-count="3"><td><strong>NA11 + NA19</strong></td><td class="num">3</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:29.3%; background:#627d98"></div></div></td><td class="num">$806.1M</td></tr><tr data-office-a="NA11" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA11 + NA90</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:62.6%; background:#627d98"></div></div></td><td class="num">$1.72B</td></tr><tr data-office-a="NA11" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA11 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:52.6%; background:#627d98"></div></div></td><td class="num">$1.45B</td></tr><tr data-office-a="NAESH" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NAESH + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:44.6%; background:#627d98"></div></div></td><td class="num">$1.23B</td></tr><tr data-office-a="NA11" data-office-b="NA80" data-shared-challenge-count="2"><td><strong>NA11 + NA80</strong></td><td class="num">2</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:43.3%; background:#627d98"></div></div></td><td class="num">$1.19B</td></tr><tr data-office-a="NA11" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA11 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:21.3%; background:#627d98"></div></div></td><td class="num">$585.2M</td></tr><tr data-office-a="NA12" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA12 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18.4%; background:#627d98"></div></div></td><td class="num">$505.1M</td></tr><tr data-office-a="NA90" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA90 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15.6%; background:#627d98"></div></div></td><td class="num">$429.5M</td></tr><tr data-office-a="NA20" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA20 + NA90</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:13.4%; background:#627d98"></div></div></td><td class="num">$368.9M</td></tr><tr data-office-a="NA20" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA20 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$95.6M</td></tr><tr data-office-a="NA19" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA19 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$21.7M</td></tr><tr data-office-a="NA70" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA70 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.5%; background:#627d98"></div></div></td><td class="num">$1.11B</td></tr><tr data-office-a="NA30" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA30 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.4%; background:#627d98"></div></div></td><td class="num">$1.11B</td></tr><tr data-office-a="NA12" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA12 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.2%; background:#627d98"></div></div></td><td class="num">$1.10B</td></tr><tr data-office-a="NA19" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA19 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.2%; background:#627d98"></div></div></td><td class="num">$1.10B</td></tr><tr data-office-a="NA12" data-office-b="NA19" data-shared-challenge-count="1"><td><strong>NA12 + NA19</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:17.6%; background:#627d98"></div></div></td><td class="num">$483.4M</td></tr><tr data-office-a="NA11" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA11 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15.2%; background:#627d98"></div></div></td><td class="num">$418.8M</td></tr><tr data-office-a="NA80" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA80 + NA90</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12.8%; background:#627d98"></div></div></td><td class="num">$351.4M</td></tr><tr data-office-a="NA70" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA70 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$85.0M</td></tr><tr data-office-a="NA30" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA30 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$80.5M</td></tr><tr data-office-a="NA12" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA12 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$75.0M</td></tr><tr data-office-a="NA19" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA19 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$75.0M</td></tr><tr data-office-a="NA80" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA80 + NAIM</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$45.0M</td></tr><tr data-office-a="NA20" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA20 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$27.5M</td></tr><tr data-office-a="NA20" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA20 + NA30</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$23.0M</td></tr><tr data-office-a="NA-MB" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-MB + NAIM</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.6M</td></tr><tr data-office-a="NA12" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA12 + NA20</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.5M</td></tr><tr data-office-a="NA19" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA19 + NA20</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.5M</td></tr><tr data-office-a="NA30" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA30 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$15.5M</td></tr><tr data-office-a="NA-MB" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA-MB + NA90</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$15.2M</td></tr><tr data-office-a="NA12" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA12 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA19" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA19 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA70" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA70 + NA90</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA30" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA30 + NA90</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA80" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA80 + NAESH</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$3.1M</td></tr></tbody></table></div>
+    <h2>Project Funding Disruptiveness</h2>
+    <p class="section-note">Each square is one programming row. Higher tiles capture a larger share of the selected funding mode for their office; farther-right tiles are more directly AI/ML work. High-share, low-AI rows are the most disruptive candidates to tax or rescope.</p>
+    
+    <div class="viz-block disruptiveness-tool" data-disruptiveness-row-count="54">
+      <div class="tool-controls">
+        <div class="tool-control">
+          <label>Funding Mode</label>
+          <div class="segmented" role="group" aria-label="Funding mode">
+            <button type="button" class="active" data-disruptiveness-mode="ALL">ALL FUNDS</button>
+            <button type="button" data-disruptiveness-mode="BASELINE">BASELINE</button>
+            <button type="button" data-disruptiveness-mode="UFR">UFR</button>
+          </div>
+        </div>
+        <div class="tool-control">
+          <label for="disruptiveness-office-filter">Program Office</label>
+          <select id="disruptiveness-office-filter">
+            <option value="">All offices</option>
+            <option value="NA11">NA11</option><option value="NA12">NA12</option><option value="NA20">NA20</option><option value="NA30">NA30</option><option value="NA70">NA70</option><option value="NA80">NA80</option><option value="NA90">NA90</option><option value="NAESH">NAESH</option><option value="NAIM">NAIM</option>
+          </select>
+        </div>
+        <div class="tool-control">
+          <label for="disruptiveness-challenge-filter">Genesis Mission Challenge</label>
+          <select id="disruptiveness-challenge-filter">
+            <option value="">All challenges</option>
+            <option value="(CUI) Preventing AI-Induced Nuclear Proliferation">(CUI) Preventing AI-Induced Nuclear Proliferation</option><option value="Accelerating Business and Management Processes for National Security Missions">Accelerating Business and Management Processes for National Security Missions</option><option value="Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence">Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</option><option value="Accelerating Nuclear Threat Assessment, Preparedness, and Response">Accelerating Nuclear Threat Assessment, Preparedness, and Response</option><option value="Harnessing America’s Historic Nuclear Data and Research">Harnessing America’s Historic Nuclear Data and Research</option><option value="Increasing Experimental Capacity at Nuclear Research Facilities">Increasing Experimental Capacity at Nuclear Research Facilities</option><option value="Integrating Design and Production Operations for Nuclear Deterrence">Integrating Design and Production Operations for Nuclear Deterrence</option><option value="Safeguarding Nuclear Materials from Proliferation Threats">Safeguarding Nuclear Materials from Proliferation Threats</option><option value="Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise">Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</option><option value="Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures">Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</option>
+          </select>
+        </div>
+      </div>
+      <div class="legend">
+        <span><span class="legend-swatch" style="background:var(--baseline)"></span>BASELINE tile</span>
+        <span><span class="legend-swatch" style="background:var(--ufr)"></span>UFR tile</span>
+        <span id="disruptiveness-count">54 visible projects</span>
+      </div>
+      <div class="disruptiveness-layout">
+        <svg id="disruptiveness-svg" class="disruptiveness-svg" viewBox="0 0 1040 560" role="img" aria-label="Project funding disruptiveness scatterplot">
+          <rect x="78" y="36" width="900" height="440" fill="#ffffff" stroke="#d9e2ec"></rect>
+          <g stroke="#edf2f7" stroke-width="1">
+            <line x1="78" y1="366" x2="978" y2="366"></line>
+            <line x1="78" y1="256" x2="978" y2="256"></line>
+            <line x1="78" y1="146" x2="978" y2="146"></line>
+            <line x1="303" y1="36" x2="303" y2="476"></line>
+            <line x1="528" y1="36" x2="528" y2="476"></line>
+            <line x1="753" y1="36" x2="753" y2="476"></line>
+          </g>
+          <g fill="#52606d" font-size="12">
+            <text x="72" y="480" text-anchor="end">0%</text>
+            <text x="72" y="370" text-anchor="end">25%</text>
+            <text x="72" y="260" text-anchor="end">50%</text>
+            <text x="72" y="150" text-anchor="end">75%</text>
+            <text x="72" y="40" text-anchor="end">100%</text>
+            <text x="78" y="500" text-anchor="middle">0</text>
+            <text x="303" y="500" text-anchor="middle">25</text>
+            <text x="528" y="500" text-anchor="middle">50</text>
+            <text x="753" y="500" text-anchor="middle">75</text>
+            <text x="978" y="500" text-anchor="middle">100</text>
+            <text x="528" y="534" text-anchor="middle">AI-directness score</text>
+            <text x="18" y="256" transform="rotate(-90 18 256)" text-anchor="middle">Share of office funding in selected mode</text>
+          </g>
+          <g fill="#102a43" font-size="12" font-weight="650">
+            <text x="98" y="58">Highest disruption risk: large office share, weak AI fit</text>
+            <text x="602" y="458">Lower disruption: small share, direct AI/ML fit</text>
+          </g>
+          <g id="disruptiveness-tiles"></g>
+        </svg>
+        <aside class="detail-panel" aria-live="polite">
+          <h3 id="disruptiveness-detail-title">Select a project tile</h3>
+          <div class="detail-grid">
+            <span class="label">Office</span><span id="disruptiveness-detail-office">-</span>
+            <span class="label">Funding</span><span id="disruptiveness-detail-funding">-</span>
+            <span class="label">Amount</span><span id="disruptiveness-detail-amount">-</span>
+            <span class="label">Office share</span><span id="disruptiveness-detail-share">-</span>
+            <span class="label">AI score</span><span id="disruptiveness-detail-score">-</span>
+            <span class="label">AI label</span><span id="disruptiveness-detail-label">-</span>
+            <span class="label">Challenge</span><span id="disruptiveness-detail-challenge">-</span>
+            <span class="label">Source</span><span id="disruptiveness-detail-source">-</span>
+          </div>
+          <p class="muted" id="disruptiveness-detail-rationale">Use the filters to isolate an office, challenge, or funding mode.</p>
+        </aside>
+      </div>
+      <script type="application/json" id="disruptiveness-data">{"rows": [{"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly describes participation in platforms that apply AI solutions to mission problems, enterprise efficiency, and scientific/engineering insight, under a WBS and STAT line specifically for Artificial Intelligence for Nuclear Security. This is direct AI solution development and application, not just infrastructure or data prep, warranting a high directness score.", "ai_directness_score": 92, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 216804000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:2", "office": "NA11", "office_share_all": 0.10854235171904265, "office_share_baseline": 0.2450917880695455, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "2", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "The scope explicitly funds participation in Mission Technology and Science Challenges that \"apply AI solutions\" to concrete mission problems, enterprise efficiency, and scientific/engineering insight. This is direct AI solution development and application, not just infrastructure or data prep. The STAT/WBS context (Artificial Intelligence for Nuclear Security) reinforces that the primary work product is AI models/tools for nuclear security missions, warranting a high directness score in the low 90s.", "ai_directness_score": 92, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 192000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:1", "office": "NA11", "office_share_all": 0.09612429443209622, "office_share_baseline": 0.21705145342960802, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "1", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly describes “New materials discovery for HE/Light sources -- New AI/ML,” indicating direct development and application of AI/ML methods for materials discovery, a core AI/ML modeling workload rather than just infrastructure or data preparation. This fits the rubric for direct AI/ML model and applied AI productization work.", "ai_directness_score": 92, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 110903334.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:6", "office": "NA11", "office_share_all": 0.05552346214019327, "office_share_baseline": 0.12537359289004826, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "6", "wbs_name": "Dynamic Materials Properties"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds AI/ML implementation—software and licenses—to automatically index, catalog, extract metadata, and search digital repositories. This describes a concrete AI/ML-powered information management capability (likely NLP/ML for document understanding and search), not just infrastructure or generic data work, placing it in the high 90s range for direct AI/ML workload support.", "ai_directness_score": 92, "challenge": "Harnessing America’s Historic Nuclear Data and Research", "five_year_total": 77548915.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:19", "office": "NA11", "office_share_all": 0.03882466009557085, "office_share_baseline": 0.08766721204499547, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "19", "wbs_name": "Archiving & Support"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly describes AI and machine learning being applied to ignition applications, double shells, experiment analysis, simulations, and pulse shaping (PUSH ML), plus development and interface with CMF. This is clearly direct AI/ML model and workflow development for a specific scientific/stockpile mission, not just infrastructure or data prep, warranting a very high directness score.", "ai_directness_score": 96, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 76113000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:26", "office": "NA11", "office_share_all": 0.03810577303182364, "office_share_baseline": 0.0860439441400404, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "26", "wbs_name": "HED & Ignition Science for Stockpile Applications (formerly Ignition)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly describes “AI/ML work across multiple HED experiments: analysis and modeling of data, with the goal of developing more refined approaches.” This is direct application of AI/ML models to experimental data and method development, not just infrastructure or data prep. No specific tool is named, but the work is clearly centered on AI/ML analysis and modeling, warranting a low-90s score as a direct AI/ML workload.", "ai_directness_score": 92, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 44130500.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:15", "office": "NA11", "office_share_all": 0.022093818622060533, "office_share_baseline": 0.049888485237371445, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "15", "wbs_name": "Secondary Assessment Technologies"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds AI/ML implementation, modeling suites to develop an AI workflow, and building AI systems that reveal causal relationships using diagnostic and experimental datasets toward frontier-class AI models. This is direct model and workflow development, not just infrastructure or data prep, placing it in the high 90s for direct AI/ML work.", "ai_directness_score": 96, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 36412500.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:14", "office": "NA11", "office_share_all": 0.018229822244836998, "office_share_baseline": 0.04116346900002918, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "14", "wbs_name": "Primary Assessment Technologies"}, {"ai_directness_confidence": "medium", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "The scope description only states “Materials Aging & Compatibility” within an aging and lifetimes engineering context, which points to general materials science and surveillance work. There is no explicit mention of AI/ML models, AI-enabled workflows, data platforms, or compute infrastructure. While such work could potentially use AI for analysis, that link is speculative based solely on the digital transformation and AI Genesis program tags, so this is best categorized as general R&D with only a weak, indirect AI/ML connection.", "ai_directness_score": 12, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 29440823.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:18", "office": "NA11", "office_share_all": 0.01473947051237099, "office_share_baseline": 0.03328215324121788, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "18", "wbs_name": "Aging & Lifetimes (formerly Enhanced Surveillance)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds incorporation of machine learning tools to predict compatibility/incompatibility of energetic materials, i.e., direct ML model development and application to a concrete materials problem. This is a clear AI/ML workload, not just infrastructure or data preparation, warranting a high directness score.", "ai_directness_score": 95, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 24666363.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:17", "office": "NA11", "office_share_all": 0.012349149685317522, "office_share_baseline": 0.0278847392706891, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "17", "wbs_name": "Aging & Lifetimes (formerly Enhanced Surveillance)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "The scope focuses on characterizing and validating materials to improve computational models and on curating and analyzing flight test data to predict future environments. This is primarily data curation, validation, and modeling support work that could underpin AI/ML but does not explicitly describe AI/ML models, AI-enabled workflows, or AI-specific infrastructure. The predictive aspect suggests potential modeling, but without clear evidence of machine learning, it fits best as data and model foundation rather than direct AI/ML deployment.", "ai_directness_score": 42, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 22175000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:22", "office": "NA11", "office_share_all": 0.01110185535954028, "office_share_baseline": 0.025068312394799782, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "22", "wbs_name": "Delivery Environments (formerly WSEAT)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "not_ai_ml", "ai_directness_rationale": "The scope focuses on capability development and operations for inertial confinement fusion experiments, including target metrology and fusion yield platforms. This is experimental and facility operations work with no mention of AI/ML models, data pipelines, or AI-specific infrastructure. Any AI use would be incidental rather than a primary objective, so it falls in the non-AI range despite the broader AI Genesis program context.", "ai_directness_score": 8, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 19451000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:24", "office": "NA11", "office_share_all": 0.009738091932284915, "office_share_baseline": 0.021988894899267218, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "24", "wbs_name": "Facility Operations (formerly also Target Production)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "The scope focuses on investigation of novel physics modeling for reentry systems and associated validation and uncertainty quantification. This is primarily physics-based modeling and V&V; while such work can use statistical or even ML techniques, there is no explicit mention of AI/ML models, AI-enabled workflows, or AI-specific infrastructure. The AI Genesis context is programmatic and not reflected in the technical scope, so the direct AI/ML linkage appears weak rather than central.", "ai_directness_score": 18, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 13900000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:23", "office": "NA11", "office_share_all": 0.006958998398990299, "office_share_baseline": 0.015713620847247665, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "23", "wbs_name": "Delivery Environments (formerly WSEAT)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly includes “Develop Large Language Model to find replacement HE binder candidates,” which is direct AI/ML model development for a specific scientific/engineering application. This is a named AI model type (LLM) with a defined use case, indicating concrete model creation and application. The additional materials/alloys work is non‑AI but does not negate the clearly stated LLM development focus.", "ai_directness_score": 92, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 11537446.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:32", "office": "NA11", "office_share_all": 0.0057761919598875566, "office_share_baseline": 0.013042809495654258, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "32", "wbs_name": "Advanced Manufacturing Development"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly describes “Automated Defect Detection of AM Structures” and “Machine Learning Models for AM Metal Components,” which are direct AI/ML model development and application tasks for a specific operational use case (defect detection in additive manufacturing). This is not generic AI enablement or infrastructure but concrete ML models and automated workflows, warranting a very high directness score.", "ai_directness_score": 96, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 5750000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:31", "office": "NA11", "office_share_all": 0.0028787223592945483, "office_share_baseline": 0.006500238839688782, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "31", "wbs_name": "Advanced Manufacturing Development"}, {"ai_directness_confidence": "medium", "ai_directness_label": "not_ai_ml", "ai_directness_rationale": "The scope focuses on constraining mix using radiochemistry on the National Ignition Facility within ICF diagnostics and instrumentation. This is experimental nuclear/ICF science and measurement work; there is no mention of AI, ML models, AI-enabled workflows, data platforms, or AI-specific infrastructure. Any AI use would be speculative rather than evidenced in the description.", "ai_directness_score": 8, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 2000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:28", "office": "NA11", "office_share_all": 0.001001294733667669, "office_share_baseline": 0.0022609526398917504, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "28", "wbs_name": "ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly states “Apply AI/ML techniques for qualification of CT data for part acceptance,” which is a direct application of AI/ML models to an operational qualification workflow. This is not just infrastructure or data prep; it is concrete AI/ML technique development and use for CT data-based acceptance decisions, fitting the top band for direct AI/ML work.", "ai_directness_score": 95, "challenge": "Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence", "five_year_total": 1750000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:30", "office": "NA11", "office_share_all": 0.0008761328919592103, "office_share_baseline": 0.0019783335599052815, "office_share_ufr": 0.0, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "30", "wbs_name": "Advanced Certification & Qualification (formerly Advanced Certification)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly focuses on productionizing several prototype AI tools (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) to accelerate weapons design, modeling, and simulation, plus building a Secure AI suite. These are concrete AI models/tools and operational deployments, with infrastructure as a supporting element, fitting the highest band for direct AI/ML workloads.", "ai_directness_score": 97, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 346644000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:3", "office": "NA11", "office_share_all": 0.17354640582874772, "office_share_baseline": 0.0, "office_share_ufr": 0.3114974331232685, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "3", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly focuses on productionizing several prototype AI tools (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) to accelerate weapons design, modeling, and simulation workflows, plus building a Secure AI suite. This is direct AI model/tool development and deployment work, with infrastructure as a supporting element, fitting the 90–100 band for concrete AI tools and operationalization.", "ai_directness_score": 96, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 338521000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:5", "office": "NA11", "office_share_all": 0.16947964726795647, "office_share_baseline": 0.0, "office_share_ufr": 0.3041980318664739, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "5", "wbs_name": "Computational Systems & Software Environment"}, {"ai_directness_confidence": "high", "ai_directness_label": "data_foundation", "ai_directness_rationale": "The scope describes expanded deployment of the Terrier tool suite to provide data conditioning, curation, and labeling for legacy weapons data. This is clearly data preparation and curation work, which is a foundational enabler for AI/ML but not itself an AI model, AI-enabled workflow, or AI-specific compute. The mention of a named tool does not specify that Terrier is an AI/ML model; it is framed as a data conditioning and labeling suite. Therefore it fits best as data foundation support with a moderate AI linkage rather than direct AI/ML deployment.", "ai_directness_score": 42, "challenge": "Harnessing America’s Historic Nuclear Data and Research", "five_year_total": 153848000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:21", "office": "NA11", "office_share_all": 0.07702359609265176, "office_share_baseline": 0.0, "office_share_ufr": 0.1382492040570401, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "21", "wbs_name": "Archiving & Support"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly focuses on productionizing several prototype AI tools (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) to accelerate weapons design, modeling, and simulation workflows, plus building a Secure AI suite. These are named AI tools and operational deployments, with infrastructure (GPUs, cloud, storage) clearly in direct service of those AI workloads. This is a direct AI/ML productization and deployment effort, fitting the high 90s range.", "ai_directness_score": 96, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 119159000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:4", "office": "NA11", "office_share_all": 0.05965663958455288, "office_share_baseline": 0.0, "office_share_ufr": 0.10707735496225393, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "4", "wbs_name": "Artificial Intelligence for Nuclear Security (AI4NS)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Scope describes a UFR explicitly for \"Developing Artificial Intelligence Tools for Nuclear Deterrence\" and references AI4NS sub-program results and the Genesis Mission focused on development of AI capabilities. However, it remains a high-level planning and funding-estimation effort without concrete named models, deployments, or specific AI products described. This indicates substantial, direct AI/ML program work and tool development, but at a generic portfolio level rather than clearly specified operational AI systems, fitting best in the upper AI-enabled workflow band rather than the top direct-AI range.", "ai_directness_score": 78, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 56442000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:16", "office": "NA11", "office_share_all": 0.028257538678835285, "office_share_baseline": 0.0, "office_share_ufr": 0.05071929160851917, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "16", "wbs_name": "Secondary Assessment Technologies"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Scope describes a UFR explicitly for \"Developing Artificial Intelligence Tools for Nuclear Deterrence\" and references development of AI capabilities under the Genesis Mission, indicating applied AI tool development and deployment planning rather than just infrastructure or data prep. However, it remains a high-level planning and funding-estimate description without concrete named models, products, or specific AI workflows, so it fits best as AI-enabled program work rather than clearly defined direct AI/ML products at the 90+ level.", "ai_directness_score": 78, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 33690000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:25", "office": "NA11", "office_share_all": 0.016866809788631882, "office_share_baseline": 0.0, "office_share_ufr": 0.030274138660767, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "25", "wbs_name": "Facility Operations (formerly also Target Production)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope explicitly concerns a UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence” and references development of AI capabilities under the Genesis Mission and AI4NS sub‑program. This indicates funding is aimed at creating and deploying AI tools and capabilities, not just infrastructure or generic modernization. However, the description remains high‑level and does not specify concrete models, products, or operational deployments, so it fits best as applied AI/AI-enabled program work rather than clearly defined direct AI products, warranting a score in the upper 70s rather than 90+.", "ai_directness_score": 78, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 30000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:13", "office": "NA11", "office_share_all": 0.015019421005015035, "office_share_baseline": 0.0, "office_share_ufr": 0.026958271291867317, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "13", "wbs_name": "Hydrodynamic & Subcritical Execution Support (formerly RDC&S)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope explicitly concerns a UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence” and references AI4NS sub‑program projects and the Genesis Mission’s AI objectives. This indicates funding for development and deployment of AI capabilities, not just infrastructure or data foundations. However, the description is still programmatic and high-level, without detailing specific models, tools, or operational AI products, so it fits best as applied AI/AI-enabled program work rather than clearly specified direct AI model/product deployment at the very top of the scale.", "ai_directness_score": 78, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 20400000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:27", "office": "NA11", "office_share_all": 0.010213206283410223, "office_share_baseline": 0.0, "office_share_ufr": 0.018331624478469775, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "27", "wbs_name": "HED & Ignition Science for Stockpile Applications (formerly Ignition)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Scope describes a UFR explicitly for \"Developing Artificial Intelligence Tools for Nuclear Deterrence\" and references early results from ASC’s AI4NS sub-program and the launch of the Genesis Mission for development of AI capabilities. However, it remains a high-level planning and funding-estimation effort for a broad AI program rather than a clearly specified, named AI model or concrete deployment activity, so it fits best as applied AI program/workflow enablement rather than direct model/product delivery.", "ai_directness_score": 78, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 9127000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:12", "office": "NA11", "office_share_all": 0.004569408517092408, "office_share_baseline": 0.0, "office_share_ufr": 0.0082016047360291, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "12", "wbs_name": "Dynamic Materials Properties"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Scope explicitly describes a UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence” and references development of AI capabilities under the Genesis Mission and AI4NS sub‑program. However, it does not specify concrete models, tools, or deployment workflows, focusing instead on planning, funding requirements, and programmatic expansion of AI capabilities. This indicates clear applied AI tool development and integration for mission use, but with limited detail on specific AI products, so it fits best as an AI-enabled workflow/program effort rather than a clearly defined direct AI model/product deployment.", "ai_directness_score": 78, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 5000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:29", "office": "NA11", "office_share_all": 0.0025032368341691724, "office_share_baseline": 0.0, "office_share_ufr": 0.00449304521531122, "office_total_all": 1997413881.0, "office_total_baseline": 884582881.0, "office_total_ufr": 1112831000.0, "source_file": "programming_data.csv", "source_row_number": "29", "wbs_name": "ICF Diagnostics & Instrumentation (formerly Diagnostics, Cryogenics & Experimental Support)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope description is very short but explicitly names “Genesis AI” as a critical executable within an AI-focused Genesis mission context. This indicates funding for an AI-centric capability or workflow rather than just infrastructure or generic modernization. However, the description does not specify a concrete model, tool, or deployment details, so it is best categorized as applied AI/AI-enabled workflow rather than clearly defined direct model/product work, warranting a score in the low 70s rather than the 90s.", "ai_directness_score": 72, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 318269000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:33", "office": "NA12", "office_share_all": 0.6584185657779322, "office_share_baseline": 0.0, "office_share_ufr": 0.6584185657779322, "office_total_all": 483384000.0, "office_total_baseline": 0.0, "office_total_ufr": 483384000.0, "source_file": "programming_data.csv", "source_row_number": "33", "wbs_name": "Multi-Weapon Systems (formerly MTP)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope description explicitly calls this a \"Programmatic AI\" critical executable UFR within a multi-weapon systems stockpile operations context, indicating funding for an AI-focused programmatic capability rather than generic digital transformation or infrastructure. However, it does not specify concrete models, tools, or deployment artifacts, so it is best interpreted as applied AI program work or AI-enabled workflows rather than a clearly defined AI product or model, warranting a score in the low 70s rather than the 90s.", "ai_directness_score": 72, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 165115000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:34", "office": "NA12", "office_share_all": 0.34158143422206777, "office_share_baseline": 0.0, "office_share_ufr": 0.34158143422206777, "office_total_all": 483384000.0, "office_total_baseline": 0.0, "office_total_ufr": 483384000.0, "source_file": "programming_data.csv", "source_row_number": "34", "wbs_name": "Multi-Weapon Systems (formerly MTP)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope is only described as “AI PROGRAM WORK,” which clearly indicates an AI-focused effort but provides no detail on specific models, tools, or products. With no mention of concrete AI systems, infrastructure, or data activities, this best fits as generic applied AI program work rather than a clearly defined model/product deployment. That merits a score in the lower 70s: clearly AI-centric, but not specific enough to place in the 80–100 range reserved for named or well-described AI workloads.", "ai_directness_score": 70, "challenge": "Safeguarding Nuclear Materials from Proliferation Threats", "five_year_total": 165000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:36", "office": "NA20", "office_share_all": 0.23487544483985764, "office_share_baseline": 0.9041095890410958, "office_share_ufr": 0.0, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "36", "wbs_name": "PD"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds “Automation and AI/ML capabilities” to enhance a specific operational system (e810) and streamline a defined workflow (civil nuclear technology transfer requests). This is direct application and integration of AI/ML into a mission system, not just infrastructure or data prep, warranting a high directness score in the 90s.", "ai_directness_score": 92, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 17500000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:38", "office": "NA20", "office_share_all": 0.02491103202846975, "office_share_baseline": 0.0958904109589041, "office_share_ufr": 0.0, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "38", "wbs_name": "Civil Nuclear Cooperation & Engagement"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds acceleration of AI for proliferation detection, including deployment/maturation of a named AI-related system (Alexandria Data Management System), development and prototyping of AI-driven process modeling, and AI-enabled system-of-systems digital twins. These are concrete AI/ML models and operational AI products, not just infrastructure or data prep, placing this in the high 90s for direct AI/ML support.", "ai_directness_score": 96, "challenge": "Safeguarding Nuclear Materials from Proliferation Threats", "five_year_total": 342000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:37", "office": "NA20", "office_share_all": 0.48683274021352313, "office_share_baseline": 0.0, "office_share_ufr": 0.6576923076923077, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "37", "wbs_name": "PD"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Scope explicitly aims to “fully leverage AI capabilities” to achieve step changes in post‑event nuclear forensics processing timelines. This is applied AI integration into an operational workflow (post‑event processing/attribution), not just infrastructure or data prep. However, it does not name specific models/tools or detail concrete AI products, so it fits high in the AI-enabled workflow band rather than the topmost direct-model range.", "ai_directness_score": 88, "challenge": "Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures", "five_year_total": 150000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:35", "office": "NA20", "office_share_all": 0.21352313167259787, "office_share_baseline": 0.0, "office_share_ufr": 0.28846153846153844, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "35", "wbs_name": "FRD"}, {"ai_directness_confidence": "high", "ai_directness_label": "not_ai_ml", "ai_directness_rationale": "The scope focuses on implementing activities under EO 14299 and expanding IAEA safeguards at U.S. nuclear facilities, with no mention of AI, ML, data platforms, compute, or analytics. It appears to be policy, regulatory, and safeguards implementation work rather than any AI/ML workload or enabling infrastructure. The AI GENESIS program label is not supported by AI-specific scope details, so this is treated as non-AI funding.", "ai_directness_score": 5, "challenge": "Safeguarding Nuclear Materials from Proliferation Threats", "five_year_total": 20000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:39", "office": "NA20", "office_share_all": 0.028469750889679714, "office_share_baseline": 0.0, "office_share_ufr": 0.038461538461538464, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "39", "wbs_name": "Civil Nuclear Cooperation & Engagement"}, {"ai_directness_confidence": "medium", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "The scope describes an export control IT systems upgrade to improve efficiency and accelerate technical reviews, but does not mention AI, ML, automation, or data/model work. It appears to be a general IT modernization effort that could someday host AI-enabled workflows but is not itself an AI/ML workload or clearly AI-focused infrastructure.", "ai_directness_score": 18, "challenge": "Safeguarding Nuclear Materials from Proliferation Threats", "five_year_total": 8000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:40", "office": "NA20", "office_share_all": 0.011387900355871887, "office_share_baseline": 0.0, "office_share_ufr": 0.015384615384615385, "office_total_all": 702500000.0, "office_total_baseline": 182500000.0, "office_total_ufr": 520000000.0, "source_file": "programming_data.csv", "source_row_number": "40", "wbs_name": "Export Control"}, {"ai_directness_confidence": "high", "ai_directness_label": "not_ai_ml", "ai_directness_rationale": "The scope focuses on designing and maintaining reactor plant components and systems for naval nuclear propulsion, with no mention of AI, machine learning, data platforms, or enabling compute. Any AI use would be speculative; this is a core engineering and propulsion design activity, not an AI/ML workload or infrastructure investment.", "ai_directness_score": 8, "challenge": "Integrating Design and Production Operations for Nuclear Deterrence", "five_year_total": 16200000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:41", "office": "NA30", "office_share_all": 0.7465437788018433, "office_share_baseline": 0.7465437788018433, "office_share_ufr": 0.0, "office_total_all": 21700000.0, "office_total_baseline": 21700000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "41", "wbs_name": "Reactor Systems & Component Technology"}, {"ai_directness_confidence": "high", "ai_directness_label": "not_ai_ml", "ai_directness_rationale": "The scope focuses on ensuring Naval Reactors operations comply with federal, state, and local standards and requirements, framed as regulation, compliance, and protection for laboratory facilities. There is no mention of AI, ML, data science, specialized compute, or AI-enabling infrastructure. Any AI use would be incidental rather than a primary objective, so this aligns with a very weak or absent AI/ML connection.", "ai_directness_score": 8, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 5500000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:42", "office": "NA30", "office_share_all": 0.2534562211981567, "office_share_baseline": 0.2534562211981567, "office_share_ufr": 0.0, "office_total_all": 21700000.0, "office_total_baseline": 21700000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "42", "wbs_name": "Laboratory Facility Regulation, Compliance, & Protection"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope explicitly describes “use of AI to enhance capabilities within the S&S program” and to address gaps and efficiencies, coordinated with NNSA Genesis efforts. This indicates applied AI work embedded in security and safeguards workflows, but it does not specify concrete models, tools, or deployment artifacts. There is no emphasis on infrastructure or data-only work; the focus is on AI-enabled capability improvements at the program level, which fits an AI-enabled workflow in the low 70s rather than direct, named AI products in the 90s.", "ai_directness_score": 72, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 10000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:43", "office": "NA70", "office_share_all": 1.0, "office_share_baseline": 1.0, "office_share_ufr": 0.0, "office_total_all": 10000000.0, "office_total_baseline": 10000000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "43", "wbs_name": "Security Program Operations & Planning"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "The scope explicitly funds “advancing AI-tools for rapid and effective response to nuclear and radiological events,” deploying AI tools to identify and mitigate sensitive information in the public domain, and improving speed and accuracy of nuclear forensics analyses. These are concrete AI applications and operational AI products (decision support for incident response, AI-based info redaction, AI-enhanced forensics), not just infrastructure or data prep. This fits the top band for direct AI/ML model and AI-enabled operational products.", "ai_directness_score": 95, "challenge": "Accelerating Nuclear Threat Assessment, Preparedness, and Response", "five_year_total": 87500000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:47", "office": "NA80", "office_share_all": 0.5833333333333334, "office_share_baseline": 0.0, "office_share_ufr": 0.5833333333333334, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "47", "wbs_name": "Nuclear Incident Response (NA-84)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "The scope explicitly funds \"advancing AI-tools\" for rapid response to nuclear and radiological events, deploying AI tools to identify and mitigate sensitive information, and improving speed and accuracy of nuclear forensics analyses. These are concrete AI applications and operational AI products directly embedded in mission workflows, not just infrastructure or data prep. The description clearly centers on developing and deploying AI tools for analysis and decision support, warranting a very high direct AI/ML score.", "ai_directness_score": 95, "challenge": "(CUI) Preventing AI-Induced Nuclear Proliferation", "five_year_total": 40000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:45", "office": "NA80", "office_share_all": 0.26666666666666666, "office_share_baseline": 0.0, "office_share_ufr": 0.26666666666666666, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "45", "wbs_name": "Nuclear Threat Science (NA-82)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds “advancing AI-tools” and “deploy AI tools” for rapid response to nuclear/radiological events, sensitive information identification/mitigation, and improving nuclear forensics analyses. These are concrete AI tools and operational AI workflows, not just infrastructure or data prep, placing this in the high 90s for direct AI/ML model and AI-enabled productization work.", "ai_directness_score": 95, "challenge": "Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures", "five_year_total": 17500000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:46", "office": "NA80", "office_share_all": 0.11666666666666667, "office_share_baseline": 0.0, "office_share_ufr": 0.11666666666666667, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "46", "wbs_name": "National Technical Nuclear Forensics (NA-83)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "The scope explicitly funds “advancing AI-tools” for rapid response to nuclear and radiological events, deploying AI tools to identify and mitigate sensitive information, and improving speed and accuracy of nuclear forensics analyses. These are direct AI/ML applications to operational nuclear risk missions, not just infrastructure or data prep. Multiple concrete AI-enabled analytical and decision-support tools are described, justifying a very high directness score.", "ai_directness_score": 95, "challenge": "Accelerating Nuclear Threat Assessment, Preparedness, and Response", "five_year_total": 5000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:44", "office": "NA80", "office_share_all": 0.03333333333333333, "office_share_baseline": 0.0, "office_share_ufr": 0.03333333333333333, "office_total_all": 150000000.0, "office_total_baseline": 0.0, "office_total_ufr": 150000000.0, "source_file": "programming_data.csv", "source_row_number": "44", "wbs_name": "Nuclear Incident Preparedness and Collaboration (NA-81)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "The scope is to build a new central computing facility providing space for network and data servers/hubs and offices. This is mission-enabling construction and general compute/network infrastructure, not specifically described as AI/GPU or model-hosting infrastructure. While such a facility could later host AI/ML workloads, the evidence only supports a generic data/compute foundation rather than AI-focused infrastructure or direct AI workflows.", "ai_directness_score": 42, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 183700000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:50", "office": "NA90", "office_share_all": 0.5010268732595657, "office_share_baseline": 0.6022417687614539, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "50", "wbs_name": "32-D-XXX New Central Computing Facility, Y-12"}, {"ai_directness_confidence": "high", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "Scope is a general electrical power capacity upgrade for LANL (new 115 kV import line, 13.8 kV distribution to the Supercomputing Center, substation modifications). While this may indirectly benefit AI/ML by powering supercomputing resources, it is broad mission infrastructure, not targeted AI/ML compute or software. The AI GENESIS context is programmatic, not reflected in the described work.", "ai_directness_score": 18, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 115104000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:49", "office": "NA90", "office_share_all": 0.3139368384304249, "office_share_baseline": 0.37735675858202716, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "49", "wbs_name": "LANL - 23-D-517 Electrical Power Capacity Upgrade"}, {"ai_directness_confidence": "medium", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "The scope describes a “New Central Computing Facility” at Y-12, categorized under infrastructure recapitalization and other project costs. This is a general-purpose computing facility investment with no explicit mention of AI/ML workloads, GPUs, or model hosting. While such a facility could eventually support AI, the evidence points to broad digital/compute modernization rather than AI-focused infrastructure, so it fits as a weak AI/ML link rather than direct AI infrastructure or AI workload support.", "ai_directness_score": 20, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 3399000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:53", "office": "NA90", "office_share_all": 0.009270497235760827, "office_share_baseline": 0.011143275841155046, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "53", "wbs_name": "Other Project Costs"}, {"ai_directness_confidence": "high", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "Scope describes an electrical power capacity upgrade at LANL (infrastructure and recapitalization). This is general facility power modernization with no mention of AI/ML, compute, or GPUs. While increased power could indirectly benefit future AI workloads hosted at the site, the row is not targeted at AI/ML capabilities and thus has only a weak, incidental AI link.", "ai_directness_score": 15, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 2824000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:52", "office": "NA90", "office_share_all": 0.00770223130149708, "office_share_baseline": 0.009258196815363886, "office_share_ufr": 0.0, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "52", "wbs_name": "Other Project Costs"}, {"ai_directness_confidence": "high", "ai_directness_label": "weak_ai_link", "ai_directness_rationale": "Scope is limited to replacing overloaded telecommunications towers to meet communication demands. This is general communications infrastructure/modernization with no mention of AI/ML workloads, data platforms, or AI-specific compute. Any AI linkage would be indirect, via improved networking that could support many uses including non-AI.", "ai_directness_score": 15, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 46400000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:48", "office": "NA90", "office_share_all": 0.12655224234754409, "office_share_baseline": 0.0, "office_share_ufr": 0.7530022719896138, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "48", "wbs_name": "Maintenance at Working Facilities"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Scope describes a combined “Telecommunication & AI Infrastructure Program Integration,” indicating infrastructure and operations work that explicitly includes AI infrastructure. This suggests compute/network/ops capabilities meant in part to support AI workloads, but not specific AI models, tools, or workflows. It is primarily infrastructure-level support rather than direct AI productization or model development, so it fits as AI-focused infrastructure in the mid-50s range.", "ai_directness_score": 55, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 15220000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:51", "office": "NA90", "office_share_all": 0.041511317425207354, "office_share_baseline": 0.0, "office_share_ufr": 0.24699772801038625, "office_total_all": 366647000.0, "office_total_baseline": 305027000.0, "office_total_ufr": 61620000.0, "source_file": "programming_data.csv", "source_row_number": "51", "wbs_name": "Operations of Facilties"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope explicitly includes maintaining a Decision and Analytics Platform and developing new data analysis, operational, and/or artificial intelligence tools. This indicates direct creation of AI tools embedded in operational decision workflows, not just data foundations or generic modernization. However, the description is still somewhat general and mixes analytics with AI, so it fits high in the AI-enabled workflow band rather than the very top reserved for clearly specified models or named AI products.", "ai_directness_score": 88, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 75000000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:55", "office": "NAESH", "office_share_all": 0.9603072983354674, "office_share_baseline": 0.9603072983354674, "office_share_ufr": 0.0, "office_total_all": 78100000.0, "office_total_baseline": 78100000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "55", "wbs_name": "Safety Analytics, Forecasting, Evaluation and Reporting (SAFER)"}, {"ai_directness_confidence": "medium", "ai_directness_label": "data_foundation", "ai_directness_rationale": "The scope describes “AI Data Center activities associated with SWEIS/NEPA,” tied to environmental operations and a Site-Wide Environmental Impact Statement. This suggests data center and compliance-related activities that may support AI work but does not specify AI models, AI-enabled workflows, or AI-specific infrastructure as the primary purpose. The link to AI is present but indirect, oriented toward data/environmental documentation rather than explicit model development or deployment.", "ai_directness_score": 42, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 3100000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:54", "office": "NAESH", "office_share_all": 0.03969270166453265, "office_share_baseline": 0.03969270166453265, "office_share_ufr": 0.0, "office_total_all": 78100000.0, "office_total_baseline": 78100000.0, "office_total_ufr": 0.0, "source_file": "programming_data.csv", "source_row_number": "54", "wbs_name": "Site-Wide Environmental Impact Statement (SWEIS)"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds “AI-enabled cybersecurity tools that support the enterprise,” which describes concrete AI-driven security capabilities (e.g., detection, response, analytics) as the primary product. This is a direct AI/ML operational workload rather than just infrastructure or data foundation, warranting a score in the low 90s.", "ai_directness_score": 92, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 467378982.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:57", "office": "NAIM", "office_share_all": 0.400615529813495, "office_share_baseline": 0.963613998029496, "office_share_ufr": 0.0, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "57", "wbs_name": "Enterprise Operations"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "The scope explicitly states it covers all expenses for Artificial Intelligence investments and the WBS name is \"Artificial Intelligence - Program Work,\" indicating funds are primarily for AI activities rather than generic IT. However, the description is generic and does not specify concrete models, tools, or deployment products, so it is best categorized as applied AI program work rather than clearly defined direct model/product delivery, warranting a high-70s score rather than 90+.", "ai_directness_score": 78, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 15148200.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:59", "office": "NAIM", "office_share_all": 0.012984332634625801, "office_share_baseline": 0.031231651672668524, "office_share_ufr": 0.0, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "59", "wbs_name": "Artificial Intelligence - Program Work"}, {"ai_directness_confidence": "high", "ai_directness_label": "direct_ai_ml", "ai_directness_rationale": "Scope explicitly funds annual licenses and tokens associated with AI, which indicates direct purchase and use of AI software/services (likely model/API access). This is not generic IT or infrastructure but direct AI capability consumption, fitting the high 80s–90s band for concrete AI tools/products. No specific model is named, so it is slightly below the absolute top of the range.", "ai_directness_score": 92, "challenge": "Accelerating Business and Management Processes for National Security Missions", "five_year_total": 2500000.0, "funding_level": "BASELINE", "id": "programming_record:programming_data_csv:58", "office": "NAIM", "office_share_all": 0.002142883747677249, "office_share_baseline": 0.005154350297835473, "office_share_ufr": 0.0, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "58", "wbs_name": "Mission Contract Tasks"}, {"ai_directness_confidence": "high", "ai_directness_label": "ai_enabled_workflow", "ai_directness_rationale": "Scope explicitly includes developing and deploying secure AI models and tools, along with AI innovation/collaboration and AI readiness training. That is direct AI/ML product and workflow work, though mixed with enabling compute, governance, and cybersecurity infrastructure rather than being solely a specific named AI system, so it fits in the low-80s within the AI-enabled/productization band rather than the very top range.", "ai_directness_score": 82, "challenge": "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise", "five_year_total": 636625000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:61", "office": "NAIM", "office_share_all": 0.5456853463460115, "office_share_baseline": 0.0, "office_share_ufr": 0.933981294700165, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "61", "wbs_name": "Artificial Intelligence - Program Work"}, {"ai_directness_confidence": "medium", "ai_directness_label": "ai_infrastructure", "ai_directness_rationale": "Scope describes a mixed-classification high-performance computing resource to meet growing mission demand, with no explicit AI models or workflows. The WBS name and AI GENESIS PLATFORM context indicate the HPC is likely intended to support AI program work, but the primary described deliverable is shared compute infrastructure rather than specific AI/ML capabilities. This fits AI-focused infrastructure that could be reused for non-AI workloads.", "ai_directness_score": 58, "challenge": "Increasing Experimental Capacity at Nuclear Research Facilities", "five_year_total": 45000000.0, "funding_level": "UFR", "id": "programming_record:programming_data_csv:60", "office": "NAIM", "office_share_all": 0.03857190745819048, "office_share_baseline": 0.0, "office_share_ufr": 0.06601870529983496, "office_total_all": 1166652182.0, "office_total_baseline": 485027182.0, "office_total_ufr": 681625000.0, "source_file": "programming_data.csv", "source_row_number": "60", "wbs_name": "Artificial Intelligence - Program Work"}]}</script>
+      
+      <script>
+        (function () {
+          const dataElement = document.getElementById('disruptiveness-data');
+          const payload = JSON.parse(dataElement.textContent || '{"rows": []}');
+          const rows = payload.rows || [];
+          const svg = document.getElementById('disruptiveness-svg');
+          const layer = document.getElementById('disruptiveness-tiles');
+          const count = document.getElementById('disruptiveness-count');
+          const officeFilter = document.getElementById('disruptiveness-office-filter');
+          const challengeFilter = document.getElementById('disruptiveness-challenge-filter');
+          const modeButtons = Array.from(document.querySelectorAll('[data-disruptiveness-mode]'));
+          const detail = {
+            title: document.getElementById('disruptiveness-detail-title'),
+            office: document.getElementById('disruptiveness-detail-office'),
+            funding: document.getElementById('disruptiveness-detail-funding'),
+            amount: document.getElementById('disruptiveness-detail-amount'),
+            share: document.getElementById('disruptiveness-detail-share'),
+            score: document.getElementById('disruptiveness-detail-score'),
+            label: document.getElementById('disruptiveness-detail-label'),
+            challenge: document.getElementById('disruptiveness-detail-challenge'),
+            source: document.getElementById('disruptiveness-detail-source'),
+            rationale: document.getElementById('disruptiveness-detail-rationale')
+          };
+          const chart = { left: 78, top: 36, width: 900, height: 440 };
+          let mode = 'ALL';
+          let selectedId = '';
+
+          function money(value) {
+            const number = Number(value || 0);
+            if (Math.abs(number) >= 1000000000) return '$' + (number / 1000000000).toFixed(2) + 'B';
+            if (Math.abs(number) >= 1000000) return '$' + (number / 1000000).toFixed(1) + 'M';
+            return '$' + Math.round(number).toLocaleString();
+          }
+          function percent(value) {
+            return (100 * Number(value || 0)).toFixed(1) + '%';
+          }
+          function labelText(value) {
+            return String(value || '').replaceAll('_', ' ');
+          }
+          function rowShare(row) {
+            if (mode === 'BASELINE') return row.office_share_baseline || 0;
+            if (mode === 'UFR') return row.office_share_ufr || 0;
+            return row.office_share_all || 0;
+          }
+          function rowVisible(row) {
+            if (mode !== 'ALL' && row.funding_level !== mode) return false;
+            if (officeFilter.value && row.office !== officeFilter.value) return false;
+            if (challengeFilter.value && row.challenge !== challengeFilter.value) return false;
+            return true;
+          }
+          function setDetail(row) {
+            const share = rowShare(row);
+            detail.title.textContent = row.wbs_name || 'Unnamed WBS';
+            detail.office.textContent = row.office || '-';
+            detail.funding.textContent = row.funding_level || '-';
+            detail.amount.textContent = money(row.five_year_total);
+            detail.share.textContent = percent(share);
+            detail.score.textContent = String(row.ai_directness_score || 0);
+            detail.label.textContent = labelText(row.ai_directness_label);
+            detail.challenge.textContent = row.challenge || '-';
+            detail.source.textContent = (row.source_file || 'programming_data.csv') + ' row ' + (row.source_row_number || '-');
+            detail.rationale.textContent = row.ai_directness_rationale || 'No AI-directness rationale available.';
+          }
+          function render() {
+            layer.replaceChildren();
+            const visible = rows.filter(rowVisible);
+            count.textContent = visible.length.toLocaleString() + ' visible project' + (visible.length === 1 ? '' : 's');
+            if (visible.length && !visible.some(function (row) { return row.id === selectedId; })) {
+              selectedId = visible[0].id || '';
+              setDetail(visible[0]);
+            }
+            visible.forEach(function (row) {
+              const score = Math.max(0, Math.min(100, Number(row.ai_directness_score || 0)));
+              const share = Math.max(0, Math.min(1, Number(rowShare(row) || 0)));
+              const x = chart.left + (score / 100) * chart.width;
+              const y = chart.top + (1 - share) * chart.height;
+              const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+              rect.setAttribute('x', (x - 6).toFixed(1));
+              rect.setAttribute('y', (y - 6).toFixed(1));
+              rect.setAttribute('width', '12');
+              rect.setAttribute('height', '12');
+              rect.setAttribute('rx', '1');
+              rect.setAttribute('tabindex', '0');
+              rect.setAttribute('role', 'button');
+              rect.setAttribute('class', (row.funding_level === 'UFR' ? 'tile-ufr' : 'tile-baseline') + (row.id === selectedId ? ' tile-selected' : ''));
+              rect.setAttribute('opacity', '0.82');
+              rect.dataset.projectId = row.id || '';
+              const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+              title.textContent = row.wbs_name + ': ' + money(row.five_year_total) + ', ' + percent(share) + ' of office ' + mode + ', AI score ' + score;
+              rect.appendChild(title);
+              rect.addEventListener('click', function () {
+                selectedId = row.id || '';
+                setDetail(row);
+                render();
+              });
+              rect.addEventListener('focus', function () {
+                selectedId = row.id || '';
+                setDetail(row);
+                render();
+              });
+              layer.appendChild(rect);
+            });
+          }
+          modeButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+              mode = button.dataset.disruptivenessMode || 'ALL';
+              modeButtons.forEach(function (item) { item.classList.toggle('active', item === button); });
+              render();
+            });
+          });
+          officeFilter.addEventListener('change', render);
+          challengeFilter.addEventListener('change', render);
+          if (rows.length) setDetail(rows[0]);
+          render();
+        })();
+      </script>
+    
+    </div>
+    
   </section>
 
   <section>
@@ -872,6 +1150,10 @@
 </table>
     </details>
     <details>
+      <summary>Office Pair Collaboration Opportunities</summary>
+      <div class="viz-block"><table class="data-table"><thead><tr><th>Office Pair</th><th>Shared Challenges</th><th>Mission Areas</th><th>Relative Combined Funding</th><th>Combined Funding</th></tr></thead><tbody><tr data-office-a="NA20" data-office-b="NA80" data-shared-challenge-count="4"><td><strong>NA20 + NA80</strong></td><td class="num">4</td><td>(CUI) Preventing AI-Induced Nuclear Proliferation; Accelerating Nuclear Threat Assessment, Preparedness, and Response; Safeguarding Nuclear Materials from Proliferation Threats; Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td><td><div class="bar-wrap"><div class="bar-fill" style="width:30.4%; background:#627d98"></div></div></td><td class="num">$835.0M</td></tr><tr data-office-a="NA11" data-office-b="NAIM" data-shared-challenge-count="3"><td><strong>NA11 + NAIM</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:100.0%; background:#627d98"></div></div></td><td class="num">$2.75B</td></tr><tr data-office-a="NA20" data-office-b="NAIM" data-shared-challenge-count="3"><td><strong>NA20 + NAIM</strong></td><td class="num">3</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Safeguarding Nuclear Materials from Proliferation Threats; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:61.9%; background:#627d98"></div></div></td><td class="num">$1.70B</td></tr><tr data-office-a="NA11" data-office-b="NA20" data-shared-challenge-count="3"><td><strong>NA11 + NA20</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:58.8%; background:#627d98"></div></div></td><td class="num">$1.62B</td></tr><tr data-office-a="NA90" data-office-b="NAIM" data-shared-challenge-count="3"><td><strong>NA90 + NAIM</strong></td><td class="num">3</td><td>Accelerating Business and Management Processes for National Security Missions; Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:55.8%; background:#627d98"></div></div></td><td class="num">$1.53B</td></tr><tr data-office-a="NA11" data-office-b="NA12" data-shared-challenge-count="3"><td><strong>NA11 + NA12</strong></td><td class="num">3</td><td>Harnessing America’s Historic Nuclear Data and Research; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:46.5%; background:#627d98"></div></div></td><td class="num">$1.28B</td></tr><tr data-office-a="NA11" data-office-b="NA19" data-shared-challenge-count="3"><td><strong>NA11 + NA19</strong></td><td class="num">3</td><td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence; Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:29.3%; background:#627d98"></div></div></td><td class="num">$806.1M</td></tr><tr data-office-a="NA11" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA11 + NA90</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:62.6%; background:#627d98"></div></div></td><td class="num">$1.72B</td></tr><tr data-office-a="NA11" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA11 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:52.6%; background:#627d98"></div></div></td><td class="num">$1.45B</td></tr><tr data-office-a="NAESH" data-office-b="NAIM" data-shared-challenge-count="2"><td><strong>NAESH + NAIM</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:44.6%; background:#627d98"></div></div></td><td class="num">$1.23B</td></tr><tr data-office-a="NA11" data-office-b="NA80" data-shared-challenge-count="2"><td><strong>NA11 + NA80</strong></td><td class="num">2</td><td>Harnessing America’s Historic Nuclear Data and Research; Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:43.3%; background:#627d98"></div></div></td><td class="num">$1.19B</td></tr><tr data-office-a="NA11" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA11 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:21.3%; background:#627d98"></div></div></td><td class="num">$585.2M</td></tr><tr data-office-a="NA12" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA12 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:18.4%; background:#627d98"></div></div></td><td class="num">$505.1M</td></tr><tr data-office-a="NA90" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA90 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15.6%; background:#627d98"></div></div></td><td class="num">$429.5M</td></tr><tr data-office-a="NA20" data-office-b="NA90" data-shared-challenge-count="2"><td><strong>NA20 + NA90</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:13.4%; background:#627d98"></div></div></td><td class="num">$368.9M</td></tr><tr data-office-a="NA20" data-office-b="NAESH" data-shared-challenge-count="2"><td><strong>NA20 + NAESH</strong></td><td class="num">2</td><td>Increasing Experimental Capacity at Nuclear Research Facilities; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$95.6M</td></tr><tr data-office-a="NA19" data-office-b="NA30" data-shared-challenge-count="2"><td><strong>NA19 + NA30</strong></td><td class="num">2</td><td>Integrating Design and Production Operations for Nuclear Deterrence; Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$21.7M</td></tr><tr data-office-a="NA70" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA70 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.5%; background:#627d98"></div></div></td><td class="num">$1.11B</td></tr><tr data-office-a="NA30" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA30 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.4%; background:#627d98"></div></div></td><td class="num">$1.11B</td></tr><tr data-office-a="NA12" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA12 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.2%; background:#627d98"></div></div></td><td class="num">$1.10B</td></tr><tr data-office-a="NA19" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA19 + NAIM</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:40.2%; background:#627d98"></div></div></td><td class="num">$1.10B</td></tr><tr data-office-a="NA12" data-office-b="NA19" data-shared-challenge-count="1"><td><strong>NA12 + NA19</strong></td><td class="num">1</td><td>Integrating Design and Production Operations for Nuclear Deterrence</td><td><div class="bar-wrap"><div class="bar-fill" style="width:17.6%; background:#627d98"></div></div></td><td class="num">$483.4M</td></tr><tr data-office-a="NA11" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA11 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:15.2%; background:#627d98"></div></div></td><td class="num">$418.8M</td></tr><tr data-office-a="NA80" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA80 + NA90</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:12.8%; background:#627d98"></div></div></td><td class="num">$351.4M</td></tr><tr data-office-a="NA70" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA70 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$85.0M</td></tr><tr data-office-a="NA30" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA30 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$80.5M</td></tr><tr data-office-a="NA12" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA12 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$75.0M</td></tr><tr data-office-a="NA19" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA19 + NAESH</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$75.0M</td></tr><tr data-office-a="NA80" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA80 + NAIM</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$45.0M</td></tr><tr data-office-a="NA20" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA20 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$27.5M</td></tr><tr data-office-a="NA20" data-office-b="NA30" data-shared-challenge-count="1"><td><strong>NA20 + NA30</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$23.0M</td></tr><tr data-office-a="NA-MB" data-office-b="NAIM" data-shared-challenge-count="1"><td><strong>NA-MB + NAIM</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.6M</td></tr><tr data-office-a="NA12" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA12 + NA20</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.5M</td></tr><tr data-office-a="NA19" data-office-b="NA20" data-shared-challenge-count="1"><td><strong>NA19 + NA20</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$17.5M</td></tr><tr data-office-a="NA30" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA30 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$15.5M</td></tr><tr data-office-a="NA-MB" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA-MB + NA90</strong></td><td class="num">1</td><td>Accelerating Business and Management Processes for National Security Missions</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$15.2M</td></tr><tr data-office-a="NA12" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA12 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA19" data-office-b="NA70" data-shared-challenge-count="1"><td><strong>NA19 + NA70</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA70" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA70 + NA90</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$10.0M</td></tr><tr data-office-a="NA30" data-office-b="NA90" data-shared-challenge-count="1"><td><strong>NA30 + NA90</strong></td><td class="num">1</td><td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$5.5M</td></tr><tr data-office-a="NA80" data-office-b="NAESH" data-shared-challenge-count="1"><td><strong>NA80 + NAESH</strong></td><td class="num">1</td><td>Increasing Experimental Capacity at Nuclear Research Facilities</td><td><div class="bar-wrap"><div class="bar-fill" style="width:5.0%; background:#627d98"></div></div></td><td class="num">$3.1M</td></tr></tbody></table></div>
+    </details>
+    <details>
       <summary>Reviewed Row-Level Classifications</summary>
       <table class="dataframe data-table">
   <thead>
@@ -885,6 +1167,10 @@
       <th>predicted_challenge</th>
       <th>confidence</th>
       <th>review_flag</th>
+      <th>ai_directness_score</th>
+      <th>ai_directness_label</th>
+      <th>ai_directness_confidence</th>
+      <th>ai_directness_rationale</th>
       <th>sme_review_decision</th>
       <th>sme_override_applied</th>
       <th>sme_notes</th>
@@ -905,6 +1191,10 @@
       <td>(CUI) Preventing AI-Induced Nuclear Proliferation</td>
       <td>high</td>
       <td>False</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>The scope explicitly funds "advancing AI-tools" for rapid response to nuclear and radiological events, deploying AI tools to identify and mitigate sensitive information, and improving speed and accuracy of nuclear forensics analyses. These are concrete AI applications and operational AI products directly embedded in mission workflows, not just infrastructure or data prep. The description clearly centers on developing and deploying AI tools for analysis and decision support, warranting a very high direct AI/ML score.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -923,6 +1213,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>medium</td>
       <td>False</td>
+      <td>72</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope explicitly states that A&amp;S activities are heavily concentrated in personnel and AI/ML tools and that critical AI/ML endeavors will remain a strategic priority. This indicates ongoing, substantive AI/ML work rather than just infrastructure or data preparation. However, the row is framed as a decrement and does not specify particular models, products, or deployments, so it fits best as applied AI/ML program/workflow support rather than a clearly defined AI product or model, warranting a score in the low 70s.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -941,6 +1235,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>medium</td>
       <td>True</td>
+      <td>55</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Scope describes a combined “Telecommunication &amp; AI Infrastructure Program Integration,” indicating infrastructure and operations work that explicitly includes AI infrastructure. This suggests compute/network/ops capabilities meant in part to support AI workloads, but not specific AI models, tools, or workflows. It is primarily infrastructure-level support rather than direct AI productization or model development, so it fits as AI-focused infrastructure in the mid-50s range.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -959,6 +1257,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>medium</td>
       <td>False</td>
+      <td>78</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope explicitly states it covers all expenses for Artificial Intelligence investments and the WBS name is "Artificial Intelligence - Program Work," indicating funds are primarily for AI activities rather than generic IT. However, the description is generic and does not specify concrete models, tools, or deployment products, so it is best categorized as applied AI program work rather than clearly defined direct model/product delivery, warranting a high-70s score rather than 90+.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -977,6 +1279,10 @@
       <td>Accelerating Business and Management Processes for National Security Missions</td>
       <td>medium</td>
       <td>True</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds annual licenses and tokens associated with AI, which indicates direct purchase and use of AI software/services (likely model/API access). This is not generic IT or infrastructure but direct AI capability consumption, fitting the high 80s–90s band for concrete AI tools/products. No specific model is named, so it is slightly below the absolute top of the range.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -995,6 +1301,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly states “Apply AI/ML techniques for qualification of CT data for part acceptance,” which is a direct application of AI/ML models to an operational qualification workflow. This is not just infrastructure or data prep; it is concrete AI/ML technique development and use for CT data-based acceptance decisions, fitting the top band for direct AI/ML work.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1013,6 +1323,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>96</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly describes “Automated Defect Detection of AM Structures” and “Machine Learning Models for AM Metal Components,” which are direct AI/ML model development and application tasks for a specific operational use case (defect detection in additive manufacturing). This is not generic AI enablement or infrastructure but concrete ML models and automated workflows, warranting a very high directness score.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1031,6 +1345,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly includes “Develop Large Language Model to find replacement HE binder candidates,” which is direct AI/ML model development for a specific scientific/engineering application. This is a named AI model type (LLM) with a defined use case, indicating concrete model creation and application. The additional materials/alloys work is non‑AI but does not negate the clearly stated LLM development focus.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1049,6 +1367,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>True</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds incorporation of machine learning tools to predict compatibility/incompatibility of energetic materials, i.e., direct ML model development and application to a concrete materials problem. This is a clear AI/ML workload, not just infrastructure or data preparation, warranting a high directness score.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1067,6 +1389,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>True</td>
+      <td>12</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>The scope description only states “Materials Aging &amp; Compatibility” within an aging and lifetimes engineering context, which points to general materials science and surveillance work. There is no explicit mention of AI/ML models, AI-enabled workflows, data platforms, or compute infrastructure. While such work could potentially use AI for analysis, that link is speculative based solely on the digital transformation and AI Genesis program tags, so this is best categorized as general R&amp;D with only a weak, indirect AI/ML connection.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1085,6 +1411,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>True</td>
+      <td>42</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>The scope focuses on characterizing and validating materials to improve computational models and on curating and analyzing flight test data to predict future environments. This is primarily data curation, validation, and modeling support work that could underpin AI/ML but does not explicitly describe AI/ML models, AI-enabled workflows, or AI-specific infrastructure. The predictive aspect suggests potential modeling, but without clear evidence of machine learning, it fits best as data and model foundation rather than direct AI/ML deployment.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1103,6 +1433,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly describes “New materials discovery for HE/Light sources -- New AI/ML,” indicating direct development and application of AI/ML methods for materials discovery, a core AI/ML modeling workload rather than just infrastructure or data preparation. This fits the rubric for direct AI/ML model and applied AI productization work.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1121,6 +1455,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds “AI/ML on Pu strength datasets” and states it is required for AI/ML and predictive modeling. This is direct model development/application on a specific scientific dataset, not just infrastructure or data prep, placing it in the high 90s for direct AI/ML workload support.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1139,6 +1477,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>38</td>
+      <td>data_foundation</td>
+      <td>high</td>
+      <td>The scope is to create a library of high explosive (HE) characterizations, focusing on microstructure characterization, documentation, and binder property evaluation. It explicitly states this data is needed to enable AI/ML and that AI/ML cannot be applied without data in the correct formats. However, the work itself is data generation and curation, not model development, AI software, or deployment. This fits a data foundation that supports future AI/ML rather than a direct AI workload.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1157,6 +1499,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>96</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds “New AI/ML for rapid data analysis, AI-guided dynamic experiments, and image analysis” plus “AI-assisted design of materials.” These are concrete AI/ML applications directly embedded in experimental workflows and materials design, not just infrastructure or data prep. The work product is clearly AI-driven analysis and decision support for W93-related materials qualification, fitting the top band for direct AI/ML deployment and tooling.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1175,6 +1521,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>32</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>The scope only states “New materials discovery for HE” with no explicit mention of AI, ML, modeling, or computational workflows. While materials discovery is often a candidate for AI/ML, the description could equally refer to experimental or traditional computational methods. This suggests R&amp;D and data generation that could support future AI but does not clearly describe an AI/ML workload itself, fitting a low data-foundation score rather than direct AI enablement.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1193,6 +1543,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly centers on using ML to develop synthesis pathways to novel high-performance materials, i.e., a direct AI/ML modeling and application effort in materials discovery. The description clearly identifies ML as the core method and deliverable, with downstream experimental synthesis and characterization as validation, so this is a direct AI/ML workload rather than just infrastructure or data preparation.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1211,6 +1565,10 @@
       <td>Accelerating Materials Discovery, Production, and Qualification for Strategic Deterrence</td>
       <td>high</td>
       <td>False</td>
+      <td>96</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds AI/ML implementation, modeling suites to develop an AI workflow, and building AI systems that reveal causal relationships using diagnostic and experimental datasets toward frontier-class AI models. This is direct model and workflow development, not just infrastructure or data prep, placing it in the high 90s for direct AI/ML work.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1229,6 +1587,10 @@
       <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
       <td>high</td>
       <td>False</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>The scope explicitly funds “advancing AI-tools” for rapid response to nuclear and radiological events, deploying AI tools to identify and mitigate sensitive information, and improving speed and accuracy of nuclear forensics analyses. These are direct AI/ML applications to operational nuclear risk missions, not just infrastructure or data prep. Multiple concrete AI-enabled analytical and decision-support tools are described, justifying a very high directness score.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1247,6 +1609,10 @@
       <td>Accelerating Nuclear Threat Assessment, Preparedness, and Response</td>
       <td>high</td>
       <td>False</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>The scope explicitly funds “advancing AI-tools for rapid and effective response to nuclear and radiological events,” deploying AI tools to identify and mitigate sensitive information in the public domain, and improving speed and accuracy of nuclear forensics analyses. These are concrete AI applications and operational AI products (decision support for incident response, AI-based info redaction, AI-enhanced forensics), not just infrastructure or data prep. This fits the top band for direct AI/ML model and AI-enabled operational products.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1265,6 +1631,10 @@
       <td>Harnessing America’s Historic Nuclear Data and Research</td>
       <td>high</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds AI/ML implementation—software and licenses—to automatically index, catalog, extract metadata, and search digital repositories. This describes a concrete AI/ML-powered information management capability (likely NLP/ML for document understanding and search), not just infrastructure or generic data work, placing it in the high 90s range for direct AI/ML workload support.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1283,6 +1653,10 @@
       <td>Harnessing America’s Historic Nuclear Data and Research</td>
       <td>high</td>
       <td>False</td>
+      <td>42</td>
+      <td>data_foundation</td>
+      <td>high</td>
+      <td>The scope describes expanded deployment of the Terrier tool suite to provide data conditioning, curation, and labeling for legacy weapons data. This is clearly data preparation and curation work, which is a foundational enabler for AI/ML but not itself an AI model, AI-enabled workflow, or AI-specific compute. The mention of a named tool does not specify that Terrier is an AI/ML model; it is framed as a data conditioning and labeling suite. Therefore it fits best as data foundation support with a moderate AI linkage rather than direct AI/ML deployment.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1301,6 +1675,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>97</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly focuses on productionizing several prototype AI tools (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) to accelerate weapons design, modeling, and simulation, plus building a Secure AI suite. These are concrete AI models/tools and operational deployments, with infrastructure as a supporting element, fitting the highest band for direct AI/ML workloads.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1319,6 +1697,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>96</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly focuses on productionizing several prototype AI tools (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) to accelerate weapons design, modeling, and simulation workflows, plus building a Secure AI suite. These are named AI tools and operational deployments, with infrastructure (GPUs, cloud, storage) clearly in direct service of those AI workloads. This is a direct AI/ML productization and deployment effort, fitting the high 90s range.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1337,6 +1719,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>96</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly focuses on productionizing several prototype AI tools (CHANDLER federated model, Horizon Shield simulation workflow, CADSAT meshing tool) to accelerate weapons design, modeling, and simulation workflows, plus building a Secure AI suite. This is direct AI model/tool development and deployment work, with infrastructure as a supporting element, fitting the 90–100 band for concrete AI tools and operationalization.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1355,6 +1741,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>True</td>
+      <td>18</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>The scope focuses on investigation of novel physics modeling for reentry systems and associated validation and uncertainty quantification. This is primarily physics-based modeling and V&amp;V; while such work can use statistical or even ML techniques, there is no explicit mention of AI/ML models, AI-enabled workflows, or AI-specific infrastructure. The AI Genesis context is programmatic and not reflected in the technical scope, so the direct AI/ML linkage appears weak rather than central.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1373,6 +1763,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>high</td>
       <td>False</td>
+      <td>8</td>
+      <td>not_ai_ml</td>
+      <td>medium</td>
+      <td>The scope focuses on capability development and operations for inertial confinement fusion experiments, including target metrology and fusion yield platforms. This is experimental and facility operations work with no mention of AI/ML models, data pipelines, or AI-specific infrastructure. Any AI use would be incidental rather than a primary objective, so it falls in the non-AI range despite the broader AI Genesis program context.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1391,6 +1785,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>96</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly describes AI and machine learning being applied to ignition applications, double shells, experiment analysis, simulations, and pulse shaping (PUSH ML), plus development and interface with CMF. This is clearly direct AI/ML model and workflow development for a specific scientific/stockpile mission, not just infrastructure or data prep, warranting a very high directness score.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1409,6 +1807,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>True</td>
+      <td>8</td>
+      <td>not_ai_ml</td>
+      <td>medium</td>
+      <td>The scope focuses on constraining mix using radiochemistry on the National Ignition Facility within ICF diagnostics and instrumentation. This is experimental nuclear/ICF science and measurement work; there is no mention of AI, ML models, AI-enabled workflows, data platforms, or AI-specific infrastructure. Any AI use would be speculative rather than evidenced in the description.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1427,6 +1829,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly describes “AI/ML work across multiple HED experiments: analysis and modeling of data, with the goal of developing more refined approaches.” This is direct application of AI/ML models to experimental data and method development, not just infrastructure or data prep. No specific tool is named, but the work is clearly centered on AI/ML analysis and modeling, warranting a low-90s score as a direct AI/ML workload.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1445,6 +1851,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>42</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>The scope is to build a new central computing facility providing space for network and data servers/hubs and offices. This is mission-enabling construction and general compute/network infrastructure, not specifically described as AI/GPU or model-hosting infrastructure. While such a facility could later host AI/ML workloads, the evidence only supports a generic data/compute foundation rather than AI-focused infrastructure or direct AI workflows.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1463,6 +1873,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>True</td>
+      <td>18</td>
+      <td>weak_ai_link</td>
+      <td>high</td>
+      <td>Scope is a general electrical power capacity upgrade for LANL (new 115 kV import line, 13.8 kV distribution to the Supercomputing Center, substation modifications). While this may indirectly benefit AI/ML by powering supercomputing resources, it is broad mission infrastructure, not targeted AI/ML compute or software. The AI GENESIS context is programmatic, not reflected in the described work.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1481,6 +1895,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>15</td>
+      <td>weak_ai_link</td>
+      <td>high</td>
+      <td>Scope is limited to replacing overloaded telecommunications towers to meet communication demands. This is general communications infrastructure/modernization with no mention of AI/ML workloads, data platforms, or AI-specific compute. Any AI linkage would be indirect, via improved networking that could support many uses including non-AI.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1499,6 +1917,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>True</td>
+      <td>15</td>
+      <td>weak_ai_link</td>
+      <td>high</td>
+      <td>Scope describes an electrical power capacity upgrade at LANL (infrastructure and recapitalization). This is general facility power modernization with no mention of AI/ML, compute, or GPUs. While increased power could indirectly benefit future AI workloads hosted at the site, the row is not targeted at AI/ML capabilities and thus has only a weak, incidental AI link.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1517,6 +1939,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>True</td>
+      <td>20</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>The scope describes a “New Central Computing Facility” at Y-12, categorized under infrastructure recapitalization and other project costs. This is a general-purpose computing facility investment with no explicit mention of AI/ML workloads, GPUs, or model hosting. While such a facility could eventually support AI, the evidence points to broad digital/compute modernization rather than AI-focused infrastructure, so it fits as a weak AI/ML link rather than direct AI infrastructure or AI workload support.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1535,6 +1961,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>low</td>
       <td>False</td>
+      <td>42</td>
+      <td>data_foundation</td>
+      <td>medium</td>
+      <td>The scope describes “AI Data Center activities associated with SWEIS/NEPA,” tied to environmental operations and a Site-Wide Environmental Impact Statement. This suggests data center and compliance-related activities that may support AI work but does not specify AI models, AI-enabled workflows, or AI-specific infrastructure as the primary purpose. The link to AI is present but indirect, oriented toward data/environmental documentation rather than explicit model development or deployment.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1553,6 +1983,10 @@
       <td>Increasing Experimental Capacity at Nuclear Research Facilities</td>
       <td>medium</td>
       <td>False</td>
+      <td>58</td>
+      <td>ai_infrastructure</td>
+      <td>medium</td>
+      <td>Scope describes a mixed-classification high-performance computing resource to meet growing mission demand, with no explicit AI models or workflows. The WBS name and AI GENESIS PLATFORM context indicate the HPC is likely intended to support AI program work, but the primary described deliverable is shared compute infrastructure rather than specific AI/ML capabilities. This fits AI-focused infrastructure that could be reused for non-AI workloads.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1571,6 +2005,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>78</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>Scope describes a UFR explicitly for "Developing Artificial Intelligence Tools for Nuclear Deterrence" and references early results from ASC’s AI4NS sub-program and the launch of the Genesis Mission for development of AI capabilities. However, it remains a high-level planning and funding-estimation effort for a broad AI program rather than a clearly specified, named AI model or concrete deployment activity, so it fits best as applied AI program/workflow enablement rather than direct model/product delivery.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1589,6 +2027,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>78</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>Scope describes a UFR explicitly for "Developing Artificial Intelligence Tools for Nuclear Deterrence" and references development of AI capabilities under the Genesis Mission, indicating applied AI tool development and deployment planning rather than just infrastructure or data prep. However, it remains a high-level planning and funding-estimate description without concrete named models, products, or specific AI workflows, so it fits best as AI-enabled program work rather than clearly defined direct AI/ML products at the 90+ level.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1607,6 +2049,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>True</td>
+      <td>78</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope explicitly concerns a UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence” and references AI4NS sub‑program projects and the Genesis Mission’s AI objectives. This indicates funding for development and deployment of AI capabilities, not just infrastructure or data foundations. However, the description is still programmatic and high-level, without detailing specific models, tools, or operational AI products, so it fits best as applied AI/AI-enabled program work rather than clearly specified direct AI model/product deployment at the very top of the scale.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1625,6 +2071,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>True</td>
+      <td>78</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope explicitly concerns a UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence” and references development of AI capabilities under the Genesis Mission and AI4NS sub‑program. This indicates funding is aimed at creating and deploying AI tools and capabilities, not just infrastructure or generic modernization. However, the description remains high‑level and does not specify concrete models, products, or operational deployments, so it fits best as applied AI/AI-enabled program work rather than clearly defined direct AI products, warranting a score in the upper 70s rather than 90+.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1643,6 +2093,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>True</td>
+      <td>78</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>Scope explicitly describes a UFR titled “Developing Artificial Intelligence Tools for Nuclear Deterrence” and references development of AI capabilities under the Genesis Mission and AI4NS sub‑program. However, it does not specify concrete models, tools, or deployment workflows, focusing instead on planning, funding requirements, and programmatic expansion of AI capabilities. This indicates clear applied AI tool development and integration for mission use, but with limited detail on specific AI products, so it fits best as an AI-enabled workflow/program effort rather than a clearly defined direct AI model/product deployment.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1661,6 +2115,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>False</td>
+      <td>78</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>Scope describes a UFR explicitly for "Developing Artificial Intelligence Tools for Nuclear Deterrence" and references AI4NS sub-program results and the Genesis Mission focused on development of AI capabilities. However, it remains a high-level planning and funding-estimation effort without concrete named models, deployments, or specific AI products described. This indicates substantial, direct AI/ML program work and tool development, but at a generic portfolio level rather than clearly specified operational AI systems, fitting best in the upper AI-enabled workflow band rather than the top direct-AI range.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1679,6 +2137,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>72</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope description is very short but explicitly names “Genesis AI” as a critical executable within an AI-focused Genesis mission context. This indicates funding for an AI-centric capability or workflow rather than just infrastructure or generic modernization. However, the description does not specify a concrete model, tool, or deployment details, so it is best categorized as applied AI/AI-enabled workflow rather than clearly defined direct model/product work, warranting a score in the low 70s rather than the 90s.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1697,6 +2159,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>low</td>
       <td>False</td>
+      <td>72</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope description explicitly calls this a "Programmatic AI" critical executable UFR within a multi-weapon systems stockpile operations context, indicating funding for an AI-focused programmatic capability rather than generic digital transformation or infrastructure. However, it does not specify concrete models, tools, or deployment artifacts, so it is best interpreted as applied AI program work or AI-enabled workflows rather than a clearly defined AI product or model, warranting a score in the low 70s rather than the 90s.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1715,6 +2181,10 @@
       <td>Integrating Design and Production Operations for Nuclear Deterrence</td>
       <td>medium</td>
       <td>True</td>
+      <td>8</td>
+      <td>not_ai_ml</td>
+      <td>high</td>
+      <td>The scope focuses on designing and maintaining reactor plant components and systems for naval nuclear propulsion, with no mention of AI, machine learning, data platforms, or enabling compute. Any AI use would be speculative; this is a core engineering and propulsion design activity, not an AI/ML workload or infrastructure investment.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1733,6 +2203,10 @@
       <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
       <td>high</td>
       <td>True</td>
+      <td>5</td>
+      <td>not_ai_ml</td>
+      <td>high</td>
+      <td>The scope focuses on implementing activities under EO 14299 and expanding IAEA safeguards at U.S. nuclear facilities, with no mention of AI, ML, data platforms, compute, or analytics. It appears to be policy, regulatory, and safeguards implementation work rather than any AI/ML workload or enabling infrastructure. The AI GENESIS program label is not supported by AI-specific scope details, so this is treated as non-AI funding.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1751,6 +2225,10 @@
       <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
       <td>high</td>
       <td>True</td>
+      <td>18</td>
+      <td>weak_ai_link</td>
+      <td>medium</td>
+      <td>The scope describes an export control IT systems upgrade to improve efficiency and accelerate technical reviews, but does not mention AI, ML, automation, or data/model work. It appears to be a general IT modernization effort that could someday host AI-enabled workflows but is not itself an AI/ML workload or clearly AI-focused infrastructure.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1769,6 +2247,10 @@
       <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
       <td>medium</td>
       <td>True</td>
+      <td>70</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope is only described as “AI PROGRAM WORK,” which clearly indicates an AI-focused effort but provides no detail on specific models, tools, or products. With no mention of concrete AI systems, infrastructure, or data activities, this best fits as generic applied AI program work rather than a clearly defined model/product deployment. That merits a score in the lower 70s: clearly AI-centric, but not specific enough to place in the 80–100 range reserved for named or well-described AI workloads.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1787,6 +2269,10 @@
       <td>Safeguarding Nuclear Materials from Proliferation Threats</td>
       <td>high</td>
       <td>True</td>
+      <td>96</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds acceleration of AI for proliferation detection, including deployment/maturation of a named AI-related system (Alexandria Data Management System), development and prototyping of AI-driven process modeling, and AI-enabled system-of-systems digital twins. These are concrete AI/ML models and operational AI products, not just infrastructure or data prep, placing this in the high 90s for direct AI/ML support.</td>
       <td>needs_discussion</td>
       <td>False</td>
       <td>NaN</td>
@@ -1805,6 +2291,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>low</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>The scope explicitly funds participation in Mission Technology and Science Challenges that "apply AI solutions" to concrete mission problems, enterprise efficiency, and scientific/engineering insight. This is direct AI solution development and application, not just infrastructure or data prep. The STAT/WBS context (Artificial Intelligence for Nuclear Security) reinforces that the primary work product is AI models/tools for nuclear security missions, warranting a high directness score in the low 90s.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1823,6 +2313,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly describes participation in platforms that apply AI solutions to mission problems, enterprise efficiency, and scientific/engineering insight, under a WBS and STAT line specifically for Artificial Intelligence for Nuclear Security. This is direct AI solution development and application, not just infrastructure or data prep, warranting a high directness score.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1841,6 +2335,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds “Automation and AI/ML capabilities” to enhance a specific operational system (e810) and streamline a defined workflow (civil nuclear technology transfer requests). This is direct application and integration of AI/ML into a mission system, not just infrastructure or data prep, warranting a high directness score in the 90s.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1859,6 +2357,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>high</td>
       <td>False</td>
+      <td>8</td>
+      <td>not_ai_ml</td>
+      <td>high</td>
+      <td>The scope focuses on ensuring Naval Reactors operations comply with federal, state, and local standards and requirements, framed as regulation, compliance, and protection for laboratory facilities. There is no mention of AI, ML, data science, specialized compute, or AI-enabling infrastructure. Any AI use would be incidental rather than a primary objective, so this aligns with a very weak or absent AI/ML connection.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1877,6 +2379,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>high</td>
       <td>False</td>
+      <td>72</td>
+      <td>ai_enabled_workflow</td>
+      <td>medium</td>
+      <td>The scope explicitly describes “use of AI to enhance capabilities within the S&amp;S program” and to address gaps and efficiencies, coordinated with NNSA Genesis efforts. This indicates applied AI work embedded in security and safeguards workflows, but it does not specify concrete models, tools, or deployment artifacts. There is no emphasis on infrastructure or data-only work; the focus is on AI-enabled capability improvements at the program level, which fits an AI-enabled workflow in the low 70s rather than direct, named AI products in the 90s.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1895,6 +2401,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>88</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>The scope explicitly includes maintaining a Decision and Analytics Platform and developing new data analysis, operational, and/or artificial intelligence tools. This indicates direct creation of AI tools embedded in operational decision workflows, not just data foundations or generic modernization. However, the description is still somewhat general and mixes analytics with AI, so it fits high in the AI-enabled workflow band rather than the very top reserved for clearly specified models or named AI products.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1913,6 +2423,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>88</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Scope explicitly includes maintaining a Decision and Analytics Platform and developing new artificial intelligence tools, alongside data analysis and operational tools. This indicates applied AI tool development and integration into decision workflows, but without naming specific models/products or detailing deployment, so it fits high AI-enabled workflow rather than top-tier direct model/product scoring.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1931,6 +2445,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>82</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Scope explicitly includes developing and deploying secure AI models and tools, along with AI innovation/collaboration and AI readiness training. That is direct AI/ML product and workflow work, though mixed with enabling compute, governance, and cybersecurity infrastructure rather than being solely a specific named AI system, so it fits in the low-80s within the AI-enabled/productization band rather than the very top range.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1949,6 +2467,10 @@
       <td>Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise</td>
       <td>medium</td>
       <td>False</td>
+      <td>92</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds “AI-enabled cybersecurity tools that support the enterprise,” which describes concrete AI-driven security capabilities (e.g., detection, response, analytics) as the primary product. This is a direct AI/ML operational workload rather than just infrastructure or data foundation, warranting a score in the low 90s.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>
@@ -1967,6 +2489,10 @@
       <td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td>
       <td>high</td>
       <td>False</td>
+      <td>88</td>
+      <td>ai_enabled_workflow</td>
+      <td>high</td>
+      <td>Scope explicitly aims to “fully leverage AI capabilities” to achieve step changes in post‑event nuclear forensics processing timelines. This is applied AI integration into an operational workflow (post‑event processing/attribution), not just infrastructure or data prep. However, it does not name specific models/tools or detail concrete AI products, so it fits high in the AI-enabled workflow band rather than the topmost direct-model range.</td>
       <td>accept</td>
       <td>False</td>
       <td>NaN</td>
@@ -1985,6 +2511,10 @@
       <td>Strengthening Deterrence Through Attribution of Nuclear and Radiological Signatures</td>
       <td>high</td>
       <td>False</td>
+      <td>95</td>
+      <td>direct_ai_ml</td>
+      <td>high</td>
+      <td>Scope explicitly funds “advancing AI-tools” and “deploy AI tools” for rapid response to nuclear/radiological events, sensitive information identification/mitigation, and improving nuclear forensics analyses. These are concrete AI tools and operational AI workflows, not just infrastructure or data prep, placing this in the high 90s for direct AI/ML model and AI-enabled productization work.</td>
       <td>change</td>
       <td>True</td>
       <td>Corrected</td>

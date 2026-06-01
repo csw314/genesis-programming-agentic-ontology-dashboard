@@ -9,18 +9,24 @@ import ssl
 from typing import Any, Mapping
 
 from .llm_classifier_common import (
+    AI_DIRECTNESS_SYSTEM_PROMPT,
     DEFAULT_LLM_TIMEOUT_SECONDS,
     DEFAULT_REASONING_EFFORT,
     SYSTEM_PROMPT,
     VALID_REASONING_EFFORTS,
+    ai_directness_api_payload,
+    ai_directness_schema,
     api_payload,
     decision_schema,
     get_value,
+    load_ai_directness_audit_cache,
     load_audit_cache,
     parse_response_decision,
     request_payload_hash,
     response_id,
+    validate_ai_directness_decision,
     validate_decision,
+    write_ai_directness_audit_entry,
     write_audit_entry,
 )
 
@@ -164,6 +170,105 @@ class OpenAIChallengeClassifier:
             request_hash=request_hash,
             decision=decision,
             candidate_names=candidate_names,
+            model=self.model,
+        )
+
+
+class OpenAIAIDirectnessClassifier:
+    """Callable classifier for row-level AI/ML workload directness."""
+
+    def __init__(
+        self,
+        *,
+        model: str = DEFAULT_OPENAI_MODEL,
+        reasoning_effort: str = DEFAULT_REASONING_EFFORT,
+        client: Any | None = None,
+        audit_cache_path: str | Path | None = None,
+        resume_cache: bool = False,
+        use_truststore: bool = True,
+        timeout_seconds: float = DEFAULT_OPENAI_TIMEOUT_SECONDS,
+    ) -> None:
+        if reasoning_effort not in VALID_REASONING_EFFORTS:
+            raise ValueError(
+                "reasoning_effort must be one of: "
+                + ", ".join(sorted(VALID_REASONING_EFFORTS))
+            )
+
+        self.model = model
+        self.reasoning_effort = reasoning_effort
+        self.audit_cache_path = Path(audit_cache_path) if audit_cache_path else None
+        self.resume_cache = resume_cache
+        self.use_truststore = use_truststore
+        self.timeout_seconds = timeout_seconds
+        self.client = client if client is not None else self._build_client()
+        self._cache = self._load_cache() if resume_cache and self.audit_cache_path else {}
+
+    def __call__(self, payload: dict[str, Any]) -> Mapping[str, Any]:
+        """Return a structured AI-directness decision for one payload."""
+
+        request_hash = request_payload_hash(payload, model=self.model)
+        cached = self._cache.get(request_hash)
+        if cached is not None:
+            return cached["decision"]
+
+        response = self.client.responses.create(
+            model=self.model,
+            input=[
+                {"role": "system", "content": AI_DIRECTNESS_SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        ai_directness_api_payload(payload),
+                        ensure_ascii=False,
+                    ),
+                },
+            ],
+            reasoning={"effort": self.reasoning_effort},
+            text={
+                "format": {
+                    "type": "json_schema",
+                    "name": "programming_ai_directness",
+                    "strict": True,
+                    "schema": ai_directness_schema(),
+                }
+            },
+            store=False,
+        )
+        decision = parse_response_decision(response, provider_name="OpenAI")
+        validate_ai_directness_decision(decision, provider_name="OpenAI")
+        self._write_audit_entry(payload, response, request_hash, decision)
+        return decision
+
+    def _build_client(self) -> Any:
+        if not os.environ.get("OPENAI_API_KEY"):
+            raise RuntimeError(
+                "OPENAI_API_KEY is required when using the OpenAI classifier."
+            )
+
+        return build_openai_client(
+            use_truststore=self.use_truststore,
+            timeout_seconds=self.timeout_seconds,
+        )
+
+    def _load_cache(self) -> dict[str, dict[str, Any]]:
+        if self.audit_cache_path is None or not self.audit_cache_path.exists():
+            return {}
+        return load_ai_directness_audit_cache(self.audit_cache_path)
+
+    def _write_audit_entry(
+        self,
+        payload: dict[str, Any],
+        response: Any,
+        request_hash: str,
+        decision: Mapping[str, Any],
+    ) -> None:
+        write_ai_directness_audit_entry(
+            audit_cache_path=self.audit_cache_path,
+            cache=self._cache,
+            payload=payload,
+            response=response,
+            request_hash=request_hash,
+            decision=decision,
             model=self.model,
         )
 

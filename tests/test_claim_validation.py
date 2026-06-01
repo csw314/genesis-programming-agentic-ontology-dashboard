@@ -18,6 +18,7 @@ from programming_ontology.classify_programming import (
     is_valid_claim_office,
     normalize_office_code,
     rollup_office_to_claimed_parent,
+    _lexical_ai_directness_classifier,
 )
 
 
@@ -84,6 +85,56 @@ def test_row_level_classification_preserves_source_funding_office() -> None:
     assert frame.loc[0, "funding_level"] == "BASELINE"
     assert frame.loc[0, "scope_description"]
     assert frame.loc[0, "five_year_total"] > 0
+    assert 0 <= frame.loc[0, "ai_directness_score"] <= 100
+    assert frame.loc[0, "ai_directness_label"]
+
+
+def test_lexical_ai_directness_scores_are_differentiated() -> None:
+    named_ai = _lexical_ai_directness_classifier(
+        {
+            "programming_evidence": {
+                "programming_record_id": "named-ai",
+                "source_row_number": 1,
+                "wbs_name": "AI Productization",
+                "scope_description": (
+                    "Productionize prototype AI tools, deploy a federated model, "
+                    "and integrate a digital twin workflow for mission decisions."
+                ),
+            }
+        }
+    )
+    generic_ai = _lexical_ai_directness_classifier(
+        {
+            "programming_evidence": {
+                "programming_record_id": "generic-ai",
+                "source_row_number": 2,
+                "wbs_name": "Program Work",
+                "scope_description": "Critical Executable CE UFR: Genesis AI",
+            }
+        }
+    )
+    data_foundation = _lexical_ai_directness_classifier(
+        {
+            "programming_evidence": {
+                "programming_record_id": "data-foundation",
+                "source_row_number": 3,
+                "wbs_name": "Data Support",
+                "scope_description": (
+                    "Provide data conditioning, curation, and labeling for legacy "
+                    "weapons data."
+                ),
+            }
+        }
+    )
+
+    assert named_ai["ai_directness_score"] > generic_ai["ai_directness_score"]
+    assert generic_ai["ai_directness_score"] > data_foundation["ai_directness_score"]
+    assert named_ai["ai_directness_label"] == "direct_ai_ml"
+    assert generic_ai["ai_directness_label"] in {
+        "ai_enabled_workflow",
+        "ai_infrastructure",
+    }
+    assert data_foundation["ai_directness_label"] == "data_foundation"
 
 
 def test_graph_enrichment_uses_evidence_edges_not_assignment_edges() -> None:

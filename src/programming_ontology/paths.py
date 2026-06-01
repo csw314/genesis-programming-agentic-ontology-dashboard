@@ -38,6 +38,8 @@ OFFICE_CHALLENGE_EVIDENCE_PATH = PROCESSED_DATA_DIR / "office_challenge_evidence
 WBS_CHALLENGE_SUMMARY_PATH = PROCESSED_DATA_DIR / "wbs_challenge_summary.csv"
 OPENAI_CLASSIFICATION_AUDIT_PATH = PROCESSED_DATA_DIR / "openai_classification_audit.jsonl"
 ASKSAGE_CLASSIFICATION_AUDIT_PATH = PROCESSED_DATA_DIR / "asksage_classification_audit.jsonl"
+OPENAI_AI_DIRECTNESS_AUDIT_PATH = PROCESSED_DATA_DIR / "openai_ai_directness_audit.jsonl"
+ASKSAGE_AI_DIRECTNESS_AUDIT_PATH = PROCESSED_DATA_DIR / "asksage_ai_directness_audit.jsonl"
 
 COMBINED_ONTOLOGY_GRAPH_PATH = GRAPH_OUTPUT_DIR / "combined_ontology.graphml"
 CLASSIFIED_ONTOLOGY_GRAPH_PATH = GRAPH_OUTPUT_DIR / "classified_ontology.graphml"

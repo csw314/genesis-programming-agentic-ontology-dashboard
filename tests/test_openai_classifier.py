@@ -8,6 +8,7 @@ from programming_ontology.build_ontology import build_combined_ontology
 from programming_ontology.classify_programming import classify_graph_with_openai
 from programming_ontology.openai_classifier import (
     DEFAULT_OPENAI_MODEL,
+    OpenAIAIDirectnessClassifier,
     OpenAIChallengeClassifier,
 )
 
@@ -22,7 +23,20 @@ class FakeResponses:
         if self.raises:
             raise AssertionError("unexpected OpenAI API call")
         self.calls.append(kwargs)
-        enum = kwargs["text"]["format"]["schema"]["properties"]["predicted_challenge"]["enum"]
+        properties = kwargs["text"]["format"]["schema"]["properties"]
+        if "ai_directness_score" in properties:
+            return {
+                "id": "resp_ai_directness_test",
+                "output_text": json.dumps(
+                    {
+                        "ai_directness_score": 87,
+                        "ai_directness_label": "ai_enabled_workflow",
+                        "confidence": "high",
+                        "rationale": "The row describes an AI-enabled workflow.",
+                    }
+                ),
+            }
+        enum = properties["predicted_challenge"]["enum"]
         challenge_name = self.challenge_name or enum[0]
         return {
             "id": "resp_test_123",
@@ -110,6 +124,42 @@ def test_openai_classifier_resume_cache_avoids_api_call(tmp_path) -> None:
     assert cached(payload)["predicted_challenge"] == "Challenge A"
 
 
+def test_openai_ai_directness_classifier_uses_structured_outputs_and_cache(tmp_path) -> None:
+    audit_path = tmp_path / "ai-directness-audit.jsonl"
+    responses = FakeResponses()
+    classifier = OpenAIAIDirectnessClassifier(
+        client=FakeClient(responses),
+        audit_cache_path=audit_path,
+    )
+    payload = {
+        "instructions": "score AI directness",
+        "predicted_challenge": "Challenge A",
+        "programming_evidence": {
+            "programming_record_id": "programming_record:test",
+            "source_row_number": 1,
+            "wbs_name": "AI workflow",
+            "scope_description": "Build an AI-enabled workflow.",
+        },
+    }
+
+    decision = classifier(payload)
+    call = responses.calls[0]
+
+    assert decision["ai_directness_score"] == 87
+    assert decision["ai_directness_label"] == "ai_enabled_workflow"
+    assert call["text"]["format"]["name"] == "programming_ai_directness"
+    assert "ai_directness_score" in call["text"]["format"]["schema"]["properties"]
+    assert audit_path.exists()
+
+    cached = OpenAIAIDirectnessClassifier(
+        client=FakeClient(FakeResponses(raises=True)),
+        audit_cache_path=audit_path,
+        resume_cache=True,
+    )
+
+    assert cached(payload)["ai_directness_score"] == 87
+
+
 def test_openai_classifier_requires_api_key_without_injected_client(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
 
@@ -130,3 +180,4 @@ def test_graph_openai_entry_point_preserves_row_level_outputs(tmp_path) -> None:
     assert results[0].programming_record_id.startswith("programming_record:")
     assert results[0].source_sub_office == "NA11"
     assert results[0].normalized_funding_office == "NA11"
+    assert 0 <= results[0].ai_directness_score <= 100

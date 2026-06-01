@@ -3,7 +3,8 @@
 Programming Ontology builds NetworkX ontology graphs from programming, Genesis
 Mission Challenge, and program-office mapping CSV inputs. It then classifies
 row-level programming funding evidence against Genesis Mission Challenges and
-publishes a self-contained HTML dashboard for team review.
+scores how directly each row supports AI/ML work. It publishes a self-contained
+HTML dashboard for team review.
 
 The primary analysis asks whether offices that claimed equity in
 `ProgramOffice_Mapping.csv` have BASELINE or UFR funding rows in
@@ -99,6 +100,8 @@ data/processed/office_challenge_evidence.csv
 data/processed/wbs_challenge_summary.csv
 data/processed/openai_classification_audit.jsonl
 data/processed/asksage_classification_audit.jsonl
+data/processed/openai_ai_directness_audit.jsonl
+data/processed/asksage_ai_directness_audit.jsonl
 outputs/graphs/combined_ontology.graphml
 outputs/graphs/classified_ontology.graphml
 outputs/reports/classification_dashboard.html
@@ -109,7 +112,8 @@ outputs/publish/genesis_dashboard_latest.html
 
 The default `lexical` classifier is offline and repeatable. OpenAI-backed and
 Ask Sage-backed classification are opt-in and write provider audit/cache JSONL
-files under `data/processed/`.
+files under `data/processed/` for both Genesis challenge mapping and
+AI-directness scoring.
 
 OpenAI classification requires `OPENAI_API_KEY`:
 
