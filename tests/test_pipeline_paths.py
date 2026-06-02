@@ -12,6 +12,7 @@ from programming_ontology.build_ontology import (
     export_graph,
     read_csv,
 )
+from programming_ontology.preprocess_programming import combine_programming_data
 
 
 def test_path_constants_resolve_to_project_structure() -> None:
@@ -22,6 +23,8 @@ def test_path_constants_resolve_to_project_structure() -> None:
     assert paths.GRAPH_OUTPUT_DIR == paths.PROJECT_ROOT / "outputs" / "graphs"
     assert paths.REPORT_OUTPUT_DIR == paths.PROJECT_ROOT / "outputs" / "reports"
     assert paths.PUBLISH_OUTPUT_DIR == paths.PROJECT_ROOT / "outputs" / "publish"
+    assert paths.PROGRAMMING_DATA_FYNSP_2027_PATH.name == "programming_data_FYNSP27_wide.csv"
+    assert paths.COMBINED_PROGRAMMING_DATA_PATH.name == "combined_programming_data.csv"
     assert paths.OFFICE_CLAIM_VALIDATION_PATH.name == "office_claim_validation.csv"
     assert paths.CHALLENGE_COVERAGE_SUMMARY_PATH.name == "challenge_coverage_summary.csv"
     assert paths.OFFICE_CHALLENGE_EVIDENCE_PATH.name == "office_challenge_evidence.csv"
@@ -34,6 +37,10 @@ def test_path_constants_resolve_to_project_structure() -> None:
 
 def test_raw_csv_files_are_loadable() -> None:
     programming = read_csv(paths.PROGRAMMING_DATA_PATH, schema="programming")
+    programming_fynsp_2027 = read_csv(
+        paths.PROGRAMMING_DATA_FYNSP_2027_PATH,
+        schema="programming",
+    )
     mstc = read_csv(paths.MSTC_DATA_PATH, schema="mstc")
     office_mapping = read_csv(
         paths.PROGRAM_OFFICE_MAPPING_PATH,
@@ -41,8 +48,35 @@ def test_raw_csv_files_are_loadable() -> None:
     )
 
     assert not programming.empty
+    assert not programming_fynsp_2027.empty
+    assert "\ufffd" not in programming_fynsp_2027.to_string()
     assert not mstc.empty
     assert not office_mapping.empty
+
+
+def test_combined_programming_preprocess_preserves_provenance() -> None:
+    combined = combine_programming_data()
+
+    assert len(combined) == 120
+    assert combined["fynsp_cycle"].value_counts().to_dict() == {
+        "FYNSP 2028": 61,
+        "FYNSP 2027": 59,
+    }
+    first_fy28 = combined.loc[
+        combined["programming_record_id"].eq("programming_record:programming_data_csv:1")
+    ].iloc[0]
+    first_fy27 = combined.loc[
+        combined["programming_record_id"].eq(
+            "programming_record:programming_data_fynsp27_wide_csv:1"
+        )
+    ].iloc[0]
+
+    assert first_fy28["source_file"] == "programming_data.csv"
+    assert first_fy28["source_row_number"] == 1
+    assert first_fy28["fynsp_years"] == "28-32"
+    assert first_fy27["source_file"] == "programming_data_FYNSP27_wide.csv"
+    assert first_fy27["source_row_number"] == 1
+    assert first_fy27["fynsp_years"] == "27-31"
 
 
 def test_default_combined_ontology_uses_raw_data_dir() -> None:
@@ -51,6 +85,7 @@ def test_default_combined_ontology_uses_raw_data_dir() -> None:
     assert graph.number_of_nodes() > 0
     assert graph.number_of_edges() > 0
     assert "programming_data.csv" in graph.graph["source_files"]
+    assert "programming_data_FYNSP27_wide.csv" in graph.graph["source_files"]
 
 
 def test_exports_can_write_to_temporary_directory(tmp_path) -> None:

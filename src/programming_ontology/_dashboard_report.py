@@ -11,8 +11,8 @@ from typing import Any
 import pandas as pd
 
 
-FUNDING_LEVELS = ("BASELINE", "UFR")
-FY_COLUMNS = ("fy2028", "fy2029", "fy2030", "fy2031", "fy2032")
+FUNDING_LEVELS = ("BASELINE", "UFR", "ROT")
+FY_COLUMNS = ("fy2027", "fy2028", "fy2029", "fy2030", "fy2031", "fy2032")
 
 
 def write_classification_dashboard_html(
@@ -49,46 +49,27 @@ def build_classification_dashboard_html(
 ) -> str:
     """Return static HTML focused on mission funding and collaboration."""
 
-    positive = _positive_funding_rows(reviewed_classifications)
-    claims = _claims_frame(office_claim_validation)
-    role_map = _claim_role_map(claims)
-
-    challenge_summary = _challenge_funding_summary(
-        positive,
-        challenge_coverage,
-        claims,
-    )
-    contributions = _office_challenge_contributions(positive, role_map, claims)
-    office_summary = _office_portfolio_summary(positive, claims)
-    office_challenge = _office_challenge_portfolio(positive, role_map, claims)
-    lead_summary = _lead_claim_funding_summary(positive, claims, contributions)
-    pair_opportunities = _office_pair_opportunities(contributions)
-    disruptiveness_rows = _disruptiveness_rows(positive)
-    unclaimed_evidence = _unclaimed_evidence(office_challenge_evidence)
-    appendix_claims = _appendix_claim_validation(office_claim_validation)
-    appendix_rows = _appendix_reviewed_rows(reviewed_classifications)
-
-    total_baseline = float(challenge_summary["BASELINE"].sum())
-    total_ufr = float(challenge_summary["UFR"].sum())
-    total_funding = total_baseline + total_ufr
-    funded_challenges = int(challenge_summary["total_funding"].gt(0).sum())
-    contributing_offices = int(positive["normalized_funding_office"].nunique()) if not positive.empty else 0
-    program_office_players = int(
-        pd.concat(
-            [
-                positive["normalized_funding_office"] if not positive.empty else pd.Series(dtype=str),
-                claims["claimed_office"] if not claims.empty else pd.Series(dtype=str),
-            ],
-            ignore_index=True,
-        )
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .loc[lambda values: values.ne("")]
-        .nunique()
-    )
-    multi_office_challenges = int(challenge_summary["contributing_office_count"].gt(1).sum())
     metadata_html = _metadata_html(paths_module, metadata_text)
+    claims = _claims_frame(office_claim_validation)
+    views = _fynsp_views(reviewed_classifications)
+    view_html = "".join(
+        _dashboard_view_html(
+            view_id=view_id,
+            view_label=view_label,
+            reviewed_classifications=view_frame,
+            office_claim_validation=office_claim_validation,
+            challenge_coverage=challenge_coverage,
+            office_challenge_evidence=office_challenge_evidence,
+            claims=claims,
+            default_visible=index == 0,
+        )
+        for index, (view_id, view_label, view_frame) in enumerate(views)
+    )
+    view_buttons = "".join(
+        f"<button type=\"button\" class=\"{'active' if index == 0 else ''}\" "
+        f"data-fynsp-view-button=\"{_ha(view_id)}\">{_h(view_label)}</button>"
+        for index, (view_id, view_label, _) in enumerate(views)
+    )
 
     return f"""<!doctype html>
 <html lang="en">
@@ -104,6 +85,7 @@ def build_classification_dashboard_html(
       --panel: #f0f4f8;
       --baseline: #3f6f9f;
       --ufr: #d97706;
+      --rot: #7c3aed;
       --lead: #2f7d59;
       --partner: #6f55a2;
       --contributor: #52606d;
@@ -203,6 +185,12 @@ def build_classification_dashboard_html(
       background: #102a43;
       color: #fff;
     }}
+    .fynsp-toggle {{
+      margin: 12px 0 20px;
+    }}
+    .fynsp-view[hidden] {{
+      display: none;
+    }}
     .disruptiveness-layout {{
       display: grid;
       grid-template-columns: minmax(760px, 1fr) minmax(250px, 320px);
@@ -235,6 +223,7 @@ def build_classification_dashboard_html(
     }}
     .tile-baseline {{ fill: var(--baseline); }}
     .tile-ufr {{ fill: var(--ufr); }}
+    .tile-rot {{ fill: var(--rot); }}
     .tile-selected {{
       stroke: #102a43;
       stroke-width: 2.5;
@@ -288,6 +277,7 @@ def build_classification_dashboard_html(
     }}
     .baseline {{ background: var(--baseline); }}
     .ufr {{ background: var(--ufr); }}
+    .rot {{ background: var(--rot); }}
     .mini-stack {{
       display: flex;
       height: 7px;
@@ -422,103 +412,202 @@ def build_classification_dashboard_html(
 <div class="page">
   <h1>Genesis Mission Funding and Collaboration Dashboard</h1>
   <p class="meta">{metadata_html}</p>
-
-  <section>
-    <h2>Executive Mission Funding Snapshot</h2>
-    <div class="metric-grid">
-      {_metric("Total BASELINE + UFR", _format_money(total_funding))}
-      {_metric("BASELINE", _format_money(total_baseline))}
-      {_metric("UFR", _format_money(total_ufr))}
-      {_metric("Funded Challenges", f"{funded_challenges:,}")}
-      {_metric("Contributing Offices", f"{contributing_offices:,}")}
-      {_metric("Program Office Players", f"{program_office_players:,}")}
-      {_metric("Multi-Office Challenges", f"{multi_office_challenges:,}")}
+  <div class="tool-control fynsp-toggle">
+    <label>FYNSP View</label>
+    <div class="segmented" role="group" aria-label="FYNSP view">
+      {view_buttons}
     </div>
-  </section>
-
-  <section>
-    <h2>Mission Funding Mix</h2>
-    <p class="section-note">How much funding is available in BASELINE funds versus UFR funds for each Genesis Mission Challenge?</p>
-    {_legend()}
-    {_mission_funding_mix_html(challenge_summary)}
-  </section>
-
-  <section>
-    <h2>Challenge-by-Office Contribution Matrix</h2>
-    <p class="section-note">Which program offices contribute BASELINE and UFR funds to each challenge, regardless of whether they are the lead office?</p>
-    {_challenge_office_matrix_html(contributions, challenge_summary)}
-  </section>
-
-  <section>
-    <h2>Collaboration Posture</h2>
-    <p class="section-note">Challenges farther right have more program office players, including claimed leads/partners and actual funding contributors; larger circles have more total funding; orange-heavy circles depend more on UFR funds.</p>
-    {_collaboration_bubble_html(challenge_summary)}
-  </section>
-
-  <section>
-    <h2>Challenge Collaboration Groups</h2>
-    <p class="section-note">These cards group the offices that should be coordinating around each challenge: claimed leads, claimed partners, and other actual funding contributors.</p>
-    {_challenge_collaboration_cards_html(challenge_summary, contributions, claims)}
-  </section>
-
-  <section>
-    <h2>Project Funding Disruptiveness</h2>
-    <p class="section-note">Each square is one programming row. Higher tiles capture a larger share of the selected funding mode for their office; farther-right tiles are more directly AI/ML work. High-share, low-AI rows are the most disruptive candidates to tax or rescope.</p>
-    {_project_disruptiveness_html(disruptiveness_rows)}
-  </section>
-
-  <section>
-    <h2>Office Portfolios</h2>
-    <p class="section-note">Each office view shows the funded Genesis Mission Challenges in its portfolio, the BASELINE/UFR mix, and programming-data citations for traceability.</p>
-    {_office_portfolios_html(office_summary, office_challenge, positive)}
-  </section>
-
-  <section>
-    <h2>Lead Office Funding by Claimed Mission</h2>
-    <p class="section-note">How much funding are lead program offices contributing to their claimed Genesis Mission Challenge?</p>
-    {_lead_claim_funding_html(lead_summary)}
-  </section>
-
-  <section>
-    <h2>Challenge Coverage</h2>
-    <p class="section-note">How much funding coverage is there for each Genesis Mission Challenge, and which program offices are contributing?</p>
-    {_challenge_coverage_html(challenge_summary)}
-  </section>
-
-  <section class="appendix">
-    <h2>Appendix: Validation and Traceability</h2>
-    <p class="section-note">Validation, confidence, review, and row-level FYNSP programming details are available here.</p>
-    <div class="appendix-actions">
-      <button type="button" onclick="setAppendix(true)">Open all</button>
-      <button type="button" onclick="setAppendix(false)">Close all</button>
-    </div>
-    <details>
-      <summary>Office Claim Validation</summary>
-      {_table_html(appendix_claims)}
-    </details>
-    <details>
-      <summary>Unclaimed Positive Evidence</summary>
-      {_table_html(unclaimed_evidence)}
-    </details>
-    <details>
-      <summary>Office Pair Collaboration Opportunities</summary>
-      {_office_pair_opportunities_html(pair_opportunities)}
-    </details>
-    <details>
-      <summary>Reviewed Row-Level Classifications</summary>
-      {_table_html(appendix_rows)}
-    </details>
-  </section>
+  </div>
+  {view_html}
 </div>
 <script>
   function setAppendix(open) {{
-    document.querySelectorAll('.appendix details').forEach(function(detail) {{
+    document.querySelectorAll('.fynsp-view:not([hidden]) .appendix details').forEach(function(detail) {{
       detail.open = open;
     }});
   }}
+  (function () {{
+    const buttons = Array.from(document.querySelectorAll('[data-fynsp-view-button]'));
+    const views = Array.from(document.querySelectorAll('[data-fynsp-view]'));
+    function showView(viewId) {{
+      views.forEach(function (view) {{
+        view.hidden = view.dataset.fynspView !== viewId;
+      }});
+      buttons.forEach(function (button) {{
+        button.classList.toggle('active', button.dataset.fynspViewButton === viewId);
+      }});
+    }}
+    buttons.forEach(function (button) {{
+      button.addEventListener('click', function () {{
+        showView(button.dataset.fynspViewButton);
+      }});
+    }});
+    if (buttons.length) showView(buttons[0].dataset.fynspViewButton);
+  }})();
 </script>
 </body>
 </html>
+"""
+
+
+def _fynsp_views(reviewed: pd.DataFrame) -> list[tuple[str, str, pd.DataFrame]]:
+    frame = reviewed.copy()
+    if "fynsp_cycle" not in frame.columns:
+        frame["fynsp_cycle"] = ""
+    cycle = frame["fynsp_cycle"].map(_clean_text)
+    return [
+        ("combined", "Combined", frame),
+        ("fynsp-2028", "FYNSP 2028", frame.loc[cycle.eq("FYNSP 2028")].copy()),
+        ("fynsp-2027", "FYNSP 2027", frame.loc[cycle.eq("FYNSP 2027")].copy()),
+    ]
+
+
+def _dashboard_view_html(
+    *,
+    view_id: str,
+    view_label: str,
+    reviewed_classifications: pd.DataFrame,
+    office_claim_validation: pd.DataFrame,
+    challenge_coverage: pd.DataFrame,
+    office_challenge_evidence: pd.DataFrame,
+    claims: pd.DataFrame,
+    default_visible: bool,
+) -> str:
+    positive = _positive_funding_rows(reviewed_classifications)
+    role_map = _claim_role_map(claims)
+
+    challenge_summary = _challenge_funding_summary(
+        positive,
+        challenge_coverage,
+        claims,
+    )
+    contributions = _office_challenge_contributions(positive, role_map, claims)
+    office_summary = _office_portfolio_summary(positive, claims)
+    office_challenge = _office_challenge_portfolio(positive, role_map, claims)
+    lead_summary = _lead_claim_funding_summary(positive, claims, contributions)
+    pair_opportunities = _office_pair_opportunities(contributions)
+    disruptiveness_rows = _disruptiveness_rows(positive)
+    unclaimed_evidence = _unclaimed_evidence(office_challenge_evidence)
+    appendix_claims = _appendix_claim_validation(office_claim_validation)
+    appendix_rows = _appendix_reviewed_rows(reviewed_classifications)
+
+    totals_by_level = {
+        level: float(challenge_summary[level].sum()) if level in challenge_summary.columns else 0.0
+        for level in FUNDING_LEVELS
+    }
+    total_funding = sum(totals_by_level.values())
+    funded_challenges = int(challenge_summary["total_funding"].gt(0).sum())
+    contributing_offices = int(positive["normalized_funding_office"].nunique()) if not positive.empty else 0
+    program_office_players = int(
+        pd.concat(
+            [
+                positive["normalized_funding_office"] if not positive.empty else pd.Series(dtype=str),
+                claims["claimed_office"] if not claims.empty else pd.Series(dtype=str),
+            ],
+            ignore_index=True,
+        )
+        .dropna()
+        .astype(str)
+        .str.strip()
+        .loc[lambda values: values.ne("")]
+        .nunique()
+    )
+    multi_office_challenges = int(challenge_summary["contributing_office_count"].gt(1).sum())
+    hidden_attr = "" if default_visible else " hidden"
+    metric_cards = "".join(
+        [_metric("Total BASELINE + UFR + ROT", _format_money(total_funding))]
+        + [_metric(level, _format_money(totals_by_level[level])) for level in FUNDING_LEVELS]
+        + [
+            _metric("Funded Challenges", f"{funded_challenges:,}"),
+            _metric("Contributing Offices", f"{contributing_offices:,}"),
+            _metric("Program Office Players", f"{program_office_players:,}"),
+            _metric("Multi-Office Challenges", f"{multi_office_challenges:,}"),
+        ]
+    )
+
+    return f"""
+  <div class="fynsp-view" data-fynsp-view="{_ha(view_id)}"{hidden_attr}>
+    <section>
+      <h2>{_h(view_label)} Executive Mission Funding Snapshot</h2>
+      <div class="metric-grid">
+        {metric_cards}
+      </div>
+    </section>
+
+    <section>
+      <h2>Mission Funding Mix</h2>
+      <p class="section-note">How much funding is available in BASELINE, UFR, and ROT funds for each Genesis Mission Challenge?</p>
+      {_legend()}
+      {_mission_funding_mix_html(challenge_summary)}
+    </section>
+
+    <section>
+      <h2>Challenge-by-Office Contribution Matrix</h2>
+      <p class="section-note">Which program offices contribute BASELINE, UFR, and ROT funds to each challenge, regardless of whether they are the lead office?</p>
+      {_challenge_office_matrix_html(contributions, challenge_summary)}
+    </section>
+
+    <section>
+      <h2>Collaboration Posture</h2>
+      <p class="section-note">Challenges farther right have more program office players, including claimed leads/partners and actual funding contributors; larger circles have more total funding; warmer circles depend more on UFR/ROT funds.</p>
+      {_collaboration_bubble_html(challenge_summary)}
+    </section>
+
+    <section>
+      <h2>Challenge Collaboration Groups</h2>
+      <p class="section-note">These cards group the offices that should be coordinating around each challenge: claimed leads, claimed partners, and other actual funding contributors.</p>
+      {_challenge_collaboration_cards_html(challenge_summary, contributions, claims)}
+    </section>
+
+    <section>
+      <h2>Project Funding Disruptiveness</h2>
+      <p class="section-note">Each square is one programming row. Higher tiles capture a larger share of the selected funding mode for their office; farther-right tiles are more directly AI/ML work. High-share, low-AI rows are the most disruptive candidates to tax or rescope.</p>
+      {_project_disruptiveness_html(disruptiveness_rows, view_id=view_id)}
+    </section>
+
+    <section>
+      <h2>Office Portfolios</h2>
+      <p class="section-note">Each office view shows the funded Genesis Mission Challenges in its portfolio, the BASELINE/UFR/ROT mix, and programming-data citations for traceability.</p>
+      {_office_portfolios_html(office_summary, office_challenge, positive)}
+    </section>
+
+    <section>
+      <h2>Lead Office Funding by Claimed Mission</h2>
+      <p class="section-note">How much funding are lead program offices contributing to their claimed Genesis Mission Challenge?</p>
+      {_lead_claim_funding_html(lead_summary)}
+    </section>
+
+    <section>
+      <h2>Challenge Coverage</h2>
+      <p class="section-note">How much funding coverage is there for each Genesis Mission Challenge, and which program offices are contributing?</p>
+      {_challenge_coverage_html(challenge_summary)}
+    </section>
+
+    <section class="appendix">
+      <h2>Appendix: Validation and Traceability</h2>
+      <p class="section-note">Validation, confidence, review, and row-level FYNSP programming details are available here.</p>
+      <div class="appendix-actions">
+        <button type="button" onclick="setAppendix(true)">Open all</button>
+        <button type="button" onclick="setAppendix(false)">Close all</button>
+      </div>
+      <details>
+        <summary>Office Claim Validation</summary>
+        {_table_html(appendix_claims)}
+      </details>
+      <details>
+        <summary>Unclaimed Positive Evidence</summary>
+        {_table_html(unclaimed_evidence)}
+      </details>
+      <details>
+        <summary>Office Pair Collaboration Opportunities</summary>
+        {_office_pair_opportunities_html(pair_opportunities)}
+      </details>
+      <details>
+        <summary>Reviewed Row-Level Classifications</summary>
+        {_table_html(appendix_rows)}
+      </details>
+    </section>
+  </div>
 """
 
 
@@ -560,7 +649,7 @@ def _challenge_funding_summary(
     claims: pd.DataFrame,
 ) -> pd.DataFrame:
     if positive.empty:
-        funding = pd.DataFrame(columns=["challenge_name", "BASELINE", "UFR"])
+        funding = pd.DataFrame(columns=["challenge_name", *FUNDING_LEVELS])
         counts = pd.DataFrame(
             columns=["challenge_name", "project_rows", "wbs_count", "contributing_office_count"]
         )
@@ -598,14 +687,16 @@ def _challenge_funding_summary(
         }
     )
     summary = (
-        base_challenges.merge(funding[["challenge_name", "BASELINE", "UFR"]], on="challenge_name", how="left")
+        base_challenges.merge(funding[["challenge_name", *FUNDING_LEVELS]], on="challenge_name", how="left")
         .merge(counts, on="challenge_name", how="left")
     )
-    for column in ["BASELINE", "UFR", "project_rows", "wbs_count", "contributing_office_count"]:
+    for column in [*FUNDING_LEVELS, "project_rows", "wbs_count", "contributing_office_count"]:
         summary[column] = pd.to_numeric(summary[column], errors="coerce").fillna(0)
-    summary["total_funding"] = summary["BASELINE"] + summary["UFR"]
+    summary["total_funding"] = summary[list(FUNDING_LEVELS)].sum(axis=1)
     summary["ufr_share"] = summary.apply(
-        lambda row: 0.0 if row["total_funding"] <= 0 else float(row["UFR"]) / float(row["total_funding"]),
+        lambda row: 0.0
+        if row["total_funding"] <= 0
+        else (float(row["UFR"]) + float(row["ROT"])) / float(row["total_funding"]),
         axis=1,
     )
 
@@ -678,8 +769,7 @@ def _office_challenge_contributions(
     output_columns = [
         "challenge_name",
         "normalized_funding_office",
-        "BASELINE",
-        "UFR",
+        *FUNDING_LEVELS,
         "total_funding",
         "project_rows",
         "wbs_count",
@@ -739,7 +829,7 @@ def _office_challenge_contributions(
     for column in ["project_rows", "wbs_count"]:
         frame[column] = pd.to_numeric(frame[column], errors="coerce").fillna(0).astype(int)
     frame["wbs_names"] = frame["wbs_names"].fillna("")
-    frame["total_funding"] = frame["BASELINE"] + frame["UFR"]
+    frame["total_funding"] = frame[list(FUNDING_LEVELS)].sum(axis=1)
     frame["role"] = frame.apply(
         lambda row: row["claimed_role"]
         if _clean_text(row.get("claimed_role"))
@@ -757,8 +847,7 @@ def _office_challenge_contributions(
 def _office_portfolio_summary(positive: pd.DataFrame, claims: pd.DataFrame) -> pd.DataFrame:
     output_columns = [
         "normalized_funding_office",
-        "BASELINE",
-        "UFR",
+        *FUNDING_LEVELS,
         "total_funding",
         "funded_challenge_count",
         "claimed_challenge_count",
@@ -829,7 +918,7 @@ def _office_portfolio_summary(positive: pd.DataFrame, claims: pd.DataFrame) -> p
         "wbs_count",
     ]:
         frame[column] = pd.to_numeric(frame[column], errors="coerce").fillna(0).astype(int)
-    frame["total_funding"] = frame["BASELINE"] + frame["UFR"]
+    frame["total_funding"] = frame[list(FUNDING_LEVELS)].sum(axis=1)
     return frame[output_columns].sort_values(
         ["funded_challenge_count", "claimed_challenge_count", "total_funding"],
         ascending=False,
@@ -860,8 +949,7 @@ def _lead_claim_funding_summary(
             columns=[
                 "challenge_name",
                 "lead_program_office",
-                "BASELINE",
-                "UFR",
+                *FUNDING_LEVELS,
                 "total_funding",
                 "project_rows",
                 "wbs_count",
@@ -883,14 +971,14 @@ def _lead_claim_funding_summary(
     lead_funding = lead_funding.rename(columns={"normalized_funding_office": "lead_program_office"})
     lead_funding = lead_funding.loc[
         lead_funding["role"].eq("lead"),
-        ["challenge_name", "lead_program_office", "BASELINE", "UFR", "total_funding", "project_rows", "wbs_count"],
+        ["challenge_name", "lead_program_office", *FUNDING_LEVELS, "total_funding", "project_rows", "wbs_count"],
     ]
     summary = leads[["challenge_name", "lead_program_office"]].merge(
         lead_funding,
         on=["challenge_name", "lead_program_office"],
         how="left",
     )
-    for column in ["BASELINE", "UFR", "total_funding", "project_rows", "wbs_count"]:
+    for column in [*FUNDING_LEVELS, "total_funding", "project_rows", "wbs_count"]:
         summary[column] = pd.to_numeric(summary[column], errors="coerce").fillna(0)
 
     contributor_counts = contributions.groupby("challenge_name")["normalized_funding_office"].nunique()
@@ -999,6 +1087,7 @@ def _appendix_reviewed_rows(reviewed_classifications: pd.DataFrame) -> pd.DataFr
     columns = [
         "source_file",
         "source_row_number",
+        "fynsp_cycle",
         "wbs_name",
         "normalized_funding_office",
         "funding_level",
@@ -1028,6 +1117,7 @@ def _disruptiveness_rows(positive: pd.DataFrame) -> pd.DataFrame:
         "programming_record_id",
         "source_file",
         "source_row_number",
+        "fynsp_cycle",
         "wbs_name",
         "normalized_funding_office",
         "funding_level",
@@ -1081,9 +1171,9 @@ def _disruptiveness_rows(positive: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def _project_disruptiveness_html(rows: pd.DataFrame) -> str:
+def _project_disruptiveness_html(rows: pd.DataFrame, *, view_id: str) -> str:
     if rows.empty:
-        return "<p>No BASELINE or UFR programming rows were found for disruptiveness scoring.</p>"
+        return "<p>No BASELINE, UFR, or ROT programming rows were found for disruptiveness scoring.</p>"
 
     payload = _disruptiveness_payload(rows)
     data_json = json.dumps(payload, ensure_ascii=False, sort_keys=True).replace(
@@ -1097,39 +1187,45 @@ def _project_disruptiveness_html(rows: pd.DataFrame) -> str:
         sorted({row["challenge"] for row in payload["rows"] if row["challenge"]})
     )
     tile_count = len(payload["rows"])
+    mode_buttons = "".join(
+        f"<button type=\"button\" data-disruptiveness-mode=\"{level}\">{level}</button>"
+        for level in FUNDING_LEVELS
+    )
+    legend_items = "".join(
+        f"<span><span class=\"legend-swatch\" style=\"background:var(--{level.lower()})\"></span>{level} tile</span>"
+        for level in FUNDING_LEVELS
+    )
     return f"""
-    <div class="viz-block disruptiveness-tool" data-disruptiveness-row-count="{tile_count}" data-tile-layout="packed-grid" data-x-axis="ai-directness-reversed">
+    <div id="disruptiveness-tool-{_ha(view_id)}" class="viz-block disruptiveness-tool" data-disruptiveness-row-count="{tile_count}" data-tile-layout="packed-grid" data-x-axis="ai-directness-reversed">
       <div class="tool-controls">
         <div class="tool-control">
           <label>Funding Mode</label>
           <div class="segmented" role="group" aria-label="Funding mode">
             <button type="button" class="active" data-disruptiveness-mode="ALL">ALL FUNDS</button>
-            <button type="button" data-disruptiveness-mode="BASELINE">BASELINE</button>
-            <button type="button" data-disruptiveness-mode="UFR">UFR</button>
+            {mode_buttons}
           </div>
         </div>
         <div class="tool-control">
-          <label for="disruptiveness-office-filter">Program Office</label>
-          <select id="disruptiveness-office-filter">
+          <label>Program Office</label>
+          <select data-disruptiveness-office-filter>
             <option value="">All offices</option>
             {office_options}
           </select>
         </div>
         <div class="tool-control">
-          <label for="disruptiveness-challenge-filter">Genesis Mission Challenge</label>
-          <select id="disruptiveness-challenge-filter">
+          <label>Genesis Mission Challenge</label>
+          <select data-disruptiveness-challenge-filter>
             <option value="">All challenges</option>
             {challenge_options}
           </select>
         </div>
       </div>
       <div class="legend">
-        <span><span class="legend-swatch" style="background:var(--baseline)"></span>BASELINE tile</span>
-        <span><span class="legend-swatch" style="background:var(--ufr)"></span>UFR tile</span>
-        <span id="disruptiveness-count">{tile_count:,} visible projects</span>
+        {legend_items}
+        <span data-disruptiveness-count>{tile_count:,} visible projects</span>
       </div>
       <div class="disruptiveness-layout">
-        <svg id="disruptiveness-svg" class="disruptiveness-svg" viewBox="0 0 1040 570" role="img" aria-label="Packed tilemap of project funding disruptiveness">
+        <svg class="disruptiveness-svg" viewBox="0 0 1040 570" role="img" aria-label="Packed tilemap of project funding disruptiveness">
           <rect x="78" y="36" width="896" height="448" fill="#ffffff" stroke="#d9e2ec"></rect>
           <g stroke="#edf2f7" stroke-width="1">
             <line x1="78" y1="372" x2="974" y2="372"></line>
@@ -1157,25 +1253,25 @@ def _project_disruptiveness_html(rows: pd.DataFrame) -> str:
             <text x="604" y="58">Highest disruption risk: large office share, weak AI fit</text>
             <text x="98" y="466">Lower disruption: small share, direct AI/ML fit</text>
           </g>
-          <g id="disruptiveness-tiles"></g>
+          <g data-disruptiveness-tiles></g>
         </svg>
         <aside class="detail-panel" aria-live="polite">
-          <h3 id="disruptiveness-detail-title">Select a project tile</h3>
+          <h3 data-disruptiveness-detail-title>Select a project tile</h3>
           <div class="detail-grid">
-            <span class="label">Office</span><span id="disruptiveness-detail-office">-</span>
-            <span class="label">Funding</span><span id="disruptiveness-detail-funding">-</span>
-            <span class="label">Amount</span><span id="disruptiveness-detail-amount">-</span>
-            <span class="label">Office share</span><span id="disruptiveness-detail-share">-</span>
-            <span class="label">AI score</span><span id="disruptiveness-detail-score">-</span>
-            <span class="label">AI label</span><span id="disruptiveness-detail-label">-</span>
-            <span class="label">Challenge</span><span id="disruptiveness-detail-challenge">-</span>
-            <span class="label">Source</span><span id="disruptiveness-detail-source">-</span>
+            <span class="label">Office</span><span data-disruptiveness-detail-office>-</span>
+            <span class="label">Funding</span><span data-disruptiveness-detail-funding>-</span>
+            <span class="label">Amount</span><span data-disruptiveness-detail-amount>-</span>
+            <span class="label">Office share</span><span data-disruptiveness-detail-share>-</span>
+            <span class="label">AI score</span><span data-disruptiveness-detail-score>-</span>
+            <span class="label">AI label</span><span data-disruptiveness-detail-label>-</span>
+            <span class="label">Challenge</span><span data-disruptiveness-detail-challenge>-</span>
+            <span class="label">Source</span><span data-disruptiveness-detail-source>-</span>
           </div>
-          <p class="muted" id="disruptiveness-detail-rationale">Use the filters to isolate an office, challenge, or funding mode.</p>
+          <p class="muted" data-disruptiveness-detail-rationale>Use the filters to isolate an office, challenge, or funding mode.</p>
         </aside>
       </div>
-      <script type="application/json" id="disruptiveness-data">{data_json}</script>
-      {_project_disruptiveness_script()}
+      <script type="application/json" data-disruptiveness-data>{data_json}</script>
+      {_project_disruptiveness_script(view_id)}
     </div>
     """
 
@@ -1196,7 +1292,7 @@ def _disruptiveness_payload(rows: pd.DataFrame) -> dict[str, Any]:
     for level in FUNDING_LEVELS:
         if level not in office_level_totals.columns:
             office_level_totals[level] = 0.0
-    office_level_totals["ALL"] = office_level_totals["BASELINE"] + office_level_totals["UFR"]
+    office_level_totals["ALL"] = office_level_totals[list(FUNDING_LEVELS)].sum(axis=1)
 
     payload_rows = []
     for _, row in frame.iterrows():
@@ -1204,9 +1300,19 @@ def _disruptiveness_payload(rows: pd.DataFrame) -> dict[str, Any]:
         funding_level = _clean_text(row.get("funding_level")).upper()
         amount = float(row.get("five_year_total") or 0.0)
         totals = office_level_totals.loc[office] if office in office_level_totals.index else {}
-        baseline_total = float(totals.get("BASELINE", 0.0)) if hasattr(totals, "get") else 0.0
-        ufr_total = float(totals.get("UFR", 0.0)) if hasattr(totals, "get") else 0.0
+        level_totals = {
+            level: float(totals.get(level, 0.0)) if hasattr(totals, "get") else 0.0
+            for level in FUNDING_LEVELS
+        }
         all_total = float(totals.get("ALL", 0.0)) if hasattr(totals, "get") else 0.0
+        level_shares = {
+            level.lower(): (
+                amount / level_totals[level]
+                if funding_level == level and level_totals[level] > 0
+                else 0.0
+            )
+            for level in FUNDING_LEVELS
+        }
         payload_rows.append(
             {
                 "id": _clean_text(row.get("programming_record_id")),
@@ -1222,19 +1328,9 @@ def _disruptiveness_payload(rows: pd.DataFrame) -> dict[str, Any]:
                 "ai_directness_confidence": _clean_text(row.get("ai_directness_confidence")) or "low",
                 "ai_directness_rationale": _clean_text(row.get("ai_directness_rationale")),
                 "office_total_all": all_total,
-                "office_total_baseline": baseline_total,
-                "office_total_ufr": ufr_total,
+                **{f"office_total_{level.lower()}": total for level, total in level_totals.items()},
                 "office_share_all": 0.0 if all_total <= 0 else amount / all_total,
-                "office_share_baseline": (
-                    amount / baseline_total
-                    if funding_level == "BASELINE" and baseline_total > 0
-                    else 0.0
-                ),
-                "office_share_ufr": (
-                    amount / ufr_total
-                    if funding_level == "UFR" and ufr_total > 0
-                    else 0.0
-                ),
+                **{f"office_share_{level}": share for level, share in level_shares.items()},
             }
         )
     return {"rows": payload_rows}
@@ -1244,30 +1340,31 @@ def _select_options(values: list[str]) -> str:
     return "".join(f"<option value=\"{_ha(value)}\">{_h(value)}</option>" for value in values)
 
 
-def _project_disruptiveness_script() -> str:
+def _project_disruptiveness_script(view_id: str) -> str:
     return """
       <script>
         (function () {
-          const dataElement = document.getElementById('disruptiveness-data');
+          const container = document.getElementById('disruptiveness-tool-__VIEW_ID__');
+          if (!container) return;
+          const dataElement = container.querySelector('[data-disruptiveness-data]');
           const payload = JSON.parse(dataElement.textContent || '{"rows": []}');
           const rows = payload.rows || [];
-          const svg = document.getElementById('disruptiveness-svg');
-          const layer = document.getElementById('disruptiveness-tiles');
-          const count = document.getElementById('disruptiveness-count');
-          const officeFilter = document.getElementById('disruptiveness-office-filter');
-          const challengeFilter = document.getElementById('disruptiveness-challenge-filter');
-          const modeButtons = Array.from(document.querySelectorAll('[data-disruptiveness-mode]'));
+          const layer = container.querySelector('[data-disruptiveness-tiles]');
+          const count = container.querySelector('[data-disruptiveness-count]');
+          const officeFilter = container.querySelector('[data-disruptiveness-office-filter]');
+          const challengeFilter = container.querySelector('[data-disruptiveness-challenge-filter]');
+          const modeButtons = Array.from(container.querySelectorAll('[data-disruptiveness-mode]'));
           const detail = {
-            title: document.getElementById('disruptiveness-detail-title'),
-            office: document.getElementById('disruptiveness-detail-office'),
-            funding: document.getElementById('disruptiveness-detail-funding'),
-            amount: document.getElementById('disruptiveness-detail-amount'),
-            share: document.getElementById('disruptiveness-detail-share'),
-            score: document.getElementById('disruptiveness-detail-score'),
-            label: document.getElementById('disruptiveness-detail-label'),
-            challenge: document.getElementById('disruptiveness-detail-challenge'),
-            source: document.getElementById('disruptiveness-detail-source'),
-            rationale: document.getElementById('disruptiveness-detail-rationale')
+            title: container.querySelector('[data-disruptiveness-detail-title]'),
+            office: container.querySelector('[data-disruptiveness-detail-office]'),
+            funding: container.querySelector('[data-disruptiveness-detail-funding]'),
+            amount: container.querySelector('[data-disruptiveness-detail-amount]'),
+            share: container.querySelector('[data-disruptiveness-detail-share]'),
+            score: container.querySelector('[data-disruptiveness-detail-score]'),
+            label: container.querySelector('[data-disruptiveness-detail-label]'),
+            challenge: container.querySelector('[data-disruptiveness-detail-challenge]'),
+            source: container.querySelector('[data-disruptiveness-detail-source]'),
+            rationale: container.querySelector('[data-disruptiveness-detail-rationale]')
           };
           const chart = { left: 78, top: 36, cols: 32, rows: 16, tileSize: 28 };
           let mode = 'ALL';
@@ -1286,8 +1383,7 @@ def _project_disruptiveness_script() -> str:
             return String(value || '').replaceAll('_', ' ');
           }
           function rowShare(row) {
-            if (mode === 'BASELINE') return row.office_share_baseline || 0;
-            if (mode === 'UFR') return row.office_share_ufr || 0;
+            if (mode !== 'ALL') return row['office_share_' + mode.toLowerCase()] || 0;
             return row.office_share_all || 0;
           }
           function rowVisible(row) {
@@ -1378,7 +1474,7 @@ def _project_disruptiveness_script() -> str:
               rect.setAttribute('rx', '2');
               rect.setAttribute('tabindex', '0');
               rect.setAttribute('role', 'button');
-              rect.setAttribute('class', (row.funding_level === 'UFR' ? 'tile-ufr' : 'tile-baseline') + (row.id === selectedId ? ' tile-selected' : ''));
+              rect.setAttribute('class', 'tile-' + String(row.funding_level || 'baseline').toLowerCase() + (row.id === selectedId ? ' tile-selected' : ''));
               rect.setAttribute('opacity', '0.82');
               rect.dataset.projectId = row.id || '';
               rect.dataset.targetCol = String(tile.target.col);
@@ -1414,32 +1510,37 @@ def _project_disruptiveness_script() -> str:
           render();
         })();
       </script>
-    """
+    """.replace("__VIEW_ID__", _ha(view_id))
 
 
 def _mission_funding_mix_html(challenge_summary: pd.DataFrame) -> str:
     if challenge_summary.empty:
-        return "<p>No BASELINE or UFR funding rows were found.</p>"
+        return "<p>No BASELINE, UFR, or ROT funding rows were found.</p>"
 
     max_total = max(float(challenge_summary["total_funding"].max()), 1.0)
     rows = []
     for _, row in challenge_summary.iterrows():
         total = float(row["total_funding"])
-        baseline = float(row["BASELINE"])
-        ufr = float(row["UFR"])
+        funding_values = _funding_values(row)
         width = 3 if total <= 0 else max(6, 100 * total / max_total)
+        funding_attrs = " ".join(
+            f"data-{level.lower()}-total=\"{funding_values[level]:.2f}\""
+            for level in FUNDING_LEVELS
+        )
+        funding_cells = "".join(
+            f"<td class=\"num\">{_format_money(funding_values[level])}</td>"
+            for level in FUNDING_LEVELS
+        )
         rows.append(
             "<tr "
             f"data-challenge=\"{_ha(row['challenge_name'])}\" "
-            f"data-baseline-total=\"{baseline:.2f}\" "
-            f"data-ufr-total=\"{ufr:.2f}\" "
+            f"{funding_attrs} "
             f"data-total=\"{total:.2f}\" "
             f"data-contributor-count=\"{int(row['contributing_office_count'])}\">"
             f"<td>{_h(row['challenge_name'])}</td>"
-            f"<td>{_stacked_bar(total, baseline, ufr, width)}</td>"
+            f"<td>{_stacked_bar(total, funding_values, width)}</td>"
             f"<td class=\"num\">{_format_money(total)}</td>"
-            f"<td class=\"num\">{_format_money(baseline)}</td>"
-            f"<td class=\"num\">{_format_money(ufr)}</td>"
+            f"{funding_cells}"
             f"<td class=\"num\">{int(row['contributing_office_count'])}</td>"
             f"<td class=\"num\">{int(row['program_office_player_count'])}</td>"
             f"<td>{_h(row['collaboration_signal'])}</td>"
@@ -1448,7 +1549,7 @@ def _mission_funding_mix_html(challenge_summary: pd.DataFrame) -> str:
     return (
         "<div class=\"viz-block\"><table class=\"data-table\">"
         "<thead><tr><th>Genesis Mission Challenge</th><th>Funding Mix</th><th>Total</th>"
-        "<th>BASELINE</th><th>UFR</th><th>Funding Offices</th><th>Office Players</th><th>Collaboration Signal</th></tr></thead>"
+        f"{_funding_header_html()}<th>Funding Offices</th><th>Office Players</th><th>Collaboration Signal</th></tr></thead>"
         f"<tbody>{''.join(rows)}</tbody></table></div>"
     )
 
@@ -1483,14 +1584,13 @@ def _challenge_office_matrix_html(
                 cells.append("<td class=\"muted\">-</td>")
                 continue
             total = float(row["total_funding"])
-            baseline = float(row["BASELINE"])
-            ufr = float(row["UFR"])
+            funding_values = _funding_values(row)
             role = _clean_text(row["role"])
             cells.append(
                 "<td>"
                 "<div class=\"matrix-cell\">"
                 f"<div class=\"cell-total\">{_format_money(total)}</div>"
-                f"{_mini_stack(total, baseline, ufr)}"
+                f"{_mini_stack(total, funding_values)}"
                 f"<div>{_role_pill(role)}</div>"
                 f"<div class=\"muted\">{int(row['project_rows'])} rows / {int(row['wbs_count'])} WBS</div>"
                 "</div>"
@@ -1553,7 +1653,7 @@ def _collaboration_bubble_html(challenge_summary: pd.DataFrame) -> str:
             f"data-total=\"{total:.2f}\" data-ufr-share=\"{ufr_share:.4f}\" />"
             f"<text x=\"{x + radius + 8:.1f}\" y=\"{y + 4:.1f}\" font-size=\"11\" fill=\"#52606d\">"
             f"{_format_money(total)} / {player_count} player{'s' if player_count != 1 else ''} "
-            f"({funding_count} funded) / {ufr_share:.0%} UFR</text>"
+            f"({funding_count} funded) / {ufr_share:.0%} UFR/ROT</text>"
         )
 
     return (
@@ -1566,7 +1666,7 @@ def _collaboration_bubble_html(challenge_summary: pd.DataFrame) -> str:
         "</svg>"
         "<div class=\"legend\"><span><span class=\"legend-swatch\" style=\"background:#3f6f9f\"></span>BASELINE-heavy</span>"
         "<span><span class=\"legend-swatch\" style=\"background:#9b7354\"></span>Mixed</span>"
-        "<span><span class=\"legend-swatch\" style=\"background:#d97706\"></span>UFR-heavy</span></div>"
+        "<span><span class=\"legend-swatch\" style=\"background:#d97706\"></span>UFR/ROT-heavy</span></div>"
         "</div>"
     )
 
@@ -1601,11 +1701,11 @@ def _challenge_collaboration_cards_html(
                 f"<td>{_h(row['normalized_funding_office'])}</td>"
                 f"<td>{_role_pill(row['role'])}</td>"
                 f"<td class=\"num\">{_format_money(row['total_funding'])}</td>"
-                f"<td>{_mini_stack(row['total_funding'], row['BASELINE'], row['UFR'])}</td>"
+                f"<td>{_mini_stack(row['total_funding'], _funding_values(row))}</td>"
                 "</tr>"
             )
         if not contributor_rows:
-            contributor_table = "<p class=\"muted\">No BASELINE/UFR funding contributors found.</p>"
+            contributor_table = "<p class=\"muted\">No BASELINE/UFR/ROT funding contributors found.</p>"
         else:
             contributor_table = (
                 "<table class=\"data-table\"><thead><tr><th>Office</th><th>Role</th><th>Total</th><th>Mix</th></tr></thead>"
@@ -1619,7 +1719,7 @@ def _challenge_collaboration_cards_html(
             f"<p><strong>{_format_money(challenge_row['total_funding'])}</strong> across "
             f"{int(challenge_row['program_office_player_count'])} program office player"
             f"{'s' if int(challenge_row['program_office_player_count']) != 1 else ''}; "
-            f"{int(challenge_row['contributing_office_count'])} have direct BASELINE/UFR funding.</p>"
+            f"{int(challenge_row['contributing_office_count'])} have direct BASELINE/UFR/ROT funding.</p>"
             f"{_labeled_chips('Lead', leads)}"
             f"{_labeled_chips('Claimed partners', partners)}"
             f"{_labeled_chips('Other funding contributors', _join_sorted(other_contributors))}"
@@ -1679,7 +1779,7 @@ def _office_portfolios_html(
             portfolio_rows.append(
                 "<div class=\"portfolio-row\">"
                 f"<div>{_h(_shorten(row['challenge_name'], 72))}<br>{_role_pill(row['role'])}</div>"
-                f"<div>{_stacked_bar(row['total_funding'], row['BASELINE'], row['UFR'], width)}</div>"
+                f"<div>{_stacked_bar(row['total_funding'], _funding_values(row), width)}</div>"
                 f"<div class=\"num\">{_format_money(row['total_funding'])}</div>"
                 "</div>"
             )
@@ -1697,7 +1797,11 @@ def _office_portfolios_html(
         )
         citations = "".join(f"<li>{_h(citation)}</li>" for citation in _top_citations(office_rows, limit=5))
         if not citations:
-            citations = "<li>No direct BASELINE/UFR programming rows found for this claimed office.</li>"
+            citations = "<li>No direct BASELINE/UFR/ROT programming rows found for this claimed office.</li>"
+        funding_metrics = "".join(
+            f"<div><strong>{_format_money(office_row[level])}</strong><br>{level}</div>"
+            for level in FUNDING_LEVELS
+        )
         cards.append(
             "<article class=\"card office-card\" "
             f"data-office=\"{_ha(office)}\" "
@@ -1709,8 +1813,7 @@ def _office_portfolios_html(
             f"<div><strong>{int(office_row['funded_challenge_count'])}</strong><br>funded challenges</div>"
             f"<div><strong>{int(office_row['lead_claim_count'])}</strong><br>lead claims</div>"
             f"<div><strong>{int(office_row['partner_claim_count'])}</strong><br>partner claims</div>"
-            f"<div><strong>{_format_money(office_row['BASELINE'])}</strong><br>BASELINE</div>"
-            f"<div><strong>{_format_money(office_row['UFR'])}</strong><br>UFR</div>"
+            f"{funding_metrics}"
             f"<div><strong>{int(office_row['wbs_count'])}</strong><br>WBS areas</div>"
             "</div>"
             f"<p>{narrative}</p>"
@@ -1732,14 +1835,18 @@ def _lead_claim_funding_html(lead_summary: pd.DataFrame) -> str:
     for _, row in lead_summary.iterrows():
         total = float(row["total_funding"])
         width = 3 if total <= 0 else max(6, 100 * total / max_total)
+        funding_values = _funding_values(row)
+        funding_cells = "".join(
+            f"<td class=\"num\">{_format_money(funding_values[level])}</td>"
+            for level in FUNDING_LEVELS
+        )
         rows.append(
             "<tr>"
             f"<td>{_h(row['lead_program_office'])}</td>"
             f"<td>{_h(row['challenge_name'])}</td>"
-            f"<td>{_stacked_bar(total, row['BASELINE'], row['UFR'], width)}</td>"
+            f"<td>{_stacked_bar(total, funding_values, width)}</td>"
             f"<td class=\"num\">{_format_money(total)}</td>"
-            f"<td class=\"num\">{_format_money(row['BASELINE'])}</td>"
-            f"<td class=\"num\">{_format_money(row['UFR'])}</td>"
+            f"{funding_cells}"
             f"<td class=\"num\">{int(row['project_rows'])}</td>"
             f"<td class=\"num\">{int(row['wbs_count'])}</td>"
             f"<td>{_h(row['collaboration_signal'])}</td>"
@@ -1748,7 +1855,7 @@ def _lead_claim_funding_html(lead_summary: pd.DataFrame) -> str:
     return (
         "<div class=\"viz-block\"><table class=\"data-table\">"
         "<thead><tr><th>Lead Office</th><th>Genesis Mission Challenge</th><th>Funding Mix</th>"
-        "<th>Total</th><th>BASELINE</th><th>UFR</th><th>Rows</th><th>WBS</th><th>Signal</th></tr></thead>"
+        f"<th>Total</th>{_funding_header_html()}<th>Rows</th><th>WBS</th><th>Signal</th></tr></thead>"
         f"<tbody>{''.join(rows)}</tbody></table></div>"
     )
 
@@ -1759,23 +1866,27 @@ def _challenge_coverage_html(challenge_summary: pd.DataFrame) -> str:
 
     rows = []
     for _, row in challenge_summary.iterrows():
+        funding_values = _funding_values(row)
+        funding_cells = "".join(
+            f"<td class=\"num\">{_format_money(funding_values[level])}</td>"
+            for level in FUNDING_LEVELS
+        )
         rows.append(
             "<tr>"
             f"<td>{_h(row['challenge_name'])}</td>"
             f"<td class=\"num\">{_format_money(row['total_funding'])}</td>"
-            f"<td class=\"num\">{_format_money(row['BASELINE'])}</td>"
-            f"<td class=\"num\">{_format_money(row['UFR'])}</td>"
+            f"{funding_cells}"
             f"<td class=\"num\">{int(row['program_office_player_count'])}</td>"
             f"<td class=\"num\">{int(row['contributing_office_count'])}</td>"
             f"<td>{_h(row['lead_offices'] or 'None identified')}</td>"
             f"<td>{_h(row['partner_offices'] or 'None identified')}</td>"
-            f"<td>{_h(row['actual_funding_offices'] or 'No BASELINE/UFR funding found')}</td>"
+            f"<td>{_h(row['actual_funding_offices'] or 'No BASELINE/UFR/ROT funding found')}</td>"
             f"<td>{_h(row['collaboration_signal'])}</td>"
             "</tr>"
         )
     return (
         "<table class=\"data-table\">"
-        "<thead><tr><th>Genesis Mission Challenge</th><th>Total</th><th>BASELINE</th><th>UFR</th>"
+        f"<thead><tr><th>Genesis Mission Challenge</th><th>Total</th>{_funding_header_html()}"
         "<th>Office Players</th><th>Funding Offices</th><th>Claimed Lead</th><th>Claimed Partners</th><th>Actual Contributors</th><th>Signal</th></tr></thead>"
         f"<tbody>{''.join(rows)}</tbody></table>"
     )
@@ -1788,7 +1899,7 @@ def _table_html(frame: pd.DataFrame) -> str:
 
 
 def _metadata_html(paths_module: Any, metadata_text: str | None) -> str:
-    suffix = "Executive views use BASELINE and UFR rows only."
+    suffix = "Executive views use BASELINE, UFR, and ROT rows only."
     if metadata_text is not None:
         text = _clean_text(metadata_text)
         separator = "" if text.endswith((".", "!", "?")) else "."
@@ -1799,31 +1910,40 @@ def _metadata_html(paths_module: Any, metadata_text: str | None) -> str:
     )
 
 
-def _stacked_bar(total: Any, baseline: Any, ufr: Any, width: float = 100.0) -> str:
+def _funding_values(row: Any) -> dict[str, float]:
+    return {
+        level: _numeric_value(row.get(level, 0.0) if hasattr(row, "get") else 0.0)
+        for level in FUNDING_LEVELS
+    }
+
+
+def _funding_header_html() -> str:
+    return "".join(f"<th>{_h(level)}</th>" for level in FUNDING_LEVELS)
+
+
+def _stacked_bar(total: Any, funding_values: dict[str, float], width: float = 100.0) -> str:
     total = float(total or 0)
-    baseline = float(baseline or 0)
-    ufr = float(ufr or 0)
-    baseline_width = 0.0 if total <= 0 else 100 * baseline / total
-    ufr_width = 0.0 if total <= 0 else 100 * ufr / total
+    segments = "".join(
+        f"<span class=\"{level.lower()}\" style=\"width:{(0.0 if total <= 0 else 100 * funding_values.get(level, 0.0) / total):.1f}%\"></span>"
+        for level in FUNDING_LEVELS
+    )
     return (
         "<div class=\"bar-wrap\">"
         f"<div class=\"bar-fill\" style=\"width:{width:.1f}%\">"
-        f"<span class=\"baseline\" style=\"width:{baseline_width:.1f}%\"></span>"
-        f"<span class=\"ufr\" style=\"width:{ufr_width:.1f}%\"></span>"
+        f"{segments}"
         "</div></div>"
     )
 
 
-def _mini_stack(total: Any, baseline: Any, ufr: Any) -> str:
+def _mini_stack(total: Any, funding_values: dict[str, float]) -> str:
     total = float(total or 0)
-    baseline = float(baseline or 0)
-    ufr = float(ufr or 0)
-    baseline_width = 0.0 if total <= 0 else 100 * baseline / total
-    ufr_width = 0.0 if total <= 0 else 100 * ufr / total
+    segments = "".join(
+        f"<span class=\"{level.lower()}\" style=\"width:{(0.0 if total <= 0 else 100 * funding_values.get(level, 0.0) / total):.1f}%\"></span>"
+        for level in FUNDING_LEVELS
+    )
     return (
         "<div class=\"mini-stack\">"
-        f"<span class=\"baseline\" style=\"width:{baseline_width:.1f}%\"></span>"
-        f"<span class=\"ufr\" style=\"width:{ufr_width:.1f}%\"></span>"
+        f"{segments}"
         "</div>"
     )
 
@@ -1885,10 +2005,13 @@ def _metric(label: str, value: str) -> str:
 
 
 def _legend() -> str:
+    funding_items = "".join(
+        f"<span><span class=\"legend-swatch\" style=\"background:var(--{level.lower()})\"></span>{level}</span>"
+        for level in FUNDING_LEVELS
+    )
     return (
         "<div class=\"legend\">"
-        "<span><span class=\"legend-swatch\" style=\"background:var(--baseline)\"></span>BASELINE</span>"
-        "<span><span class=\"legend-swatch\" style=\"background:var(--ufr)\"></span>UFR</span>"
+        f"{funding_items}"
         "<span><span class=\"role-pill role-lead\">Lead</span></span>"
         "<span><span class=\"role-pill role-partner\">Partner</span></span>"
         "<span><span class=\"role-pill role-contributor\">Actual contributor</span></span>"
@@ -1907,7 +2030,7 @@ def _collaboration_signal(row: pd.Series) -> str:
         return f"Single-office execution: {actual}"
     if player_count == 1:
         return f"Claimed mission ownership: {players}"
-    return "No BASELINE/UFR funding found"
+    return "No BASELINE/UFR/ROT funding found"
 
 
 def _ufr_share_color(ufr_share: float, total: float) -> str:
@@ -1921,10 +2044,7 @@ def _ufr_share_color(ufr_share: float, total: float) -> str:
 
 
 def _format_money(value: Any) -> str:
-    try:
-        number = float(value)
-    except (TypeError, ValueError):
-        number = 0.0
+    number = _numeric_value(value)
     sign = "-" if number < 0 else ""
     number = abs(number)
     if number >= 1_000_000_000:
@@ -1932,6 +2052,13 @@ def _format_money(value: Any) -> str:
     if number >= 1_000_000:
         return f"{sign}${number / 1_000_000:,.1f}M"
     return f"{sign}${number:,.0f}"
+
+
+def _numeric_value(value: Any) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _shorten(value: Any, limit: int) -> str:

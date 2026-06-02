@@ -1,9 +1,9 @@
 """Classify programming funding rows and validate program office claims.
 
 The core question for this package is whether offices that claimed equity in a
-Genesis Mission Challenge have BASELINE or UFR funding rows that map to that
-challenge. Program office mappings are treated as claims, not as assignments of
-WBS items to offices.
+Genesis Mission Challenge have BASELINE, UFR, or ROT funding rows that map to
+that challenge. Program office mappings are treated as claims, not as
+assignments of WBS items to offices.
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ AIDirectnessClassifier = Callable[[dict[str, Any]], Mapping[str, Any] | str]
 
 CLASSIFICATION_SOURCE = "classification_pipeline"
 CONFIDENCE_LEVELS = {"high", "medium", "low"}
-VALIDATION_FUNDING_LEVELS = {"BASELINE", "UFR"}
+VALIDATION_FUNDING_LEVELS = {"BASELINE", "UFR", "ROT"}
 VALID_REVIEW_DECISIONS = {"accept", "change", "needs_discussion", "out_of_scope"}
 NON_VALIDATABLE_OFFICES = {"NNSA FIELD OFFICES"}
 SPECIAL_OFFICE_CODES = {"NAIM", "NAESH", "NA-PAS", "NA-MB"}
@@ -53,7 +53,7 @@ CLASSIFICATION_CONTEXT_COLUMNS = {
     "Acquisition Name",
 }
 
-BUDGET_COLUMNS = ("FY2028", "FY2029", "FY2030", "FY2031", "FY2032")
+BUDGET_COLUMNS = ("FY2027", "FY2028", "FY2029", "FY2030", "FY2031", "FY2032")
 AI_DIRECTNESS_LABELS = {
     "direct_ai_ml",
     "ai_enabled_workflow",
@@ -132,6 +132,7 @@ class EvidenceProfile:
     programming_record_id: str
     source_file: str
     source_row_number: int
+    fynsp_cycle: str
     wbs_name: str
     wbs_node_id: str
     wbs_code: str
@@ -146,6 +147,7 @@ class EvidenceProfile:
     process_improvement_area: str
     program_request: str
     acquisition_context: tuple[str, ...]
+    fy2027: float
     fy2028: float
     fy2029: float
     fy2030: float
@@ -175,6 +177,7 @@ class ClassificationResult:
     programming_record_id: str
     source_file: str
     source_row_number: int
+    fynsp_cycle: str
     wbs_name: str
     wbs_node_id: str
     wbs_code: str
@@ -189,6 +192,7 @@ class ClassificationResult:
     process_improvement_area: str
     program_request: str
     acquisition_context: tuple[str, ...]
+    fy2027: float
     fy2028: float
     fy2029: float
     fy2030: float
@@ -454,6 +458,11 @@ def build_programming_evidence_profiles(
                 programming_record_id=record_id,
                 source_file=source_file,
                 source_row_number=row_number,
+                fynsp_cycle=_collect_single_programming_column_value(
+                    graph,
+                    record_id,
+                    "fynsp_cycle",
+                ),
                 wbs_name=wbs_name,
                 wbs_node_id=wbs_node_id,
                 wbs_code=_collect_single_programming_column_value(graph, record_id, "WBS"),
@@ -487,6 +496,7 @@ def build_programming_evidence_profiles(
                     [record_id],
                     {"Acquisition Type", "Acquisition Name"},
                 ),
+                fy2027=year_values["fy2027"],
                 fy2028=year_values["fy2028"],
                 fy2029=year_values["fy2029"],
                 fy2030=year_values["fy2030"],
@@ -503,7 +513,10 @@ def build_programming_evidence_profiles(
             )
         )
 
-    return sorted(profiles, key=lambda profile: profile.source_row_number)
+    return sorted(
+        profiles,
+        key=lambda profile: (profile.source_file.casefold(), profile.source_row_number),
+    )
 
 
 def rank_challenge_candidates(
@@ -836,7 +849,12 @@ def build_review_template(classifications_df: pd.DataFrame) -> pd.DataFrame:
     template = pd.DataFrame(
         {
             "programming_record_id": classifications_df["programming_record_id"],
+            "source_file": classifications_df["source_file"],
             "source_row_number": classifications_df["source_row_number"],
+            "fynsp_cycle": classifications_df.get(
+                "fynsp_cycle",
+                pd.Series([""] * len(classifications_df)),
+            ),
             "wbs_name": classifications_df["wbs_name"],
             "source_sub_office": classifications_df["source_sub_office"],
             "normalized_funding_office": classifications_df["normalized_funding_office"],
@@ -1321,6 +1339,7 @@ def _build_result_from_decision(
         programming_record_id=evidence.programming_record_id,
         source_file=evidence.source_file,
         source_row_number=evidence.source_row_number,
+        fynsp_cycle=evidence.fynsp_cycle,
         wbs_name=evidence.wbs_name,
         wbs_node_id=evidence.wbs_node_id,
         wbs_code=evidence.wbs_code,
@@ -1335,6 +1354,7 @@ def _build_result_from_decision(
         process_improvement_area=evidence.process_improvement_area,
         program_request=evidence.program_request,
         acquisition_context=evidence.acquisition_context,
+        fy2027=evidence.fy2027,
         fy2028=evidence.fy2028,
         fy2029=evidence.fy2029,
         fy2030=evidence.fy2030,

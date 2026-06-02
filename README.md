@@ -7,9 +7,9 @@ scores how directly each row supports AI/ML work. It publishes a self-contained
 HTML dashboard for team review.
 
 The primary analysis asks whether offices that claimed equity in
-`ProgramOffice_Mapping.csv` have BASELINE or UFR funding rows in
-`programming_data.csv` that map to those same challenges. A programming row's
-funding owner always comes from its source `Sub Office Number`;
+`ProgramOffice_Mapping.csv` have BASELINE, UFR, or ROT funding rows in the
+combined FYNSP programming data that map to those same challenges. A
+programming row's funding owner always comes from its source `Sub Office Number`;
 `ProgramOffice_Mapping.csv` entries are claims to validate, not office
 assignments for WBS items.
 
@@ -53,7 +53,13 @@ Place approved source files in `data/raw/` with these expected names:
 MSTC_data.csv
 ProgramOffice_Mapping.csv
 programming_data.csv
+programming_data_FYNSP27_wide.csv
 ```
+
+The pipeline preprocesses the FYNSP 2028 and FYNSP 2027 programming extracts
+into `data/processed/combined_programming_data.csv` with `source_file`,
+`source_row_number`, and `fynsp_cycle` provenance columns before building the
+ontology.
 
 The pipeline also maintains `data/review/sme_review_overrides.csv`. This file is
 intended for SME review decisions and can be kept under version control when it
@@ -69,6 +75,12 @@ Build and inspect the combined ontology from raw CSVs:
 
 ```powershell
 python -m programming_ontology.build_ontology
+```
+
+Optionally run the preprocessing step directly:
+
+```powershell
+python -m programming_ontology.preprocess_programming
 ```
 
 Run the deterministic offline classifier and write processed artifacts:
@@ -92,6 +104,7 @@ python -m pytest
 Key generated outputs include:
 
 ```text
+data/processed/combined_programming_data.csv
 data/processed/programming_challenge_classifications.csv
 data/processed/reviewed_programming_challenge_classifications.csv
 data/processed/office_claim_validation.csv

@@ -25,9 +25,19 @@ import networkx as nx
 import pandas as pd
 
 try:
-    from .paths import RAW_DATA_DIR
+    from .paths import (
+        COMBINED_PROGRAMMING_DATA_PATH,
+        MSTC_DATA_PATH,
+        PROGRAM_OFFICE_MAPPING_PATH,
+        RAW_DATA_DIR,
+    )
 except ImportError:  # pragma: no cover - supports direct script execution.
     RAW_DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
+    COMBINED_PROGRAMMING_DATA_PATH = (
+        Path(__file__).resolve().parents[2] / "data" / "processed" / "combined_programming_data.csv"
+    )
+    MSTC_DATA_PATH = RAW_DATA_DIR / "MSTC_data.csv"
+    PROGRAM_OFFICE_MAPPING_PATH = RAW_DATA_DIR / "ProgramOffice_Mapping.csv"
 
 
 PROGRAMMING_COLUMNS = [
@@ -41,6 +51,12 @@ PROGRAMMING_COLUMNS = [
 ]
 
 PROGRAMMING_EXTRA_NODE_TYPES = {
+    "programming_record_id": "programming_record_id",
+    "source_file": "programming_source_file",
+    "source_row_number": "programming_source_row_number",
+    "fynsp_cycle": "fynsp_cycle",
+    "fynsp_years": "fynsp_years",
+    "FYNSP": "fynsp_years",
     "Submission Type": "submission_type",
     "Scenario": "planning_scenario",
     "WBS": "wbs_code",
@@ -60,6 +76,7 @@ PROGRAMMING_EXTRA_NODE_TYPES = {
     "Account Integrator Decision": "account_integrator_decision",
     "Program Priority": "program_priority",
     "DOE Priority Tier": "doe_priority_tier",
+    "FY2027": "fy2027_budget",
     "FY2028": "fy2028_budget",
     "FY2029": "fy2029_budget",
     "FY2030": "fy2030_budget",
@@ -237,14 +254,39 @@ def build_combined_ontology(
     combined = _new_graph("combined")
     source_files = []
 
-    for source_name, graph in build_ontologies_for_folder(folder, pattern=pattern).items():
+    graphs = (
+        build_project_ontologies()
+        if Path(folder) == RAW_DATA_DIR and pattern == "*.csv"
+        else build_ontologies_for_folder(folder, pattern=pattern)
+    )
+    for source_name, graph in graphs.items():
         combined = nx.compose(combined, graph)
-        source_files.append(source_name)
+        source_files.extend(_split_delimited(graph.graph.get("source_files", source_name)))
 
     combined.graph["name"] = "combined"
     combined.graph["label"] = "Combined CSV Ontology"
-    combined.graph["source_files"] = "; ".join(source_files)
+    combined.graph["source_files"] = "; ".join(dict.fromkeys(source_files))
     return combined
+
+
+def build_project_ontologies() -> dict[str, nx.MultiDiGraph]:
+    """Build the canonical project graph inputs, including preprocessed programming."""
+
+    from .preprocess_programming import preprocess_programming_data
+
+    preprocess_programming_data()
+
+    return {
+        MSTC_DATA_PATH.name: build_ontology_from_csv(MSTC_DATA_PATH, schema="mstc"),
+        COMBINED_PROGRAMMING_DATA_PATH.name: build_ontology_from_csv(
+            COMBINED_PROGRAMMING_DATA_PATH,
+            schema="programming",
+        ),
+        PROGRAM_OFFICE_MAPPING_PATH.name: build_ontology_from_csv(
+            PROGRAM_OFFICE_MAPPING_PATH,
+            schema="program_office",
+        ),
+    }
 
 
 def summarize_graph(graph: nx.MultiDiGraph) -> dict[str, Any]:
@@ -432,8 +474,26 @@ def _add_programming_rows(
     dataset = _add_concept_node(graph, "dataset", source_name, source_name=source_name)
 
     for row_number, row in df.iterrows():
-        record = _add_record_node(graph, "programming_record", source_name, row_number)
-        _add_relation(graph, dataset, record, "contains_record", source_name, row_number)
+        record_source_name = _clean_value(row.get("source_file")) or source_name
+        source_row_number = _to_int(row.get("source_row_number")) or int(row_number + 1)
+        relation_row_number = source_row_number - 1
+        record = _add_record_node(
+            graph,
+            "programming_record",
+            record_source_name,
+            relation_row_number,
+            explicit_node_id=_clean_value(row.get("programming_record_id")),
+            source_row_number=source_row_number,
+        )
+        _add_relation(
+            graph,
+            dataset,
+            record,
+            "contains_record",
+            record_source_name,
+            relation_row_number,
+        )
+        _append_graph_source(graph, record_source_name)
 
         office = _add_concept_node(
             graph, "sub_office", row["Sub Office Number"], source_name=source_name
@@ -474,7 +534,7 @@ def _add_programming_rows(
             (wbs, scope, "described_by_scope"),
         ]
         for source, target, relation in row_edges:
-            _add_relation(graph, source, target, relation, source_name, row_number)
+            _add_relation(graph, source, target, relation, record_source_name, relation_row_number)
 
         for column in _programming_extra_columns(df):
             label = _clean_value(row[column])
@@ -498,16 +558,16 @@ def _add_programming_rows(
                 record,
                 attribute,
                 f"has_programming_{slug}",
-                source_name,
-                row_number,
+                record_source_name,
+                relation_row_number,
             )
             _add_relation(
                 graph,
                 wbs,
                 attribute,
                 f"wbs_has_programming_{slug}",
-                source_name,
-                row_number,
+                record_source_name,
+                relation_row_number,
             )
 
 
@@ -710,16 +770,22 @@ def _add_record_node(
     node_type: str,
     source_name: str,
     row_number: int,
+    *,
+    explicit_node_id: str | None = None,
+    source_row_number: int | None = None,
 ) -> str:
-    node_id = f"{node_type}:{_slugify(source_name)}:{row_number + 1}"
+    display_row_number = int(source_row_number if source_row_number is not None else row_number + 1)
+    node_id = explicit_node_id or f"{node_type}:{_slugify(source_name)}:{display_row_number}"
     if node_id not in graph:
         graph.add_node(
             node_id,
-            label=f"{source_name} row {row_number + 1}",
+            label=f"{source_name} row {display_row_number}",
             node_type=node_type,
             source_files=source_name,
-            row_number=int(row_number + 1),
+            row_number=display_row_number,
         )
+    else:
+        _append_node_source(graph, node_id, source_name)
     return node_id
 
 
@@ -768,6 +834,10 @@ def _append_delimited(existing: str, value: str, *, delimiter: str = "; ") -> st
     if value not in values:
         values.append(value)
     return delimiter.join(values)
+
+
+def _split_delimited(value: str, *, delimiter: str = "; ") -> list[str]:
+    return [item for item in str(value or "").split(delimiter) if item]
 
 
 def _node_id(node_type: str, label: str) -> str:
@@ -823,6 +893,18 @@ def _clean_value(value: Any) -> str | None:
 
     cleaned = re.sub(r"\s+", " ", str(value)).strip()
     return cleaned or None
+
+
+def _to_int(value: Any) -> int | None:
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    try:
+        return int(float(str(value).replace(",", "").strip()))
+    except (TypeError, ValueError):
+        return None
 
 
 def _normalize_office_code(value: Any) -> str | None:

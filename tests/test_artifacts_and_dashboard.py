@@ -15,6 +15,9 @@ from programming_ontology._dashboard_report import build_classification_dashboar
 from programming_ontology.publish_dashboard import publish_dashboard
 
 
+FUNDING_LEVELS = ("BASELINE", "UFR", "ROT")
+
+
 def _render_dashboard_html() -> str:
     return build_classification_dashboard_html(
         paths_module=paths,
@@ -36,7 +39,9 @@ def test_processed_artifacts_have_expected_row_level_schema() -> None:
 
     required_classification_columns = {
         "programming_record_id",
+        "source_file",
         "source_row_number",
+        "fynsp_cycle",
         "source_sub_office",
         "normalized_funding_office",
         "funding_level",
@@ -47,9 +52,25 @@ def test_processed_artifacts_have_expected_row_level_schema() -> None:
         "ai_directness_label",
         "ai_directness_confidence",
         "ai_directness_rationale",
+        "fy2027",
+        "fy2032",
     }
     assert required_classification_columns.issubset(classifications.columns)
+    assert len(classifications) == 120
     assert len(classifications) == len(reviewed)
+    assert classifications["fynsp_cycle"].value_counts().to_dict() == {
+        "FYNSP 2028": 61,
+        "FYNSP 2027": 59,
+    }
+    validation_by_level = (
+        classifications.groupby("funding_level")["validation_funding_level"]
+        .first()
+        .astype(str)
+        .str.lower()
+        .to_dict()
+    )
+    assert validation_by_level["ROT"] == "true"
+    assert validation_by_level["DECREMENT"] == "false"
     assert "lead_program_office" not in classifications.columns
     assert "support_program_offices" not in classifications.columns
     assert set(claims["validation_status"]).issubset(
@@ -162,14 +183,19 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
     ]:
         assert expected in html
     assert "programming_data.csv row" in html
-    assert "Executive views use BASELINE and UFR rows only" in html
+    assert "programming_data_FYNSP27_wide.csv row" in html
+    assert "Executive views use BASELINE, UFR, and ROT rows only" in html
+    assert 'data-fynsp-view-button="combined"' in html
+    assert 'data-fynsp-view-button="fynsp-2028"' in html
+    assert 'data-fynsp-view-button="fynsp-2027"' in html
+    assert 'data-fynsp-view="combined"' in html
     assert 'data-office="NA-MB"' in html
     assert 'data-office="NA-PAS"' in html
     assert "NA-MB</td><td>Accelerating Business and Management Processes for National Security Missions" in html
     assert "NA-PAS</td><td>Accelerating Nuclear Enterprise Acquisition" in html
     assert html.find("Project Funding Disruptiveness") < html.find("Appendix: Validation and Traceability")
     assert html.find("Office Pair Collaboration Opportunities") > html.find("Appendix: Validation and Traceability")
-    assert 'id="disruptiveness-data"' in html
+    assert "data-disruptiveness-data" in html
     assert 'data-tile-layout="packed-grid"' in html
     assert 'data-x-axis="ai-directness-reversed"' in html
     assert "AI-directness score (more directly AI to the left)" in html
@@ -177,15 +203,17 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
     assert "targetCell" in html
     assert 'data-disruptiveness-mode="BASELINE"' in html
     assert 'data-disruptiveness-mode="UFR"' in html
+    assert 'data-disruptiveness-mode="ROT"' in html
+    assert "tile-rot" in html
     assert '<text x="78" y="510" text-anchor="middle">100</text>' in html
     assert '<text x="974" y="510" text-anchor="middle">0</text>' in html
 
 
-def test_dashboard_challenge_totals_match_baseline_ufr_rows() -> None:
+def test_dashboard_challenge_totals_match_positive_funding_rows() -> None:
     html = _render_dashboard_html()
     reviewed = pd.read_csv(paths.REVIEWED_PROGRAMMING_CHALLENGE_CLASSIFICATIONS_PATH)
     positive = reviewed.loc[
-        reviewed["funding_level"].astype(str).str.upper().isin(["BASELINE", "UFR"])
+        reviewed["funding_level"].astype(str).str.upper().isin(FUNDING_LEVELS)
     ].copy()
     positive["five_year_total"] = pd.to_numeric(
         positive["five_year_total"], errors="coerce"
@@ -199,19 +227,17 @@ def test_dashboard_challenge_totals_match_baseline_ufr_rows() -> None:
     )
 
     for challenge, row in totals.iterrows():
-        baseline = float(row.get("BASELINE", 0.0))
-        ufr = float(row.get("UFR", 0.0))
         challenge_attr = escape(str(challenge), quote=True)
         assert f'data-challenge="{challenge_attr}"' in html
-        assert f'data-baseline-total="{baseline:.2f}"' in html
-        assert f'data-ufr-total="{ufr:.2f}"' in html
+        for level in FUNDING_LEVELS:
+            assert f'data-{level.lower()}-total="{float(row.get(level, 0.0)):.2f}"' in html
 
 
 def test_dashboard_office_counts_match_funded_challenges() -> None:
     html = _render_dashboard_html()
     reviewed = pd.read_csv(paths.REVIEWED_PROGRAMMING_CHALLENGE_CLASSIFICATIONS_PATH)
     positive = reviewed.loc[
-        reviewed["funding_level"].astype(str).str.upper().isin(["BASELINE", "UFR"])
+        reviewed["funding_level"].astype(str).str.upper().isin(FUNDING_LEVELS)
     ].copy()
     expected_counts = positive.groupby("normalized_funding_office")[
         "predicted_challenge"
@@ -225,10 +251,10 @@ def test_dashboard_office_counts_match_funded_challenges() -> None:
         ) in html
 
 
-def test_dashboard_disruptiveness_payload_matches_baseline_ufr_rows() -> None:
+def test_dashboard_disruptiveness_payload_matches_positive_funding_rows() -> None:
     html = _render_dashboard_html()
     match = re.search(
-        r'<script type="application/json" id="disruptiveness-data">(.*?)</script>',
+        r'<script type="application/json" data-disruptiveness-data>(.*?)</script>',
         html,
         flags=re.DOTALL,
     )
@@ -237,11 +263,11 @@ def test_dashboard_disruptiveness_payload_matches_baseline_ufr_rows() -> None:
     rows = payload["rows"]
     reviewed = pd.read_csv(paths.REVIEWED_PROGRAMMING_CHALLENGE_CLASSIFICATIONS_PATH)
     eligible = reviewed.loc[
-        reviewed["funding_level"].astype(str).str.upper().isin(["BASELINE", "UFR"])
+        reviewed["funding_level"].astype(str).str.upper().isin(FUNDING_LEVELS)
     ].copy()
 
     assert len(rows) == len(eligible)
-    assert {row["funding_level"] for row in rows}.issubset({"BASELINE", "UFR"})
+    assert {row["funding_level"] for row in rows}.issubset(set(FUNDING_LEVELS))
 
     eligible["five_year_total"] = pd.to_numeric(
         eligible["five_year_total"], errors="coerce"
@@ -253,10 +279,10 @@ def test_dashboard_disruptiveness_payload_matches_baseline_ufr_rows() -> None:
         aggfunc="sum",
         fill_value=0.0,
     )
-    for level in ["BASELINE", "UFR"]:
+    for level in FUNDING_LEVELS:
         if level not in office_totals.columns:
             office_totals[level] = 0.0
-    office_totals["ALL"] = office_totals["BASELINE"] + office_totals["UFR"]
+    office_totals["ALL"] = office_totals[list(FUNDING_LEVELS)].sum(axis=1)
 
     by_id = {row["id"]: row for row in rows}
     for source_row in eligible.itertuples(index=False):
@@ -267,16 +293,14 @@ def test_dashboard_disruptiveness_payload_matches_baseline_ufr_rows() -> None:
         assert payload_row["office_share_all"] == pytest.approx(
             0.0 if all_total <= 0 else amount / all_total
         )
-        if source_row.funding_level == "BASELINE":
-            baseline_total = float(office_totals_row["BASELINE"])
-            assert payload_row["office_share_baseline"] == pytest.approx(
-                0.0 if baseline_total <= 0 else amount / baseline_total
+        for level in FUNDING_LEVELS:
+            level_total = float(office_totals_row[level])
+            expected = (
+                amount / level_total
+                if source_row.funding_level == level and level_total > 0
+                else 0.0
             )
-        if source_row.funding_level == "UFR":
-            ufr_total = float(office_totals_row["UFR"])
-            assert payload_row["office_share_ufr"] == pytest.approx(
-                0.0 if ufr_total <= 0 else amount / ufr_total
-            )
+            assert payload_row[f"office_share_{level.lower()}"] == pytest.approx(expected)
 
 
 def test_publish_dashboard_writes_sanitized_shareable_html(tmp_path) -> None:
