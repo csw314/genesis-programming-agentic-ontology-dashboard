@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import base64
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import datetime
+from io import BytesIO
 import json
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -12,6 +15,9 @@ from pathlib import Path
 import re
 from typing import Any, Mapping, Sequence
 
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches, Pt
 import httpx
 
 from . import paths
@@ -25,9 +31,12 @@ from .asksage_classifier import (
 
 
 DEFAULT_PROXY_PORT = 8765
-MAX_REQUEST_BYTES = 5_000_000
+MAX_REQUEST_BYTES = 25_000_000
 MAX_CONTEXT_CHARS = 120_000
 DEFAULT_MAX_TOKENS = 1600
+DEFAULT_REPORT_MAX_TOKENS = 3200
+REPORT_DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+MAX_REPORT_IMAGES_FOR_MODEL = 4
 
 
 @dataclass(frozen=True)
@@ -36,6 +45,15 @@ class AskSageDashboardCredentials:
 
     email: str
     api_key: str
+
+
+@dataclass(frozen=True)
+class GeneratedReport:
+    """Generated dashboard report response."""
+
+    filename: str
+    content_type: str
+    body: bytes
 
 
 class AskSageProxyError(RuntimeError):
@@ -203,6 +221,103 @@ def request_asksage_dashboard_insight(
     return {"answer": _extract_chat_completion_text(response.json())}
 
 
+def request_asksage_dashboard_report(
+    payload: Mapping[str, Any],
+    *,
+    http_client: httpx.Client | None = None,
+    base_url: str | None = None,
+) -> GeneratedReport:
+    """Generate a Word executive report from dashboard context."""
+
+    credentials = _parse_credentials(payload)
+    model = _clean_text(payload.get("model"))
+    if not model:
+        raise AskSageProxyError(400, "missing_model", "Select an AskSage model.")
+
+    targets = payload.get("targets")
+    if not isinstance(targets, list) or not targets:
+        raise AskSageProxyError(
+            400,
+            "missing_dashboard_context",
+            "Dashboard data is missing or unavailable.",
+        )
+
+    registry = dashboard_model_registry()
+    configured_model = registry.get(model)
+    target_images = _target_images_from_payload(targets)
+    if target_images and configured_model and configured_model.get("supports_image") is False:
+        raise AskSageProxyError(
+            400,
+            "unsupported_image_model",
+            "The selected AskSage model does not support image input.",
+        )
+
+    report_context = prepare_dashboard_report_context(payload)
+    context_text = prepare_dashboard_report_context_text(report_context)
+    user_content: str | list[dict[str, Any]]
+    text_part = _report_user_text(context_text)
+    model_images = list(target_images.values())[:MAX_REPORT_IMAGES_FOR_MODEL]
+    if model_images:
+        user_content = [{"type": "text", "text": text_part}]
+        user_content.extend(
+            {"type": "image_url", "image_url": {"url": image_url, "detail": "low"}}
+            for image_url in model_images
+        )
+    else:
+        user_content = text_part
+
+    request_body = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": _report_system_prompt()},
+            {"role": "user", "content": user_content},
+        ],
+        "temperature": 0.2,
+        "max_tokens": DEFAULT_REPORT_MAX_TOKENS,
+    }
+
+    close_client = http_client is None
+    client = http_client or httpx.Client(timeout=120.0, trust_env=True)
+    try:
+        response = client.post(
+            f"{resolve_proxy_openai_base_url(base_url).rstrip('/')}/chat/completions",
+            headers=_asksage_headers(credentials),
+            json=request_body,
+        )
+    except httpx.RequestError as error:
+        raise AskSageProxyError(
+            502,
+            "network_failure",
+            "Unable to reach AskSage. Check the network connection or proxy configuration.",
+        ) from error
+    finally:
+        if close_client:
+            client.close()
+
+    _raise_for_asksage_status(response)
+    narrative = _extract_chat_completion_text(response.json())
+    try:
+        body = build_dashboard_report_docx(
+            report_context,
+            narrative,
+            target_images=target_images,
+        )
+    except Exception as error:
+        raise AskSageProxyError(
+            500,
+            "document_generation_failure",
+            "Word document generation failed.",
+        ) from error
+
+    generated_at = _clean_text(report_context.get("generated_at")) or datetime.now().isoformat(timespec="seconds")
+    date_part = generated_at[:10] if len(generated_at) >= 10 else datetime.now().strftime("%Y-%m-%d")
+    return GeneratedReport(
+        filename=f"dashboard_executive_summary_{date_part}.docx",
+        content_type=REPORT_DOCX_MIME,
+        body=body,
+    )
+
+
 def prepare_dashboard_context_text(
     context: Any,
     *,
@@ -220,6 +335,181 @@ def prepare_dashboard_context_text(
     if len(text) <= max_chars:
         return text
     return text[: max_chars - 120] + "\n...[dashboard context truncated to fit AskSage request limits]"
+
+
+def prepare_dashboard_report_context(
+    payload: Mapping[str, Any],
+    *,
+    raw_sample_limit: int = 8,
+    graph_limit: int = 60,
+) -> dict[str, Any]:
+    """Build compact report context without credentials or image data."""
+
+    dashboard = payload.get("dashboard") if isinstance(payload.get("dashboard"), Mapping) else {}
+    generated_at = _clean_text(dashboard.get("generated_at_client")) or datetime.now().isoformat(timespec="seconds")
+    targets = []
+    for target in payload.get("targets", []):
+        if not isinstance(target, Mapping):
+            continue
+        context = target.get("context") if isinstance(target.get("context"), Mapping) else {}
+        target_meta = context.get("target") if isinstance(context.get("target"), Mapping) else {}
+        metadata = context.get("metadata") if isinstance(context.get("metadata"), Mapping) else {}
+        ontology = context.get("ontology") if isinstance(context.get("ontology"), Mapping) else {}
+        raw_data = context.get("raw_data")
+        target_id = _clean_text(target_meta.get("id")) or f"target-{len(targets) + 1}"
+        targets.append(
+            {
+                "id": target_id,
+                "title": _clean_text(target_meta.get("title")) or "Dashboard element",
+                "type": _clean_text(target_meta.get("type")),
+                "fynsp_view": _clean_text(target_meta.get("fynsp_view")),
+                "metadata": metadata,
+                "current_dashboard_selections": context.get("current_dashboard_selections", {}),
+                "raw_data_summary": _summarize_raw_data(raw_data, sample_limit=raw_sample_limit),
+                "ontology": {
+                    "summary": ontology.get("summary", {}),
+                    "selection": ontology.get("selection", {}),
+                    "nodes": (ontology.get("nodes") or [])[:graph_limit]
+                    if isinstance(ontology.get("nodes"), list)
+                    else [],
+                    "edges": (ontology.get("edges") or [])[:graph_limit]
+                    if isinstance(ontology.get("edges"), list)
+                    else [],
+                },
+                "has_image": bool(_clean_text(target.get("image"))),
+                "capture_error": _clean_text(target.get("capture_error")),
+                "session_insight": _clean_text(target.get("session_insight")),
+                "text_snapshot": _clean_text(target.get("text_snapshot"))[:4000],
+            }
+        )
+
+    return {
+        "report_type": "dashboard_executive_summary",
+        "generated_at": generated_at,
+        "dashboard": {
+            "title": _clean_text(dashboard.get("title")) or "Genesis Mission Funding and Collaboration Dashboard",
+            "metadata": _clean_text(dashboard.get("metadata")),
+            "current_view": _clean_text(dashboard.get("current_view")),
+            "assumptions": dashboard.get("assumptions", []),
+        },
+        "target_count": len(targets),
+        "targets": targets,
+    }
+
+
+def prepare_dashboard_report_context_text(
+    context: Mapping[str, Any],
+    *,
+    max_chars: int = MAX_CONTEXT_CHARS,
+) -> str:
+    """Serialize report context and cap target-level evidence if needed."""
+
+    text = json.dumps(context, ensure_ascii=False, sort_keys=True, default=str)
+    if len(text) <= max_chars:
+        return text
+    compacted = deepcopy(dict(context))
+    for target in compacted.get("targets", []):
+        if isinstance(target, dict):
+            summary = target.get("raw_data_summary")
+            if isinstance(summary, dict):
+                summary["sample_rows"] = summary.get("sample_rows", [])[:3]
+            ontology = target.get("ontology")
+            if isinstance(ontology, dict):
+                ontology["nodes"] = ontology.get("nodes", [])[:20]
+                ontology["edges"] = ontology.get("edges", [])[:20]
+            target["text_snapshot"] = _clean_text(target.get("text_snapshot"))[:1000]
+    compacted["_context_truncated"] = True
+    text = json.dumps(compacted, ensure_ascii=False, sort_keys=True, default=str)
+    if len(text) <= max_chars:
+        return text
+    return text[: max_chars - 120] + "\n...[dashboard report context truncated to fit AskSage request limits]"
+
+
+def build_dashboard_report_docx(
+    report_context: Mapping[str, Any],
+    narrative: str,
+    *,
+    target_images: Mapping[str, str] | None = None,
+) -> bytes:
+    """Build a formatted Word report as bytes."""
+
+    target_images = target_images or {}
+    document = Document()
+    _configure_document_styles(document)
+
+    dashboard = report_context.get("dashboard") if isinstance(report_context.get("dashboard"), Mapping) else {}
+    title = _clean_text(dashboard.get("title")) or "Genesis Mission Funding and Collaboration Dashboard"
+    generated_at = _clean_text(report_context.get("generated_at")) or datetime.now().isoformat(timespec="seconds")
+
+    heading = document.add_paragraph()
+    heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title_run = heading.add_run(f"{title}\nExecutive Summary")
+    title_run.bold = True
+    title_run.font.size = Pt(20)
+    subtitle = document.add_paragraph()
+    subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    subtitle.add_run(f"Generated {generated_at}").italic = True
+
+    metadata = _clean_text(dashboard.get("metadata"))
+    if metadata:
+        document.add_paragraph(metadata)
+
+    document.add_heading("Current Dashboard Selections and Assumptions", level=1)
+    if _clean_text(dashboard.get("current_view")):
+        document.add_paragraph(f"Dashboard view: {_clean_text(dashboard.get('current_view'))}")
+    assumptions = dashboard.get("assumptions") if isinstance(dashboard.get("assumptions"), list) else []
+    for assumption in assumptions:
+        document.add_paragraph(_clean_text(assumption), style="List Bullet")
+
+    document.add_page_break()
+    document.add_heading("Executive Narrative", level=1)
+    _add_markdownish_text(document, narrative)
+
+    document.add_page_break()
+    document.add_heading("Supporting Dashboard Evidence", level=1)
+    targets = report_context.get("targets") if isinstance(report_context.get("targets"), list) else []
+    for index, target in enumerate(targets, start=1):
+        if not isinstance(target, Mapping):
+            continue
+        title = _clean_text(target.get("title")) or f"Dashboard Element {index}"
+        target_id = _clean_text(target.get("id"))
+        document.add_heading(title, level=2)
+        raw_summary = target.get("raw_data_summary") if isinstance(target.get("raw_data_summary"), Mapping) else {}
+        if raw_summary:
+            row_count = raw_summary.get("row_count", 0)
+            columns = ", ".join(raw_summary.get("columns", [])[:8])
+            document.add_paragraph(
+                f"Source data: {row_count} row{'s' if row_count != 1 else ''}"
+                + (f"; columns include {columns}." if columns else ".")
+            )
+
+        image_url = target_images.get(target_id)
+        if image_url:
+            _add_image(document, image_url, caption=f"Figure {index}. {title}")
+        elif _clean_text(target.get("capture_error")):
+            note = document.add_paragraph()
+            note.add_run(f"Figure capture note: {_clean_text(target.get('capture_error'))}").italic = True
+
+        sample_rows = raw_summary.get("sample_rows") if isinstance(raw_summary, Mapping) else None
+        if isinstance(sample_rows, list) and sample_rows:
+            _add_sample_table(document, sample_rows, caption=f"Table {index}. Representative data for {title}")
+
+        session_insight = _clean_text(target.get("session_insight"))
+        if session_insight:
+            note = document.add_paragraph()
+            note.add_run("AI insight generated during this dashboard session:").italic = True
+            _add_markdownish_text(document, session_insight)
+
+    document.add_heading("Conclusion and Recommended Next Steps", level=1)
+    document.add_paragraph(
+        "Use this report as an executive briefing companion to the dashboard. "
+        "Validate resourcing or coordination decisions against the source programming rows, "
+        "SME review notes, and current AskSage-generated narrative above."
+    )
+
+    buffer = BytesIO()
+    document.save(buffer)
+    return buffer.getvalue()
 
 
 def run_proxy(
@@ -270,6 +560,17 @@ class DashboardAIProxyHandler(BaseHTTPRequestHandler):
                     payload,
                     base_url=self.asksage_base_url,
                 )
+            elif self.path == "/api/asksage/report":
+                report = request_asksage_dashboard_report(
+                    payload,
+                    base_url=self.asksage_base_url,
+                )
+                self._send_bytes(
+                    report.body,
+                    content_type=report.content_type,
+                    filename=report.filename,
+                )
+                return
             else:
                 self._send_json({"error": "Not found."}, status_code=404)
                 return
@@ -286,7 +587,7 @@ class DashboardAIProxyHandler(BaseHTTPRequestHandler):
             )
         except Exception:
             self._send_json(
-                {"error": "AskSage insight proxy failed.", "code": "proxy_failure"},
+                {"error": "AskSage dashboard proxy failed.", "code": "proxy_failure"},
                 status_code=500,
             )
 
@@ -326,6 +627,21 @@ class DashboardAIProxyHandler(BaseHTTPRequestHandler):
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _send_bytes(
+        self,
+        body: bytes,
+        *,
+        content_type: str,
+        filename: str,
+        status_code: int = 200,
+    ) -> None:
+        self.send_response(status_code)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
         self.end_headers()
         self.wfile.write(body)
 
@@ -501,6 +817,193 @@ def _limit_rows(value: Any, row_limit: int) -> Any:
     if isinstance(value, dict):
         return {key: _limit_rows(item, row_limit) for key, item in value.items()}
     return value
+
+
+def _summarize_raw_data(value: Any, *, sample_limit: int) -> dict[str, Any]:
+    rows = _raw_rows(value)
+    columns = sorted({str(key) for row in rows for key in row.keys()})
+    numeric_columns: dict[str, dict[str, float]] = {}
+    for column in columns:
+        numeric_values = []
+        for row in rows:
+            try:
+                numeric_values.append(float(row.get(column)))
+            except (TypeError, ValueError):
+                continue
+        if numeric_values:
+            numeric_columns[column] = {
+                "min": min(numeric_values),
+                "max": max(numeric_values),
+                "sum": sum(numeric_values),
+            }
+    return {
+        "row_count": len(rows),
+        "columns": columns,
+        "numeric_columns": numeric_columns,
+        "sample_rows": rows[:sample_limit],
+    }
+
+
+def _raw_rows(value: Any) -> list[dict[str, Any]]:
+    if isinstance(value, list):
+        rows = []
+        for item in value:
+            if isinstance(item, Mapping):
+                rows.append({str(key): item.get(key) for key in item.keys()})
+        return rows
+    if isinstance(value, Mapping):
+        rows: list[dict[str, Any]] = []
+        for key, item in value.items():
+            for row in _raw_rows(item):
+                rows.append({"dataset": key, **row})
+        return rows
+    return []
+
+
+def _target_images_from_payload(targets: Sequence[Any]) -> dict[str, str]:
+    images: dict[str, str] = {}
+    for index, target in enumerate(targets, start=1):
+        if not isinstance(target, Mapping):
+            continue
+        context = target.get("context") if isinstance(target.get("context"), Mapping) else {}
+        target_meta = context.get("target") if isinstance(context.get("target"), Mapping) else {}
+        target_id = _clean_text(target_meta.get("id")) or f"target-{index}"
+        image = _clean_text(target.get("image"))
+        if image.startswith("data:image/"):
+            images[target_id] = image
+    return images
+
+
+def _report_system_prompt() -> str:
+    return (
+        "You are a senior executive briefing writer. Draft polished, evidence-grounded "
+        "narrative for the Genesis Mission Funding and Collaboration Dashboard. "
+        "Prioritize decision-relevant findings over technical detail, explain what "
+        "charts and tables mean, identify trends, anomalies, risks, opportunities, "
+        "and recommended next steps, and avoid unsupported claims."
+    )
+
+
+def _report_user_text(context_text: str) -> str:
+    return (
+        "Draft a report-ready executive narrative using the dashboard context below. "
+        "Write for a senior executive audience. Use these sections: Executive Summary, "
+        "Key Findings, Narrative Discussion, Risks and Opportunities, and Conclusion "
+        "and Recommended Next Steps. Reference dashboard evidence when making claims.\n\n"
+        "Dashboard report context JSON:\n"
+        f"{context_text}\n\n"
+        "Return readable Markdown. Use concise bullets where helpful and avoid raw data dumps."
+    )
+
+
+def _configure_document_styles(document: Document) -> None:
+    normal = document.styles["Normal"]
+    normal.font.name = "Aptos"
+    normal.font.size = Pt(10.5)
+    for style_name in ["Heading 1", "Heading 2", "Title"]:
+        style = document.styles[style_name]
+        style.font.name = "Aptos"
+
+
+def _add_markdownish_text(document: Document, text: str) -> None:
+    table_lines: list[str] = []
+
+    def flush_table() -> None:
+        nonlocal table_lines
+        if table_lines:
+            _add_markdown_table(document, table_lines)
+            table_lines = []
+
+    for raw_line in _clean_text(text).splitlines():
+        line = raw_line.strip()
+        if not line:
+            flush_table()
+            continue
+        if line.startswith("|") and line.endswith("|"):
+            table_lines.append(line)
+            continue
+        flush_table()
+        if line.startswith("### "):
+            document.add_heading(line[4:].strip(), level=3)
+        elif line.startswith("## "):
+            document.add_heading(line[3:].strip(), level=2)
+        elif line.startswith("# "):
+            document.add_heading(line[2:].strip(), level=1)
+        elif re.match(r"^[-*]\s+", line):
+            document.add_paragraph(re.sub(r"^[-*]\s+", "", line), style="List Bullet")
+        else:
+            document.add_paragraph(line)
+    flush_table()
+
+
+def _add_markdown_table(document: Document, lines: list[str]) -> None:
+    useful = [
+        line
+        for line in lines
+        if not re.fullmatch(r"\|\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|", line)
+    ]
+    rows = [
+        [cell.strip() for cell in line.split("|")[1:-1]]
+        for line in useful
+        if line.split("|")[1:-1]
+    ]
+    if not rows:
+        return
+    _add_table_rows(document, rows)
+
+
+def _add_sample_table(document: Document, rows: list[Any], *, caption: str) -> None:
+    dict_rows = [row for row in rows if isinstance(row, Mapping)]
+    if not dict_rows:
+        return
+    columns = sorted({str(key) for row in dict_rows for key in row.keys()})[:6]
+    table_rows = [columns]
+    for row in dict_rows[:6]:
+        table_rows.append([_clean_text(row.get(column))[:120] for column in columns])
+    _add_table_rows(document, table_rows)
+    caption_paragraph = document.add_paragraph(caption)
+    caption_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    caption_paragraph.runs[0].italic = True
+
+
+def _add_table_rows(document: Document, rows: list[list[str]]) -> None:
+    column_count = max(len(row) for row in rows)
+    table = document.add_table(rows=len(rows), cols=column_count)
+    table.style = "Table Grid"
+    for row_index, row_values in enumerate(rows):
+        for column_index in range(column_count):
+            value = row_values[column_index] if column_index < len(row_values) else ""
+            cell = table.cell(row_index, column_index)
+            cell.text = _clean_text(value)
+            if row_index == 0:
+                for paragraph in cell.paragraphs:
+                    for run in paragraph.runs:
+                        run.bold = True
+
+
+def _add_image(document: Document, image_url: str, *, caption: str) -> None:
+    image_bytes = _decode_data_url(image_url)
+    if image_bytes is None:
+        return
+    try:
+        document.add_picture(BytesIO(image_bytes), width=Inches(6.3))
+    except Exception:
+        return
+    last_paragraph = document.paragraphs[-1]
+    last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    caption_paragraph = document.add_paragraph(caption)
+    caption_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    caption_paragraph.runs[0].italic = True
+
+
+def _decode_data_url(value: str) -> bytes | None:
+    match = re.match(r"^data:image/(?:png|jpeg|jpg);base64,(.+)$", value, flags=re.IGNORECASE | re.DOTALL)
+    if not match:
+        return None
+    try:
+        return base64.b64decode(match.group(1), validate=True)
+    except ValueError:
+        return None
 
 
 def _insight_system_prompt() -> str:

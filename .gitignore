@@ -29,6 +29,8 @@ credentials*.json
 *.secret
 .secrets/
 *.xlsx
+*.docx
+
 
 # Local/editor noise
 .vscode/

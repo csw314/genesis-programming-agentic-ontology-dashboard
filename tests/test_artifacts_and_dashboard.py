@@ -194,8 +194,16 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
         "Summarize Insights",
         "Get Raw Data",
         "Write Your Own Query",
+        "Draft Report",
+        "Collecting dashboard data",
+        "Capturing charts and tables",
+        "Generating executive narrative",
+        "Creating Word document",
         "/api/asksage/insights",
+        "/api/asksage/report",
         "data-insight-context",
+        "data-asksage-draft-report",
+        "data-report-status",
     ]:
         assert expected in html
     assert 'type="password"' in html

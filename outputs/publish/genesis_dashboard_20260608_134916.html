@@ -79,6 +79,30 @@
       color: var(--muted);
       font-size: 12px;
     }
+    .asksage-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .draft-report-button {
+      border-color: #102a43;
+      background: #102a43;
+      color: #fff;
+      font-weight: 650;
+    }
+    .draft-report-button:disabled {
+      cursor: wait;
+      opacity: 0.72;
+    }
+    .report-status {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .report-status.error {
+      color: #7c2d12;
+    }
     .insight-target {
       margin: 12px 0 24px;
     }
@@ -465,11 +489,13 @@
           <option value="gpt-4.1-mini" data-cost="Low cost" data-supports-image="true">GPT 4.1 Mini - Low cost</option><option value="gpt-4.1" data-cost="Medium cost" data-supports-image="true">GPT 4.1 - Medium cost</option><option value="gpt-5.1" data-cost="High cost" data-supports-image="true">GPT 5.1 - High cost</option><option value="google-gemini-2.5-flash" data-cost="Low cost" data-supports-image="true">Gemini 2.5 Flash - Low cost</option><option value="google-gemini-2.5-pro" data-cost="High cost" data-supports-image="true">Gemini 2.5 Pro - High cost</option><option value="google-claude-46-sonnet" data-cost="Medium cost" data-supports-image="true">Claude 4.6 Sonnet - Medium cost</option><option value="google-claude-47-opus" data-cost="High cost" data-supports-image="true">Claude 4.7 Opus - High cost</option>
         </select>
       </div>
-      <div>
+      <div class="asksage-actions">
         <button type="button" data-asksage-refresh-models>Check Models</button>
+        <button type="button" class="draft-report-button" data-asksage-draft-report>Draft Report</button>
       </div>
     </div>
     <div class="asksage-status" aria-live="polite" data-asksage-status>Models are loaded from dashboard configuration.</div>
+    <div class="report-status" aria-live="polite" data-report-status>Draft Report uses the current visible dashboard view.</div>
   </section>
 
   <div class="tool-control fynsp-toggle">
@@ -9207,6 +9233,8 @@
     const modelSelect = document.querySelector('[data-asksage-model]');
     const status = document.querySelector('[data-asksage-status]');
     const refreshButton = document.querySelector('[data-asksage-refresh-models]');
+    const draftReportButton = document.querySelector('[data-asksage-draft-report]');
+    const reportStatus = document.querySelector('[data-report-status]');
 
     function escapeHtml(value) {
       return String(value || '').replace(/[&<>"']/g, function (character) {
@@ -9215,6 +9243,11 @@
     }
     function setStatus(message) {
       if (status) status.textContent = message;
+    }
+    function setReportStatus(message, state) {
+      if (!reportStatus) return;
+      reportStatus.textContent = message;
+      reportStatus.classList.toggle('error', state === 'error');
     }
     function credentials() {
       return {
@@ -9275,6 +9308,116 @@
       }
     }
     if (refreshButton) refreshButton.addEventListener('click', refreshModels);
+    if (draftReportButton) draftReportButton.addEventListener('click', draftReport);
+
+    function dashboardReportMetadata() {
+      const activeViewButton = document.querySelector('[data-fynsp-view-button].active');
+      const activeView = activeViewButton ? activeViewButton.dataset.fynspViewButton || '' : '';
+      return {
+        title: document.querySelector('h1') ? document.querySelector('h1').textContent.trim() : 'Genesis Mission Funding and Collaboration Dashboard',
+        generated_at_client: new Date().toISOString(),
+        metadata: document.querySelector('.meta') ? document.querySelector('.meta').textContent.trim() : '',
+        current_view: activeView,
+        assumptions: [
+          'Report uses the currently visible dashboard view.',
+          'Executive views use BASELINE, UFR, and ROT rows only.',
+          'AskSage narrative should be interpreted with the source dashboard data and SME review artifacts.'
+        ]
+      };
+    }
+    async function draftReport() {
+      const missing = credentialError();
+      if (missing) {
+        setReportStatus(missing, 'error');
+        return;
+      }
+      if (!draftReportButton) return;
+      draftReportButton.disabled = true;
+      try {
+        setReportStatus('Collecting dashboard data');
+        const visibleView = document.querySelector('.fynsp-view:not([hidden])');
+        const targetScope = visibleView || document;
+        const targets = Array.from(targetScope.querySelectorAll('[data-insight-target]'));
+        if (!targets.length) throw new Error('Dashboard data is missing or unavailable.');
+
+        const payload = {
+          credentials: credentials(),
+          model: selectedModel().id,
+          dashboard: dashboardReportMetadata(),
+          targets: []
+        };
+
+        setReportStatus('Capturing charts and tables');
+        for (const target of targets) {
+          const visual = target.querySelector('[data-insight-visual]');
+          const panel = target.querySelector('[data-insight-panel]');
+          const response = panel ? panel.querySelector('[data-insight-response]') : null;
+          const responseText = response ? response.textContent.trim() : '';
+          let image = null;
+          let captureError = '';
+          try {
+            image = await captureTargetImage(target);
+          } catch (error) {
+            captureError = error.message || 'Image capture failed.';
+          }
+          payload.targets.push({
+            context: targetContext(target),
+            image: image,
+            capture_error: captureError,
+            session_insight: usefulInsightText(responseText),
+            text_snapshot: visual ? visual.textContent.trim().replace(/\s+/g, ' ').slice(0, 4000) : ''
+          });
+        }
+
+        setReportStatus('Generating executive narrative');
+        const response = await fetch('/api/asksage/report', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+          const errorPayload = await response.json().catch(function () { return {}; });
+          throw new Error(errorPayload.error || 'Report generation failed.');
+        }
+
+        setReportStatus('Creating Word document');
+        const blob = await response.blob();
+        if (!blob.size) throw new Error('Word document generation failed.');
+        downloadBlob(blob, responseFilename(response) || defaultReportFilename());
+        setReportStatus('Report ready for download.');
+      } catch (error) {
+        const message = location.protocol === 'file:'
+          ? 'Draft Report requires the local AskSage dashboard proxy.'
+          : (error.message || 'Report generation failed.');
+        setReportStatus(message, 'error');
+      } finally {
+        draftReportButton.disabled = false;
+      }
+    }
+    function usefulInsightText(text) {
+      const value = String(text || '').trim();
+      if (!value || value === 'Select an option to begin.' || value === 'Generating AskSage response...') return '';
+      if (value.startsWith('{') || value.startsWith('[')) return '';
+      return value.slice(0, 5000);
+    }
+    function responseFilename(response) {
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const match = disposition.match(/filename="?([^";]+)"?/i);
+      return match ? match[1] : '';
+    }
+    function defaultReportFilename() {
+      return 'dashboard_executive_summary_' + new Date().toISOString().slice(0, 10) + '.docx';
+    }
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
 
     function targetContext(target) {
       const dataElement = target.querySelector('[data-insight-context]');

@@ -58,7 +58,8 @@ The zip is the recommended stakeholder share artifact.
 ## AskSage AI Insights
 
 The dashboard can still be opened directly as static HTML, but AskSage insights
-use a local proxy so API keys are not sent directly from the browser to AskSage.
+and Draft Report generation use a local proxy so API keys are not sent directly
+from the browser to AskSage.
 
 Run:
 
@@ -68,7 +69,9 @@ $env:PYTHONPATH = "src"
 ```
 
 Then open the local URL printed by the command and enter AskSage credentials in
-the dashboard.
+the dashboard. Use `Get Insights` for chart/table-specific answers or
+`Draft Report` to generate a downloadable Word executive summary for the
+currently visible dashboard view.
 
 ## Report HTML vs Published HTML
 
