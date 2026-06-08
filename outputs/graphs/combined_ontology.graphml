@@ -9774,7 +9774,7 @@
       <data key="d12">MSTC_data.csv</data>
       <data key="d13">6</data>
     </edge>
-    <edge source="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" target="sub_office:na90:e748b0fc5d" id="led_by_program_office">
+    <edge source="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" target="sub_office:na19:a403c01b92" id="led_by_program_office">
       <data key="d10">led_by_program_office</data>
       <data key="d11">1</data>
       <data key="d12">ProgramOffice_Mapping.csv</data>
@@ -9792,7 +9792,7 @@
       <data key="d12">ProgramOffice_Mapping.csv</data>
       <data key="d13">5</data>
     </edge>
-    <edge source="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" target="sub_office:na19:a403c01b92" id="has_partner_organization">
+    <edge source="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" target="sub_office:na90:e748b0fc5d" id="has_partner_organization">
       <data key="d10">has_partner_organization</data>
       <data key="d11">1</data>
       <data key="d12">ProgramOffice_Mapping.csv</data>
@@ -26730,8 +26730,8 @@
       <data key="d12">programming_data.csv; programming_data_FYNSP27_wide.csv</data>
       <data key="d13">48; 49; 50; 51; 52; 53; 56</data>
     </edge>
-    <edge source="sub_office:na90:e748b0fc5d" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="leads_challenge">
-      <data key="d10">leads_challenge</data>
+    <edge source="sub_office:na90:e748b0fc5d" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="partners_on_challenge">
+      <data key="d10">partners_on_challenge</data>
       <data key="d11">1</data>
       <data key="d12">ProgramOffice_Mapping.csv</data>
       <data key="d13">5</data>
@@ -42246,8 +42246,8 @@
       <data key="d12">ProgramOffice_Mapping.csv</data>
       <data key="d13">4</data>
     </edge>
-    <edge source="sub_office:na19:a403c01b92" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="partners_on_challenge">
-      <data key="d10">partners_on_challenge</data>
+    <edge source="sub_office:na19:a403c01b92" target="mstc_challenge:streamlining_production_removing_red_tape_and_en:5c22e0a6a3" id="leads_challenge">
+      <data key="d10">leads_challenge</data>
       <data key="d11">1</data>
       <data key="d12">ProgramOffice_Mapping.csv</data>
       <data key="d13">5</data>
@@ -42414,7 +42414,7 @@
       <data key="d12">ProgramOffice_Mapping.csv</data>
       <data key="d13">5</data>
     </edge>
-    <edge source="program_office_mapping_record:programoffice_mapping_csv:5" target="sub_office:na90:e748b0fc5d" id="has_lead_program_office">
+    <edge source="program_office_mapping_record:programoffice_mapping_csv:5" target="sub_office:na19:a403c01b92" id="has_lead_program_office">
       <data key="d10">has_lead_program_office</data>
       <data key="d11">1</data>
       <data key="d12">ProgramOffice_Mapping.csv</data>
@@ -42432,7 +42432,7 @@
       <data key="d12">ProgramOffice_Mapping.csv</data>
       <data key="d13">5</data>
     </edge>
-    <edge source="program_office_mapping_record:programoffice_mapping_csv:5" target="sub_office:na19:a403c01b92" id="has_partner_program_office">
+    <edge source="program_office_mapping_record:programoffice_mapping_csv:5" target="sub_office:na90:e748b0fc5d" id="has_partner_program_office">
       <data key="d10">has_partner_program_office</data>
       <data key="d11">1</data>
       <data key="d12">ProgramOffice_Mapping.csv</data>
