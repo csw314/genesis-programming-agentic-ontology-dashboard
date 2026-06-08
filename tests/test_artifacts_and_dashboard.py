@@ -182,6 +182,24 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
         "Reviewed Row-Level Classifications",
     ]:
         assert expected in html
+    for expected in [
+        "AskSage AI Credentials",
+        "AskSage Email or Username",
+        "AskSage API Key",
+        "Preferred AskSage Model",
+        "Low cost",
+        "Medium cost",
+        "High cost",
+        "Get Insights",
+        "Summarize Insights",
+        "Get Raw Data",
+        "Write Your Own Query",
+        "/api/asksage/insights",
+        "data-insight-context",
+    ]:
+        assert expected in html
+    assert 'type="password"' in html
+    assert "write your own quest" not in html.lower()
     assert "programming_data.csv row" in html
     assert "programming_data_FYNSP27_wide.csv row" in html
     assert "Executive views use BASELINE, UFR, and ROT rows only" in html
@@ -207,6 +225,33 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
     assert "tile-rot" in html
     assert '<text x="78" y="510" text-anchor="middle">100</text>' in html
     assert '<text x="974" y="510" text-anchor="middle">0</text>' in html
+
+
+def test_dashboard_insight_context_includes_raw_data_and_graph_snippet() -> None:
+    html = _render_dashboard_html()
+    contexts = [
+        json.loads(match.replace("<\\/", "</"))
+        for match in re.findall(
+            r'<script type="application/json" data-insight-context>(.*?)</script>',
+            html,
+            flags=re.DOTALL,
+        )
+    ]
+
+    assert contexts
+    mission_context = next(
+        context
+        for context in contexts
+        if context["target"]["id"] == "combined-mission-funding-mix"
+    )
+
+    assert mission_context["raw_data"]
+    assert mission_context["metadata"]["legend"] == list(FUNDING_LEVELS)
+    assert mission_context["ontology"]["available"] is True
+    assert mission_context["ontology"]["selection"]["edge_count"] < mission_context["ontology"]["summary"]["edges"]
+    assert mission_context["ontology"]["selection"]["node_count"] < mission_context["ontology"]["summary"]["nodes"]
+    assert len(mission_context["ontology"]["edges"]) <= 180
+    assert len(mission_context["ontology"]["nodes"]) <= 160
 
 
 def test_dashboard_challenge_totals_match_positive_funding_rows() -> None:

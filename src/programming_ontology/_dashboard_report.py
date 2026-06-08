@@ -8,11 +8,78 @@ import json
 from math import sqrt
 from typing import Any
 
+import networkx as nx
 import pandas as pd
 
 
 FUNDING_LEVELS = ("BASELINE", "UFR", "ROT")
 FY_COLUMNS = ("fy2027", "fy2028", "fy2029", "fy2030", "fy2031", "fy2032")
+ASKSAGE_MULTIMODAL_MODELS = (
+    {
+        "id": "gpt-4.1-mini",
+        "name": "GPT 4.1 Mini",
+        "cost": "Low cost",
+        "supports_image": True,
+    },
+    {
+        "id": "gpt-4.1",
+        "name": "GPT 4.1",
+        "cost": "Medium cost",
+        "supports_image": True,
+    },
+    {
+        "id": "gpt-5.1",
+        "name": "GPT 5.1",
+        "cost": "High cost",
+        "supports_image": True,
+    },
+    {
+        "id": "google-gemini-2.5-flash",
+        "name": "Gemini 2.5 Flash",
+        "cost": "Low cost",
+        "supports_image": True,
+    },
+    {
+        "id": "google-gemini-2.5-pro",
+        "name": "Gemini 2.5 Pro",
+        "cost": "High cost",
+        "supports_image": True,
+    },
+    {
+        "id": "google-claude-46-sonnet",
+        "name": "Claude 4.6 Sonnet",
+        "cost": "Medium cost",
+        "supports_image": True,
+    },
+    {
+        "id": "google-claude-47-opus",
+        "name": "Claude 4.7 Opus",
+        "cost": "High cost",
+        "supports_image": True,
+    },
+)
+_INSIGHT_TERM_KEYS = {
+    "actual_funding_offices",
+    "challenge",
+    "challenge_name",
+    "claimed_office",
+    "claimed_offices",
+    "lead_offices",
+    "lead_program_office",
+    "normalized_funding_office",
+    "office",
+    "partner_offices",
+    "predicted_challenge",
+    "program_office_players",
+    "wbs_name",
+    "wbs_names",
+}
+_INSIGHT_NODE_ID_KEYS = {
+    "challenge_node_id",
+    "evidence_node_ids",
+    "programming_record_id",
+    "wbs_node_id",
+}
 
 
 def write_classification_dashboard_html(
@@ -52,6 +119,7 @@ def build_classification_dashboard_html(
     metadata_html = _metadata_html(paths_module, metadata_text)
     claims = _claims_frame(office_claim_validation)
     views = _fynsp_views(reviewed_classifications)
+    ontology_graph = _load_dashboard_ontology_graph(paths_module)
     view_html = "".join(
         _dashboard_view_html(
             view_id=view_id,
@@ -61,6 +129,7 @@ def build_classification_dashboard_html(
             challenge_coverage=challenge_coverage,
             office_challenge_evidence=office_challenge_evidence,
             claims=claims,
+            ontology_graph=ontology_graph,
             default_visible=index == 0,
         )
         for index, (view_id, view_label, view_frame) in enumerate(views)
@@ -109,6 +178,114 @@ def build_classification_dashboard_html(
     p {{ line-height: 1.42; }}
     .meta {{ color: var(--muted); margin: 0 0 22px; }}
     .section-note {{ color: var(--muted); max-width: 1080px; }}
+    .asksage-credentials {{
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin: 18px 0 20px;
+      background: var(--soft);
+    }}
+    .asksage-credentials h2 {{
+      margin: 0 0 10px;
+      font-size: 18px;
+    }}
+    .asksage-credentials-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }}
+    .asksage-field {{
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }}
+    .asksage-field label {{
+      color: #102a43;
+      font-weight: 650;
+    }}
+    .asksage-field input,
+    .asksage-field select,
+    .ai-custom-query textarea {{
+      width: 100%;
+      border: 1px solid #bcccdc;
+      border-radius: 6px;
+      padding: 7px 8px;
+      background: #fff;
+      color: #102a43;
+      font: inherit;
+    }}
+    .asksage-status {{
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }}
+    .insight-target {{
+      margin: 12px 0 24px;
+    }}
+    .insight-header {{
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0 8px;
+    }}
+    .insight-button {{
+      font-weight: 650;
+    }}
+    .insight-panel {{
+      border: 1px solid var(--line);
+      border-left: 4px solid #3f6f9f;
+      border-radius: 8px;
+      margin: 10px 0 18px;
+      padding: 12px;
+      background: #fff;
+    }}
+    .insight-panel[hidden] {{ display: none; }}
+    .ai-actions {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }}
+    .ai-response {{
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: var(--soft);
+      line-height: 1.42;
+    }}
+    .ai-response.loading {{
+      color: var(--muted);
+      font-style: italic;
+    }}
+    .ai-response.error {{
+      border-color: #d97706;
+      background: #fff7ed;
+      color: #7c2d12;
+    }}
+    .ai-response table {{
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0;
+    }}
+    .ai-response th,
+    .ai-response td {{
+      border: 1px solid var(--line);
+      padding: 5px 7px;
+      vertical-align: top;
+    }}
+    .ai-response pre {{
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }}
+    .ai-custom-query {{
+      display: grid;
+      gap: 8px;
+      margin: 10px 0;
+    }}
     .metric-grid {{
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -412,6 +589,7 @@ def build_classification_dashboard_html(
 <div class="page">
   <h1>Genesis Mission Funding and Collaboration Dashboard</h1>
   <p class="meta">{metadata_html}</p>
+  {_asksage_credentials_html()}
   <div class="tool-control fynsp-toggle">
     <label>FYNSP View</label>
     <div class="segmented" role="group" aria-label="FYNSP view">
@@ -445,8 +623,591 @@ def build_classification_dashboard_html(
     if (buttons.length) showView(buttons[0].dataset.fynspViewButton);
   }})();
 </script>
+{_dashboard_insights_script()}
 </body>
 </html>
+"""
+
+
+def _asksage_credentials_html() -> str:
+    options = "".join(
+        "<option "
+        f"value=\"{_ha(model['id'])}\" "
+        f"data-cost=\"{_ha(model['cost'])}\" "
+        f"data-supports-image=\"{'true' if model['supports_image'] else 'false'}\">"
+        f"{_h(model['name'])} - {_h(model['cost'])}</option>"
+        for model in ASKSAGE_MULTIMODAL_MODELS
+    )
+    return f"""
+  <section class="asksage-credentials" aria-labelledby="asksage-credentials-heading">
+    <h2 id="asksage-credentials-heading">AskSage AI Credentials</h2>
+    <div class="asksage-credentials-grid">
+      <div class="asksage-field">
+        <label for="asksage-email">AskSage Email or Username</label>
+        <input id="asksage-email" type="text" autocomplete="username" data-asksage-email>
+      </div>
+      <div class="asksage-field">
+        <label for="asksage-api-key">AskSage API Key</label>
+        <input id="asksage-api-key" type="password" autocomplete="off" data-asksage-api-key>
+      </div>
+      <div class="asksage-field">
+        <label for="asksage-model">Preferred AskSage Model</label>
+        <select id="asksage-model" data-asksage-model>
+          {options}
+        </select>
+      </div>
+      <div>
+        <button type="button" data-asksage-refresh-models>Check Models</button>
+      </div>
+    </div>
+    <div class="asksage-status" aria-live="polite" data-asksage-status>Models are loaded from dashboard configuration.</div>
+  </section>
+"""
+
+
+def _insight_target_html(
+    *,
+    view_id: str,
+    view_label: str,
+    target_key: str,
+    title: str,
+    target_type: str,
+    visual_html: str,
+    raw_data: Any,
+    metadata: dict[str, Any],
+    ontology_graph: nx.MultiDiGraph | None,
+) -> str:
+    target_id = f"{view_id}-{target_key}"
+    context = {
+        "schema_version": 1,
+        "target": {
+            "id": target_id,
+            "key": target_key,
+            "title": title,
+            "type": target_type,
+            "fynsp_view": view_id,
+            "fynsp_label": view_label,
+        },
+        "metadata": _jsonable_data(metadata),
+        "raw_data": _jsonable_data(raw_data),
+        "ontology": _ontology_context_for_target(
+            ontology_graph,
+            raw_data,
+            metadata,
+        ),
+    }
+    context_json = _json_script_text(context)
+    return f"""
+      <div class="insight-target" data-insight-target data-insight-target-id="{_ha(target_id)}" data-insight-title="{_ha(title)}">
+        <div class="insight-header">
+          <button type="button" class="insight-button" data-insight-open>Get Insights</button>
+        </div>
+        <div class="insight-visual" data-insight-visual>
+          {visual_html}
+        </div>
+        <div class="insight-panel" data-insight-panel hidden></div>
+        <script type="application/json" data-insight-context>{context_json}</script>
+      </div>
+"""
+
+
+def _load_dashboard_ontology_graph(paths_module: Any) -> nx.MultiDiGraph | None:
+    graph_path = getattr(paths_module, "CLASSIFIED_ONTOLOGY_GRAPH_PATH", None)
+    if graph_path is None:
+        return None
+    try:
+        if not graph_path.exists():
+            return None
+        return nx.read_graphml(graph_path)
+    except Exception:
+        return None
+
+
+def _ontology_context_for_target(
+    graph: nx.MultiDiGraph | None,
+    raw_data: Any,
+    metadata: dict[str, Any],
+    *,
+    max_seed_nodes: int = 48,
+    max_nodes: int = 160,
+    max_edges: int = 180,
+) -> dict[str, Any]:
+    if graph is None:
+        return {"available": False, "reason": "classified ontology graph was not available"}
+
+    json_data = _jsonable_data(raw_data)
+    terms: set[str] = set()
+    node_ids: set[str] = set()
+    _collect_insight_terms(json_data, terms, node_ids)
+    _collect_insight_terms(_jsonable_data(metadata), terms, node_ids)
+
+    label_lookup: dict[str, list[str]] = {}
+    for node_id, data in graph.nodes(data=True):
+        label = _clean_text(data.get("label"))
+        if label:
+            label_lookup.setdefault(label.casefold(), []).append(str(node_id))
+
+    seeds: list[str] = []
+    for node_id in sorted(node_ids):
+        if node_id in graph and node_id not in seeds:
+            seeds.append(node_id)
+    for term in sorted(terms):
+        for node_id in label_lookup.get(term.casefold(), []):
+            if node_id not in seeds:
+                seeds.append(node_id)
+            if len(seeds) >= max_seed_nodes:
+                break
+        if len(seeds) >= max_seed_nodes:
+            break
+
+    selected_nodes: dict[str, dict[str, Any]] = {}
+    selected_edges: list[dict[str, Any]] = []
+    seen_edges: set[tuple[str, str, str]] = set()
+
+    def add_node(node_id: str) -> None:
+        if node_id not in graph or node_id in selected_nodes or len(selected_nodes) >= max_nodes:
+            return
+        data = graph.nodes[node_id]
+        selected_nodes[node_id] = {
+            "id": node_id,
+            "label": _clean_text(data.get("label")) or node_id,
+            "node_type": _clean_text(data.get("node_type")),
+            "source_files": _clean_text(data.get("source_files")),
+        }
+
+    def add_edge(source: str, target: str, key: Any, data: dict[str, Any]) -> None:
+        edge_key = (str(source), str(target), str(key))
+        if edge_key in seen_edges or len(selected_edges) >= max_edges:
+            return
+        seen_edges.add(edge_key)
+        add_node(str(source))
+        add_node(str(target))
+        selected_edges.append(
+            {
+                "source": str(source),
+                "target": str(target),
+                "relation": _clean_text(data.get("relation")) or "related_to",
+                "label": _clean_text(data.get("label")),
+            }
+        )
+
+    for seed in seeds[:max_seed_nodes]:
+        add_node(seed)
+        if len(selected_edges) >= max_edges:
+            break
+        for source, target, key, data in graph.out_edges(seed, keys=True, data=True):
+            add_edge(source, target, key, data)
+            if len(selected_edges) >= max_edges:
+                break
+        if len(selected_edges) >= max_edges:
+            break
+        for source, target, key, data in graph.in_edges(seed, keys=True, data=True):
+            add_edge(source, target, key, data)
+            if len(selected_edges) >= max_edges:
+                break
+
+    return {
+        "available": True,
+        "summary": {
+            "nodes": graph.number_of_nodes(),
+            "edges": graph.number_of_edges(),
+            "source_files": _clean_text(graph.graph.get("source_files")),
+        },
+        "selection": {
+            "seed_node_count": len(seeds[:max_seed_nodes]),
+            "term_count": len(terms),
+            "node_count": len(selected_nodes),
+            "edge_count": len(selected_edges),
+            "capped": len(seeds) > max_seed_nodes
+            or len(selected_nodes) >= max_nodes
+            or len(selected_edges) >= max_edges,
+        },
+        "nodes": list(selected_nodes.values()),
+        "edges": selected_edges,
+    }
+
+
+def _collect_insight_terms(
+    value: Any,
+    terms: set[str],
+    node_ids: set[str],
+    *,
+    key: str = "",
+) -> None:
+    if isinstance(value, dict):
+        for child_key, child_value in value.items():
+            _collect_insight_terms(child_value, terms, node_ids, key=str(child_key))
+        return
+    if isinstance(value, list):
+        for item in value:
+            _collect_insight_terms(item, terms, node_ids, key=key)
+        return
+
+    text = _clean_text(value)
+    if not text:
+        return
+    if key in _INSIGHT_NODE_ID_KEYS:
+        for part in _split_semicolon_list(text):
+            node_ids.add(part)
+    if key in _INSIGHT_TERM_KEYS:
+        for part in _split_semicolon_list(text):
+            terms.add(part)
+
+
+def _jsonable_data(value: Any) -> Any:
+    if isinstance(value, pd.DataFrame):
+        frame = value.copy()
+        return [
+            {str(key): _jsonable_data(item) for key, item in row.items()}
+            for row in frame.where(pd.notna(frame), None).to_dict(orient="records")
+        ]
+    if isinstance(value, pd.Series):
+        return {str(key): _jsonable_data(item) for key, item in value.to_dict().items()}
+    if isinstance(value, dict):
+        return {str(key): _jsonable_data(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_jsonable_data(item) for item in value]
+    if value is None:
+        return None
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
+def _json_script_text(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True).replace("</", "<\\/")
+
+
+def _dashboard_insights_script() -> str:
+    return r"""
+<script>
+  (function () {
+    const emailInput = document.querySelector('[data-asksage-email]');
+    const apiKeyInput = document.querySelector('[data-asksage-api-key]');
+    const modelSelect = document.querySelector('[data-asksage-model]');
+    const status = document.querySelector('[data-asksage-status]');
+    const refreshButton = document.querySelector('[data-asksage-refresh-models]');
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function (character) {
+        return ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[character]);
+      });
+    }
+    function setStatus(message) {
+      if (status) status.textContent = message;
+    }
+    function credentials() {
+      return {
+        email: emailInput ? emailInput.value.trim() : '',
+        apiKey: apiKeyInput ? apiKeyInput.value.trim() : ''
+      };
+    }
+    function selectedModel() {
+      const option = modelSelect ? modelSelect.options[modelSelect.selectedIndex] : null;
+      return {
+        id: modelSelect ? modelSelect.value : '',
+        cost: option ? option.dataset.cost || '' : '',
+        supportsImage: option ? option.dataset.supportsImage !== 'false' : true
+      };
+    }
+    function credentialError() {
+      const creds = credentials();
+      if (!creds.email) return 'Enter your AskSage email or username.';
+      if (!creds.apiKey) return 'Enter your AskSage API key.';
+      if (!selectedModel().id) return 'Select an AskSage model.';
+      return '';
+    }
+    function populateModels(models) {
+      if (!modelSelect || !Array.isArray(models) || !models.length) return;
+      const current = modelSelect.value;
+      modelSelect.replaceChildren();
+      models.forEach(function (model) {
+        const option = document.createElement('option');
+        option.value = model.id;
+        option.textContent = (model.name || model.id) + ' - ' + (model.cost || 'Cost not configured');
+        option.dataset.cost = model.cost || '';
+        option.dataset.supportsImage = model.supports_image === false ? 'false' : 'true';
+        modelSelect.appendChild(option);
+      });
+      if (models.some(function (model) { return model.id === current; })) {
+        modelSelect.value = current;
+      }
+    }
+    async function refreshModels() {
+      const creds = credentials();
+      if (!creds.email || !creds.apiKey) {
+        setStatus('Enter AskSage credentials before checking models.');
+        return;
+      }
+      setStatus('Checking AskSage models...');
+      try {
+        const response = await fetch('/api/asksage/models', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({credentials: creds})
+        });
+        const payload = await response.json().catch(function () { return {}; });
+        if (!response.ok) throw new Error(payload.error || 'Unable to check AskSage models.');
+        populateModels(payload.models || []);
+        setStatus('AskSage models are ready.');
+      } catch (error) {
+        setStatus(error.message || 'AskSage model check failed.');
+      }
+    }
+    if (refreshButton) refreshButton.addEventListener('click', refreshModels);
+
+    function targetContext(target) {
+      const dataElement = target.querySelector('[data-insight-context]');
+      const context = JSON.parse(dataElement ? dataElement.textContent || '{}' : '{}');
+      context.current_dashboard_selections = currentSelections(target);
+      return context;
+    }
+    function currentSelections(target) {
+      const activeViewButton = document.querySelector('[data-fynsp-view-button].active');
+      const selections = {
+        fynsp_view: activeViewButton ? activeViewButton.dataset.fynspViewButton || '' : ''
+      };
+      const disruptiveness = target.querySelector('.disruptiveness-tool');
+      if (disruptiveness) {
+        const activeMode = disruptiveness.querySelector('[data-disruptiveness-mode].active');
+        const office = disruptiveness.querySelector('[data-disruptiveness-office-filter]');
+        const challenge = disruptiveness.querySelector('[data-disruptiveness-challenge-filter]');
+        selections.disruptiveness = {
+          funding_mode: activeMode ? activeMode.dataset.disruptivenessMode || '' : '',
+          office: office ? office.value : '',
+          challenge: challenge ? challenge.value : ''
+        };
+      }
+      return selections;
+    }
+    function ensurePanel(target) {
+      const panel = target.querySelector('[data-insight-panel]');
+      if (!panel || panel.dataset.initialized === 'true') return panel;
+      panel.innerHTML = [
+        '<div class="ai-actions">',
+        '<button type="button" data-insight-action="summarize">Summarize Insights</button>',
+        '<button type="button" data-insight-action="raw">Get Raw Data</button>',
+        '<button type="button" data-insight-action="custom">Write Your Own Query</button>',
+        '</div>',
+        '<form class="ai-custom-query" data-insight-custom-form>',
+        '<textarea rows="3" data-insight-custom-input aria-label="Custom AskSage query"></textarea>',
+        '<div><button type="submit">Send Query</button></div>',
+        '</form>',
+        '<div class="ai-response" data-insight-response>Select an option to begin.</div>'
+      ].join('');
+      panel.querySelectorAll('[data-insight-action]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          if (button.dataset.insightAction === 'raw') {
+            showRawData(target, panel);
+          } else if (button.dataset.insightAction === 'custom') {
+            const input = panel.querySelector('[data-insight-custom-input]');
+            if (input) input.focus();
+          } else {
+            runInsight(target, panel, 'summarize', 'Summarize the most important insights from this dashboard visualization. Focus on funding magnitude, collaboration posture, notable outliers, risks, and recommended next questions.');
+          }
+        });
+      });
+      const form = panel.querySelector('[data-insight-custom-form]');
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const input = panel.querySelector('[data-insight-custom-input]');
+        const prompt = input ? input.value.trim() : '';
+        if (!prompt) {
+          setResponse(panel, 'Enter a question about this chart or table.', 'error');
+          return;
+        }
+        runInsight(target, panel, 'custom', prompt);
+      });
+      panel.dataset.initialized = 'true';
+      return panel;
+    }
+    function setResponse(panel, html, state) {
+      const response = panel.querySelector('[data-insight-response]');
+      if (!response) return;
+      response.classList.toggle('loading', state === 'loading');
+      response.classList.toggle('error', state === 'error');
+      response.innerHTML = html;
+    }
+    function showRawData(target, panel) {
+      const context = targetContext(target);
+      setResponse(panel, '<pre>' + escapeHtml(JSON.stringify(context.raw_data || {}, null, 2)) + '</pre>', '');
+    }
+    async function runInsight(target, panel, promptKind, prompt) {
+      const missing = credentialError();
+      if (missing) {
+        setResponse(panel, escapeHtml(missing), 'error');
+        return;
+      }
+      setResponse(panel, 'Generating AskSage response...', 'loading');
+      try {
+        const context = targetContext(target);
+        const image = await captureTargetImage(target);
+        const response = await fetch('/api/asksage/insights', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            credentials: credentials(),
+            model: selectedModel().id,
+            prompt_kind: promptKind,
+            prompt: prompt,
+            context: context,
+            image: image
+          })
+        });
+        const payload = await response.json().catch(function () { return {}; });
+        if (!response.ok) throw new Error(payload.error || 'AskSage request failed.');
+        setResponse(panel, formatText(payload.answer || ''), '');
+      } catch (error) {
+        setResponse(panel, escapeHtml(error.message || 'AskSage request failed.'), 'error');
+      }
+    }
+    async function captureTargetImage(target) {
+      const visual = target.querySelector('[data-insight-visual]');
+      if (!visual) return null;
+      const svg = visual.querySelector('svg');
+      if (svg) {
+        try {
+          return await svgToPng(svg);
+        } catch (error) {
+          return textSnapshotImage(visual);
+        }
+      }
+      return textSnapshotImage(visual);
+    }
+    function svgToPng(svg) {
+      return new Promise(function (resolve, reject) {
+        const source = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([source], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const image = new Image();
+        image.onload = function () {
+          const viewBox = svg.viewBox && svg.viewBox.baseVal;
+          const width = Math.max(320, Math.ceil(viewBox && viewBox.width ? viewBox.width : svg.getBoundingClientRect().width || 900));
+          const height = Math.max(180, Math.ceil(viewBox && viewBox.height ? viewBox.height : svg.getBoundingClientRect().height || 500));
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const context = canvas.getContext('2d');
+          context.fillStyle = '#ffffff';
+          context.fillRect(0, 0, width, height);
+          context.drawImage(image, 0, 0, width, height);
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        image.onerror = function () {
+          URL.revokeObjectURL(url);
+          reject(new Error('Unable to capture chart image.'));
+        };
+        image.src = url;
+      });
+    }
+    function textSnapshotImage(element) {
+      const lines = [];
+      const rows = Array.from(element.querySelectorAll('tr')).slice(0, 80);
+      if (rows.length) {
+        rows.forEach(function (row) {
+          lines.push(Array.from(row.children).map(function (cell) {
+            return cell.textContent.trim().replace(/\s+/g, ' ');
+          }).join(' | '));
+        });
+      } else {
+        element.textContent.split(/\n+/).forEach(function (line) {
+          const clean = line.trim().replace(/\s+/g, ' ');
+          if (clean) lines.push(clean);
+        });
+      }
+      const canvas = document.createElement('canvas');
+      const width = 1200;
+      const height = Math.max(180, Math.min(1800, 42 + lines.length * 22));
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, width, height);
+      context.fillStyle = '#102a43';
+      context.font = '14px Segoe UI, Arial, sans-serif';
+      lines.slice(0, 80).forEach(function (line, index) {
+        context.fillText(line.slice(0, 150), 18, 28 + index * 22);
+      });
+      return canvas.toDataURL('image/png');
+    }
+    function formatText(text) {
+      const lines = String(text || '').split(/\r?\n/);
+      const output = [];
+      let paragraph = [];
+      let bullets = [];
+      function flushParagraph() {
+        if (paragraph.length) {
+          output.push('<p>' + escapeHtml(paragraph.join(' ')) + '</p>');
+          paragraph = [];
+        }
+      }
+      function flushBullets() {
+        if (bullets.length) {
+          output.push('<ul>' + bullets.map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('') + '</ul>');
+          bullets = [];
+        }
+      }
+      for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index].trim();
+        if (!line) {
+          flushParagraph();
+          flushBullets();
+          continue;
+        }
+        if (/^\|.+\|$/.test(line)) {
+          flushParagraph();
+          flushBullets();
+          const tableLines = [];
+          while (index < lines.length && /^\|.+\|$/.test(lines[index].trim())) {
+            tableLines.push(lines[index].trim());
+            index += 1;
+          }
+          index -= 1;
+          output.push(markdownTable(tableLines));
+        } else if (/^[-*]\s+/.test(line)) {
+          flushParagraph();
+          bullets.push(line.replace(/^[-*]\s+/, ''));
+        } else {
+          flushBullets();
+          paragraph.push(line);
+        }
+      }
+      flushParagraph();
+      flushBullets();
+      return output.join('') || '<p>No response text was returned.</p>';
+    }
+    function markdownTable(lines) {
+      const useful = lines.filter(function (line) {
+        return !/^\|\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|$/.test(line);
+      });
+      const rows = useful.map(function (line) {
+        return line.split('|').slice(1, -1).map(function (cell) { return cell.trim(); });
+      });
+      if (!rows.length) return '';
+      const header = rows.shift();
+      return '<table><thead><tr>' + header.map(function (cell) {
+        return '<th>' + escapeHtml(cell) + '</th>';
+      }).join('') + '</tr></thead><tbody>' + rows.map(function (row) {
+        return '<tr>' + row.map(function (cell) { return '<td>' + escapeHtml(cell) + '</td>'; }).join('') + '</tr>';
+      }).join('') + '</tbody></table>';
+    }
+    document.querySelectorAll('[data-insight-target]').forEach(function (target) {
+      const openButton = target.querySelector('[data-insight-open]');
+      const panel = target.querySelector('[data-insight-panel]');
+      if (!openButton || !panel) return;
+      openButton.addEventListener('click', function () {
+        const initializedPanel = ensurePanel(target);
+        initializedPanel.hidden = !initializedPanel.hidden;
+      });
+    });
+  })();
+</script>
 """
 
 
@@ -471,6 +1232,7 @@ def _dashboard_view_html(
     challenge_coverage: pd.DataFrame,
     office_challenge_evidence: pd.DataFrame,
     claims: pd.DataFrame,
+    ontology_graph: nx.MultiDiGraph | None,
     default_visible: bool,
 ) -> str:
     positive = _positive_funding_rows(reviewed_classifications)
@@ -524,6 +1286,177 @@ def _dashboard_view_html(
             _metric("Multi-Office Challenges", f"{multi_office_challenges:,}"),
         ]
     )
+    mission_funding_mix_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="mission-funding-mix",
+        title="Mission Funding Mix",
+        target_type="table",
+        visual_html=_mission_funding_mix_html(challenge_summary),
+        raw_data=challenge_summary,
+        metadata={
+            "description": "Funding by Genesis Mission Challenge across BASELINE, UFR, and ROT.",
+            "labels": ["Genesis Mission Challenge", "Funding Mix", "Total", *FUNDING_LEVELS],
+            "legend": list(FUNDING_LEVELS),
+        },
+        ontology_graph=ontology_graph,
+    )
+    contribution_matrix_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="challenge-office-matrix",
+        title="Challenge-by-Office Contribution Matrix",
+        target_type="table",
+        visual_html=_challenge_office_matrix_html(contributions, challenge_summary),
+        raw_data=contributions,
+        metadata={
+            "description": "Funding and role contribution matrix by mission challenge and program office.",
+            "labels": ["Challenge", "Program Offices", "Funding Mix", "Role", "Rows", "WBS"],
+            "legend": [*FUNDING_LEVELS, "Lead", "Partner", "Actual contributor"],
+        },
+        ontology_graph=ontology_graph,
+    )
+    collaboration_posture_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="collaboration-posture",
+        title="Collaboration Posture",
+        target_type="chart",
+        visual_html=_collaboration_bubble_html(challenge_summary),
+        raw_data=challenge_summary,
+        metadata={
+            "description": "Bubble chart comparing program office player count, total funding, and UFR/ROT share.",
+            "x_axis": "Program office players",
+            "size": "Total funding",
+            "color": "Funding posture from BASELINE-heavy to UFR/ROT-heavy",
+        },
+        ontology_graph=ontology_graph,
+    )
+    collaboration_groups_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="challenge-collaboration-groups",
+        title="Challenge Collaboration Groups",
+        target_type="cards",
+        visual_html=_challenge_collaboration_cards_html(challenge_summary, contributions, claims),
+        raw_data={
+            "challenge_summary": challenge_summary,
+            "contributions": contributions,
+            "claims": claims,
+        },
+        metadata={
+            "description": "Challenge cards grouping claimed leads, partners, and actual funding contributors.",
+            "labels": ["Lead", "Claimed partners", "Other funding contributors", "Suggested collaboration group"],
+        },
+        ontology_graph=ontology_graph,
+    )
+    project_disruptiveness_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="project-funding-disruptiveness",
+        title="Project Funding Disruptiveness",
+        target_type="chart",
+        visual_html=_project_disruptiveness_html(disruptiveness_rows, view_id=view_id),
+        raw_data=disruptiveness_rows,
+        metadata={
+            "description": "Packed tilemap of row-level funding share and AI-directness score.",
+            "x_axis": "AI-directness score, with more directly AI work to the left",
+            "y_axis": "Share of office funding in selected mode",
+            "filters": ["Funding Mode", "Program Office", "Genesis Mission Challenge"],
+            "legend": [f"{level} tile" for level in FUNDING_LEVELS],
+        },
+        ontology_graph=ontology_graph,
+    )
+    office_portfolios_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="office-portfolios",
+        title="Office Portfolios",
+        target_type="cards",
+        visual_html=_office_portfolios_html(office_summary, office_challenge, positive),
+        raw_data={
+            "office_summary": office_summary,
+            "office_challenge": office_challenge,
+            "positive_programming_rows": positive,
+        },
+        metadata={
+            "description": "Office cards showing funded challenges, claimed roles, funding mix, and citations.",
+            "labels": ["Funded challenges", "Lead claims", "Partner claims", *FUNDING_LEVELS],
+        },
+        ontology_graph=ontology_graph,
+    )
+    lead_funding_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="lead-office-funding",
+        title="Lead Office Funding by Claimed Mission",
+        target_type="table",
+        visual_html=_lead_claim_funding_html(lead_summary),
+        raw_data=lead_summary,
+        metadata={
+            "description": "Lead program office funding against claimed Genesis Mission Challenges.",
+            "labels": ["Lead Office", "Genesis Mission Challenge", "Funding Mix", "Total", *FUNDING_LEVELS],
+        },
+        ontology_graph=ontology_graph,
+    )
+    challenge_coverage_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="challenge-coverage",
+        title="Challenge Coverage",
+        target_type="table",
+        visual_html=_challenge_coverage_html(challenge_summary),
+        raw_data=challenge_summary,
+        metadata={
+            "description": "Funding coverage, claimed offices, actual contributors, and coordination signal.",
+            "labels": ["Genesis Mission Challenge", "Total", *FUNDING_LEVELS, "Office Players", "Funding Offices"],
+        },
+        ontology_graph=ontology_graph,
+    )
+    appendix_claims_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="appendix-office-claim-validation",
+        title="Office Claim Validation",
+        target_type="table",
+        visual_html=_table_html(appendix_claims),
+        raw_data=appendix_claims,
+        metadata={"description": "Validation status and evidence for claimed office roles."},
+        ontology_graph=ontology_graph,
+    )
+    appendix_evidence_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="appendix-unclaimed-positive-evidence",
+        title="Unclaimed Positive Evidence",
+        target_type="table",
+        visual_html=_table_html(unclaimed_evidence),
+        raw_data=unclaimed_evidence,
+        metadata={"description": "Positive funding evidence that was not matched to claimed offices."},
+        ontology_graph=ontology_graph,
+    )
+    appendix_pairs_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="appendix-office-pair-opportunities",
+        title="Office Pair Collaboration Opportunities",
+        target_type="table",
+        visual_html=_office_pair_opportunities_html(pair_opportunities),
+        raw_data=pair_opportunities,
+        metadata={"description": "Office pairs that share funded mission areas."},
+        ontology_graph=ontology_graph,
+    )
+    appendix_reviewed_rows_html = _insight_target_html(
+        view_id=view_id,
+        view_label=view_label,
+        target_key="appendix-reviewed-row-level-classifications",
+        title="Reviewed Row-Level Classifications",
+        target_type="table",
+        visual_html=_table_html(appendix_rows),
+        raw_data=appendix_rows,
+        metadata={"description": "Reviewed row-level classifications, SME corrections, and AI-directness fields."},
+        ontology_graph=ontology_graph,
+    )
 
     return f"""
   <div class="fynsp-view" data-fynsp-view="{_ha(view_id)}"{hidden_attr}>
@@ -538,49 +1471,49 @@ def _dashboard_view_html(
       <h2>Mission Funding Mix</h2>
       <p class="section-note">How much funding is available in BASELINE, UFR, and ROT funds for each Genesis Mission Challenge?</p>
       {_legend()}
-      {_mission_funding_mix_html(challenge_summary)}
+      {mission_funding_mix_html}
     </section>
 
     <section>
       <h2>Challenge-by-Office Contribution Matrix</h2>
       <p class="section-note">Which program offices contribute BASELINE, UFR, and ROT funds to each challenge, regardless of whether they are the lead office?</p>
-      {_challenge_office_matrix_html(contributions, challenge_summary)}
+      {contribution_matrix_html}
     </section>
 
     <section>
       <h2>Collaboration Posture</h2>
       <p class="section-note">Challenges farther right have more program office players, including claimed leads/partners and actual funding contributors; larger circles have more total funding; warmer circles depend more on UFR/ROT funds.</p>
-      {_collaboration_bubble_html(challenge_summary)}
+      {collaboration_posture_html}
     </section>
 
     <section>
       <h2>Challenge Collaboration Groups</h2>
       <p class="section-note">These cards group the offices that should be coordinating around each challenge: claimed leads, claimed partners, and other actual funding contributors.</p>
-      {_challenge_collaboration_cards_html(challenge_summary, contributions, claims)}
+      {collaboration_groups_html}
     </section>
 
     <section>
       <h2>Project Funding Disruptiveness</h2>
       <p class="section-note">Each square is one programming row. Higher tiles capture a larger share of the selected funding mode for their office; farther-right tiles are more directly AI/ML work. High-share, low-AI rows are the most disruptive candidates to tax or rescope.</p>
-      {_project_disruptiveness_html(disruptiveness_rows, view_id=view_id)}
+      {project_disruptiveness_html}
     </section>
 
     <section>
       <h2>Office Portfolios</h2>
       <p class="section-note">Each office view shows the funded Genesis Mission Challenges in its portfolio, the BASELINE/UFR/ROT mix, and programming-data citations for traceability.</p>
-      {_office_portfolios_html(office_summary, office_challenge, positive)}
+      {office_portfolios_html}
     </section>
 
     <section>
       <h2>Lead Office Funding by Claimed Mission</h2>
       <p class="section-note">How much funding are lead program offices contributing to their claimed Genesis Mission Challenge?</p>
-      {_lead_claim_funding_html(lead_summary)}
+      {lead_funding_html}
     </section>
 
     <section>
       <h2>Challenge Coverage</h2>
       <p class="section-note">How much funding coverage is there for each Genesis Mission Challenge, and which program offices are contributing?</p>
-      {_challenge_coverage_html(challenge_summary)}
+      {challenge_coverage_html}
     </section>
 
     <section class="appendix">
@@ -592,19 +1525,19 @@ def _dashboard_view_html(
       </div>
       <details>
         <summary>Office Claim Validation</summary>
-        {_table_html(appendix_claims)}
+        {appendix_claims_html}
       </details>
       <details>
         <summary>Unclaimed Positive Evidence</summary>
-        {_table_html(unclaimed_evidence)}
+        {appendix_evidence_html}
       </details>
       <details>
         <summary>Office Pair Collaboration Opportunities</summary>
-        {_office_pair_opportunities_html(pair_opportunities)}
+        {appendix_pairs_html}
       </details>
       <details>
         <summary>Reviewed Row-Level Classifications</summary>
-        {_table_html(appendix_rows)}
+        {appendix_reviewed_rows_html}
       </details>
     </section>
   </div>

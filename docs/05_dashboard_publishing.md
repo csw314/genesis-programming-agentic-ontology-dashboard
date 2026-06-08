@@ -55,6 +55,21 @@ outputs/publish/genesis_dashboard_YYYYMMDD_HHMMSS.zip
 
 The zip is the recommended stakeholder share artifact.
 
+## AskSage AI Insights
+
+The dashboard can still be opened directly as static HTML, but AskSage insights
+use a local proxy so API keys are not sent directly from the browser to AskSage.
+
+Run:
+
+```powershell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m programming_ontology.dashboard_ai_proxy --dashboard outputs\publish\genesis_dashboard_latest.html
+```
+
+Then open the local URL printed by the command and enter AskSage credentials in
+the dashboard.
+
 ## Report HTML vs Published HTML
 
 Report output:

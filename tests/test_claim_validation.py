@@ -47,8 +47,13 @@ def test_claims_include_lead_and_partners_but_exclude_field_offices() -> None:
     claim_pairs = {(claim.challenge_name, claim.claimed_office, claim.claim_role) for claim in claims}
     assert (
         "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",
-        "NA90",
+        "NA19",
         "lead",
+    ) in claim_pairs
+    assert (
+        "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",
+        "NA90",
+        "partner",
     ) in claim_pairs
     assert (
         "Streamlining Production, Removing Red Tape, and Ensuring Safety in the Nuclear Enterprise",

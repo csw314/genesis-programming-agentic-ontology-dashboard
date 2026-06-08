@@ -119,9 +119,11 @@ If `review_decision` is `out_of_scope`:
 
 - The row remains flagged and marked as out of scope in reviewed outputs.
 
-## Safe Refresh After SME Edits
+## Safe Refresh After Mapping or SME Edits
 
-Use Ask Sage cache unless you intentionally want lexical replacement:
+Use this after intentional edits to `data/raw/ProgramOffice_Mapping.csv`,
+programming source files, or SME overrides. Ask Sage cache is reused unless the
+changed source data alters a row payload or candidate set:
 
 ```powershell
 $env:PYTHONPATH = "src"
