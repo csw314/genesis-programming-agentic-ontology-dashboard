@@ -12,9 +12,13 @@ import pandas as pd
 
 from . import paths
 from .build_ontology import read_csv
+from .fiscal_years import (
+    detect_fiscal_year_columns,
+    fiscal_year_columns_for_cycles,
+    fiscal_year_labels_for_cycle,
+)
 
 
-FY_COLUMNS = ("FY2027", "FY2028", "FY2029", "FY2030", "FY2031", "FY2032")
 PROVENANCE_COLUMNS = (
     "programming_record_id",
     "source_file",
@@ -22,7 +26,7 @@ PROVENANCE_COLUMNS = (
     "fynsp_cycle",
     "fynsp_years",
 )
-PROGRAMMING_COLUMN_ORDER = (
+BASE_PROGRAMMING_COLUMN_ORDER = (
     *PROVENANCE_COLUMNS,
     "FYNSP",
     "Submission Type",
@@ -51,7 +55,6 @@ PROGRAMMING_COLUMN_ORDER = (
     "Account Integrator Decision",
     "Program Priority",
     "DOE Priority Tier",
-    *FY_COLUMNS,
 )
 
 
@@ -91,12 +94,12 @@ def combine_programming_data(
         [frame.dropna(axis=1, how="all") for frame in frames],
         ignore_index=True,
     )
-    for column in PROGRAMMING_COLUMN_ORDER:
+    for column in _programming_column_order(combined.columns):
         if column not in combined.columns:
             combined[column] = pd.NA
     ordered_columns = [
         column
-        for column in PROGRAMMING_COLUMN_ORDER
+        for column in _programming_column_order(combined.columns)
         if column in combined.columns
     ]
     ordered_columns.extend(
@@ -141,15 +144,33 @@ def _normalize_source(source: ProgrammingSource) -> pd.DataFrame:
     if "Funding Levels" in df.columns:
         df["Funding Levels"] = df["Funding Levels"].fillna("").astype(str).str.upper().str.strip()
 
-    for column in FY_COLUMNS:
+    for column in _source_fiscal_year_columns(source, df.columns):
         if column not in df.columns:
             df[column] = pd.NA
 
-    for column in PROGRAMMING_COLUMN_ORDER:
+    for column in _programming_column_order(df.columns):
         if column not in df.columns:
             df[column] = pd.NA
 
     return df
+
+
+def _source_fiscal_year_columns(
+    source: ProgrammingSource,
+    columns: Sequence[str],
+) -> tuple[str, ...]:
+    detected = set(detect_fiscal_year_columns(columns))
+    expected = set(fiscal_year_labels_for_cycle(source.fynsp_cycle))
+    expected.update(fiscal_year_labels_for_cycle(source.fynsp_years))
+    return fiscal_year_columns_for_cycles(
+        [*detected, *expected],
+        [source.fynsp_cycle, source.fynsp_years],
+    )
+
+
+def _programming_column_order(columns: Sequence[str]) -> tuple[str, ...]:
+    fiscal_years = detect_fiscal_year_columns(columns)
+    return (*BASE_PROGRAMMING_COLUMN_ORDER, *fiscal_years)
 
 
 def _slugify(value: str) -> str:

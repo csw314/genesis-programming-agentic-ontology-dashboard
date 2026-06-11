@@ -25,6 +25,11 @@ import networkx as nx
 import pandas as pd
 
 try:
+    from .fiscal_years import fiscal_year_key
+except ImportError:  # pragma: no cover - supports direct script execution.
+    from fiscal_years import fiscal_year_key
+
+try:
     from .paths import (
         COMBINED_PROGRAMMING_DATA_PATH,
         MSTC_DATA_PATH,
@@ -544,7 +549,7 @@ def _add_programming_rows(
             slug = _slugify(column)
             attribute = _add_concept_node(
                 graph,
-                PROGRAMMING_EXTRA_NODE_TYPES.get(column, f"programming_{slug}"),
+                _programming_extra_node_type(column, slug),
                 label,
                 source_name=source_name,
             )
@@ -942,6 +947,13 @@ def _has_columns(df: pd.DataFrame, required_columns: Iterable[str]) -> bool:
 
 def _programming_extra_columns(df: pd.DataFrame) -> list[str]:
     return [column for column in df.columns if column not in PROGRAMMING_COLUMNS]
+
+
+def _programming_extra_node_type(column: str, slug: str) -> str:
+    fiscal_year = fiscal_year_key(column)
+    if fiscal_year:
+        return f"{fiscal_year}_budget"
+    return PROGRAMMING_EXTRA_NODE_TYPES.get(column, f"programming_{slug}")
 
 
 def _csv_appears_to_have_header(path: Path) -> bool:

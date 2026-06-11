@@ -22,6 +22,11 @@ import networkx as nx
 import pandas as pd
 
 from .asksage_classifier import DEFAULT_ASKSAGE_MODEL
+from .fiscal_years import (
+    detect_fiscal_year_columns,
+    fiscal_year_key,
+    normalized_fiscal_year_columns,
+)
 from .openai_classifier import DEFAULT_OPENAI_MODEL
 
 
@@ -53,7 +58,8 @@ CLASSIFICATION_CONTEXT_COLUMNS = {
     "Acquisition Name",
 }
 
-BUDGET_COLUMNS = ("FY2027", "FY2028", "FY2029", "FY2030", "FY2031", "FY2032")
+DEFAULT_BUDGET_COLUMNS = ("FY2027", "FY2028", "FY2029", "FY2030", "FY2031", "FY2032")
+BUDGET_COLUMNS = DEFAULT_BUDGET_COLUMNS
 AI_DIRECTNESS_LABELS = {
     "direct_ai_ml",
     "ai_enabled_workflow",
@@ -147,6 +153,7 @@ class EvidenceProfile:
     process_improvement_area: str
     program_request: str
     acquisition_context: tuple[str, ...]
+    fiscal_year_amounts: dict[str, float]
     fy2027: float
     fy2028: float
     fy2029: float
@@ -192,6 +199,7 @@ class ClassificationResult:
     process_improvement_area: str
     program_request: str
     acquisition_context: tuple[str, ...]
+    fiscal_year_amounts: dict[str, float]
     fy2027: float
     fy2028: float
     fy2029: float
@@ -425,6 +433,7 @@ def build_programming_evidence_profiles(
 
     claimed = frozenset(claimed_offices or set())
     profiles = []
+    budget_columns = _graph_fiscal_year_columns(graph) or DEFAULT_BUDGET_COLUMNS
 
     for record_id, data in graph.nodes(data=True):
         if data.get("node_type") != "programming_record":
@@ -439,14 +448,14 @@ def build_programming_evidence_profiles(
         wbs_node_id = _record_target_node(graph, record_id, "has_wbs")
         wbs_name = graph.nodes[wbs_node_id].get("label", "") if wbs_node_id else ""
         budget = {
-            column.casefold(): _collect_single_programming_column_value(
+            fiscal_year_key(column): _collect_single_programming_column_value(
                 graph, record_id, column
             )
-            for column in BUDGET_COLUMNS
+            for column in budget_columns
         }
         year_values = {
-            column.casefold(): _to_float(budget[column.casefold()]) or 0.0
-            for column in BUDGET_COLUMNS
+            fiscal_year_key(column): _to_float(budget[fiscal_year_key(column)]) or 0.0
+            for column in budget_columns
         }
         five_year_total = sum(year_values.values())
         additional_context, additional_context_nodes = (
@@ -496,12 +505,13 @@ def build_programming_evidence_profiles(
                     [record_id],
                     {"Acquisition Type", "Acquisition Name"},
                 ),
-                fy2027=year_values["fy2027"],
-                fy2028=year_values["fy2028"],
-                fy2029=year_values["fy2029"],
-                fy2030=year_values["fy2030"],
-                fy2031=year_values["fy2031"],
-                fy2032=year_values["fy2032"],
+                fiscal_year_amounts=dict(sorted(year_values.items())),
+                fy2027=year_values.get("fy2027", 0.0),
+                fy2028=year_values.get("fy2028", 0.0),
+                fy2029=year_values.get("fy2029", 0.0),
+                fy2030=year_values.get("fy2030", 0.0),
+                fy2031=year_values.get("fy2031", 0.0),
+                fy2032=year_values.get("fy2032", 0.0),
                 five_year_total=five_year_total,
                 validation_funding_level=funding_level in VALIDATION_FUNDING_LEVELS,
                 additional_context=additional_context,
@@ -630,8 +640,17 @@ def classification_results_to_dataframe(
     """Convert classification results to a flat DataFrame."""
 
     rows = []
+    fiscal_year_columns = normalized_fiscal_year_columns(
+        column
+        for result in results
+        for column in result.fiscal_year_amounts
+    )
     for result in results:
         row = asdict(result)
+        fiscal_year_amounts = row.pop("fiscal_year_amounts", {})
+        if isinstance(fiscal_year_amounts, dict):
+            for column in fiscal_year_columns:
+                row[column] = float(fiscal_year_amounts.get(column, 0.0) or 0.0)
         for key, value in list(row.items()):
             if isinstance(value, tuple):
                 row[key] = "; ".join(str(item) for item in value)
@@ -1354,6 +1373,7 @@ def _build_result_from_decision(
         process_improvement_area=evidence.process_improvement_area,
         program_request=evidence.program_request,
         acquisition_context=evidence.acquisition_context,
+        fiscal_year_amounts=evidence.fiscal_year_amounts,
         fy2027=evidence.fy2027,
         fy2028=evidence.fy2028,
         fy2029=evidence.fy2029,
@@ -1397,7 +1417,7 @@ def _classification_payload(
             "Return predicted_challenge, confidence, and rationale. Confidence "
             "must be one of: high, medium, low."
         ),
-        "programming_evidence": asdict(evidence),
+        "programming_evidence": _evidence_payload(evidence),
         "candidate_challenges": [
             {
                 **asdict(candidate),
@@ -1426,8 +1446,14 @@ def _ai_directness_payload(
             "modernization into meaningfully different scores."
         ),
         "predicted_challenge": predicted_challenge,
-        "programming_evidence": asdict(evidence),
+        "programming_evidence": _evidence_payload(evidence),
     }
+
+
+def _evidence_payload(evidence: EvidenceProfile) -> dict[str, Any]:
+    payload = asdict(evidence)
+    payload.pop("fiscal_year_amounts", None)
+    return payload
 
 
 def _lexical_classifier(payload: dict[str, Any]) -> dict[str, Any]:
@@ -2134,6 +2160,15 @@ def _collect_single_programming_column_value(
             if label:
                 values.append(str(label))
     return "; ".join(dict.fromkeys(values))
+
+
+def _graph_fiscal_year_columns(graph: nx.MultiDiGraph) -> tuple[str, ...]:
+    columns = {
+        str(node_data.get("column_name", ""))
+        for _, node_data in graph.nodes(data=True)
+        if node_data.get("programming_context") == "true"
+    }
+    return detect_fiscal_year_columns(columns)
 
 
 def _collect_programming_column_context(

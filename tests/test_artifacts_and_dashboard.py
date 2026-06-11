@@ -12,6 +12,11 @@ import pytest
 
 from programming_ontology import paths
 from programming_ontology._dashboard_report import build_classification_dashboard_html
+from programming_ontology.build_ontology import read_csv
+from programming_ontology.fiscal_years import (
+    detect_fiscal_year_columns,
+    fiscal_year_columns_for_cycles,
+)
 from programming_ontology.publish_dashboard import publish_dashboard
 
 
@@ -27,6 +32,23 @@ def _render_dashboard_html() -> str:
         office_claim_validation=pd.read_csv(paths.OFFICE_CLAIM_VALIDATION_PATH),
         challenge_coverage=pd.read_csv(paths.CHALLENGE_COVERAGE_SUMMARY_PATH),
         office_challenge_evidence=pd.read_csv(paths.OFFICE_CHALLENGE_EVIDENCE_PATH),
+    )
+
+
+def test_fiscal_year_helpers_detect_and_select_view_years() -> None:
+    columns = ["challenge", "fy2029", "FY2027", "FY2032", "notes", "fy2028"]
+
+    assert detect_fiscal_year_columns(columns) == ("FY2027", "fy2028", "fy2029", "FY2032")
+    assert fiscal_year_columns_for_cycles(columns, ["FYNSP 2028"]) == (
+        "fy2028",
+        "fy2029",
+        "FY2032",
+    )
+    assert fiscal_year_columns_for_cycles(columns, ["FYNSP 2027", "FYNSP 2028"]) == (
+        "FY2027",
+        "fy2028",
+        "fy2029",
+        "FY2032",
     )
 
 
@@ -55,13 +77,23 @@ def test_processed_artifacts_have_expected_row_level_schema() -> None:
         "fy2027",
         "fy2032",
     }
-    assert required_classification_columns.issubset(classifications.columns)
-    assert len(classifications) == 120
-    assert len(classifications) == len(reviewed)
-    assert classifications["fynsp_cycle"].value_counts().to_dict() == {
-        "FYNSP 2028": 61,
-        "FYNSP 2027": 59,
+    expected_source_counts = {
+        paths.PROGRAMMING_DATA_PATH.name: len(
+            read_csv(paths.PROGRAMMING_DATA_PATH, schema="programming")
+        ),
+        paths.PROGRAMMING_DATA_FYNSP_2027_PATH.name: len(
+            read_csv(paths.PROGRAMMING_DATA_FYNSP_2027_PATH, schema="programming")
+        ),
     }
+    expected_cycle_counts = {
+        "FYNSP 2028": expected_source_counts[paths.PROGRAMMING_DATA_PATH.name],
+        "FYNSP 2027": expected_source_counts[paths.PROGRAMMING_DATA_FYNSP_2027_PATH.name],
+    }
+    assert required_classification_columns.issubset(classifications.columns)
+    assert len(classifications) == sum(expected_source_counts.values())
+    assert len(classifications) == len(reviewed)
+    assert classifications["source_file"].value_counts().to_dict() == expected_source_counts
+    assert classifications["fynsp_cycle"].value_counts().to_dict() == expected_cycle_counts
     validation_by_level = (
         classifications.groupby("funding_level")["validation_funding_level"]
         .first()
@@ -230,6 +262,14 @@ def test_dashboard_html_contains_executive_sections_and_citations() -> None:
     assert 'data-disruptiveness-mode="BASELINE"' in html
     assert 'data-disruptiveness-mode="UFR"' in html
     assert 'data-disruptiveness-mode="ROT"' in html
+    assert 'data-expandable-funding-table="mission-funding-mix"' in html
+    assert 'data-expandable-funding-table="challenge-coverage"' in html
+    assert 'data-expandable-funding-table="lead-office-funding"' in html
+    for mode in ("Total", *FUNDING_LEVELS):
+        assert f'data-funding-expand="{mode}"' in html
+        assert f'data-funding-phase="{mode}"' in html
+        assert f"Expand {mode} fiscal-year phasing" in html
+    assert "expanded_funding_columns" in html
     assert "tile-rot" in html
     assert '<text x="78" y="510" text-anchor="middle">100</text>' in html
     assert '<text x="974" y="510" text-anchor="middle">0</text>' in html
@@ -255,6 +295,44 @@ def test_dashboard_insight_context_includes_raw_data_and_graph_snippet() -> None
 
     assert mission_context["raw_data"]
     assert mission_context["metadata"]["legend"] == list(FUNDING_LEVELS)
+    assert mission_context["metadata"]["fiscal_year_labels"] == [
+        "FY2027",
+        "FY2028",
+        "FY2029",
+        "FY2030",
+        "FY2031",
+        "FY2032",
+    ]
+    assert mission_context["metadata"]["phased_funding_modes"] == ["Total", *FUNDING_LEVELS]
+    for target_id in [
+        "combined-mission-funding-mix",
+        "combined-lead-office-funding",
+        "combined-challenge-coverage",
+    ]:
+        context = next(item for item in contexts if item["target"]["id"] == target_id)
+        labels = context["metadata"]["fiscal_year_labels"]
+        first_row = context["raw_data"][0]
+        assert first_row["fiscal_year_labels"] == labels
+        assert first_row["funding_phasing_reconciled"] is True
+        for mode in ("Total", *FUNDING_LEVELS):
+            profile = first_row["funding_phasing"][mode]
+            assert list(profile) == labels
+            expected = first_row["total_funding"] if mode == "Total" else first_row[mode]
+            assert sum(float(profile[label]) for label in labels) == pytest.approx(
+                float(expected)
+            )
+    fynsp_2028_context = next(
+        context
+        for context in contexts
+        if context["target"]["id"] == "fynsp-2028-mission-funding-mix"
+    )
+    assert fynsp_2028_context["metadata"]["fiscal_year_labels"] == [
+        "FY2028",
+        "FY2029",
+        "FY2030",
+        "FY2031",
+        "FY2032",
+    ]
     assert mission_context["ontology"]["available"] is True
     assert mission_context["ontology"]["selection"]["edge_count"] < mission_context["ontology"]["summary"]["edges"]
     assert mission_context["ontology"]["selection"]["node_count"] < mission_context["ontology"]["summary"]["nodes"]

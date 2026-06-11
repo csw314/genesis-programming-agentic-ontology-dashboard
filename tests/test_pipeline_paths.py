@@ -56,11 +56,20 @@ def test_raw_csv_files_are_loadable() -> None:
 
 def test_combined_programming_preprocess_preserves_provenance() -> None:
     combined = combine_programming_data()
+    expected_counts = {
+        paths.PROGRAMMING_DATA_PATH.name: len(
+            read_csv(paths.PROGRAMMING_DATA_PATH, schema="programming")
+        ),
+        paths.PROGRAMMING_DATA_FYNSP_2027_PATH.name: len(
+            read_csv(paths.PROGRAMMING_DATA_FYNSP_2027_PATH, schema="programming")
+        ),
+    }
 
-    assert len(combined) == 120
+    assert len(combined) == sum(expected_counts.values())
+    assert combined["source_file"].value_counts().to_dict() == expected_counts
     assert combined["fynsp_cycle"].value_counts().to_dict() == {
-        "FYNSP 2028": 61,
-        "FYNSP 2027": 59,
+        "FYNSP 2028": expected_counts[paths.PROGRAMMING_DATA_PATH.name],
+        "FYNSP 2027": expected_counts[paths.PROGRAMMING_DATA_FYNSP_2027_PATH.name],
     }
     first_fy28 = combined.loc[
         combined["programming_record_id"].eq("programming_record:programming_data_csv:1")

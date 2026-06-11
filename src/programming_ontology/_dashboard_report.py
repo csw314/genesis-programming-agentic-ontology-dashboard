@@ -11,9 +11,14 @@ from typing import Any
 import networkx as nx
 import pandas as pd
 
+from .fiscal_years import (
+    detect_fiscal_year_columns,
+    fiscal_year_columns_for_cycles,
+    fiscal_year_label,
+)
 
 FUNDING_LEVELS = ("BASELINE", "UFR", "ROT")
-FY_COLUMNS = ("fy2027", "fy2028", "fy2029", "fy2030", "fy2031", "fy2032")
+EXPANDABLE_FUNDING_COLUMNS = ("Total", *FUNDING_LEVELS)
 ASKSAGE_MULTIMODAL_MODELS = (
     {
         "id": "gpt-4.1-mini",
@@ -445,6 +450,31 @@ def build_classification_dashboard_html(
       text-align: left;
       font-weight: 650;
     }}
+    .funding-summary-header,
+    .funding-phase-header {{
+      white-space: nowrap;
+    }}
+    .funding-expand-toggle {{
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 0;
+      background: transparent;
+      color: #102a43;
+      padding: 0;
+      font: inherit;
+      font-weight: 650;
+    }}
+    .funding-toggle-symbol {{
+      display: inline-block;
+      min-width: 1em;
+      text-align: center;
+      color: var(--muted);
+    }}
+    .funding-phase-header,
+    .funding-phase-cell {{
+      min-width: 96px;
+    }}
     .data-table tr:nth-child(even) td {{ background: var(--soft); }}
     .num {{ text-align: right; white-space: nowrap; }}
     .muted {{ color: var(--muted); }}
@@ -645,6 +675,33 @@ def build_classification_dashboard_html(
       }});
     }});
     if (buttons.length) showView(buttons[0].dataset.fynspViewButton);
+  }})();
+  (function () {{
+    document.querySelectorAll('[data-expandable-funding-table]').forEach(function (table) {{
+      const buttons = Array.from(table.querySelectorAll('[data-funding-expand]'));
+      function setExpanded(mode, expanded) {{
+        buttons.forEach(function (button) {{
+          if (button.dataset.fundingExpand !== mode) return;
+          button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+          const symbol = button.querySelector('.funding-toggle-symbol');
+          if (symbol) symbol.textContent = expanded ? '-' : '+';
+          button.setAttribute(
+            'aria-label',
+            (expanded ? 'Collapse ' : 'Expand ') + mode + ' fiscal-year phasing'
+          );
+        }});
+        Array.from(table.querySelectorAll('[data-funding-phase]')).forEach(function (cell) {{
+          if (cell.dataset.fundingPhase === mode) cell.hidden = !expanded;
+        }});
+      }}
+      buttons.forEach(function (button) {{
+        button.addEventListener('click', function () {{
+          const mode = button.dataset.fundingExpand || '';
+          const expanded = button.getAttribute('aria-expanded') === 'true';
+          setExpanded(mode, !expanded);
+        }});
+      }});
+    }});
   }})();
 </script>
 {_dashboard_insights_script()}
@@ -1115,6 +1172,14 @@ def _dashboard_insights_script() -> str:
       const selections = {
         fynsp_view: activeViewButton ? activeViewButton.dataset.fynspViewButton || '' : ''
       };
+      const expandedFundingColumns = Array.from(
+        target.querySelectorAll('[data-funding-expand][aria-expanded="true"]')
+      ).map(function (button) {
+        return button.dataset.fundingExpand || '';
+      }).filter(Boolean);
+      if (expandedFundingColumns.length) {
+        selections.expanded_funding_columns = expandedFundingColumns;
+      }
       const disruptiveness = target.querySelector('.disruptiveness-tool');
       if (disruptiveness) {
         const activeMode = disruptiveness.querySelector('[data-disruptiveness-mode].active');
@@ -1386,6 +1451,7 @@ def _dashboard_view_html(
         challenge_coverage,
         claims,
     )
+    fiscal_year_labels = _summary_fiscal_year_labels(challenge_summary)
     contributions = _office_challenge_contributions(positive, role_map, claims)
     office_summary = _office_portfolio_summary(positive, claims)
     office_challenge = _office_challenge_portfolio(positive, role_map, claims)
@@ -1441,6 +1507,8 @@ def _dashboard_view_html(
             "description": "Funding by Genesis Mission Challenge across BASELINE, UFR, and ROT.",
             "labels": ["Genesis Mission Challenge", "Funding Mix", "Total", *FUNDING_LEVELS],
             "legend": list(FUNDING_LEVELS),
+            "fiscal_year_labels": fiscal_year_labels,
+            "phased_funding_modes": list(EXPANDABLE_FUNDING_COLUMNS),
         },
         ontology_graph=ontology_graph,
     )
@@ -1539,6 +1607,8 @@ def _dashboard_view_html(
         metadata={
             "description": "Lead program office funding against claimed Genesis Mission Challenges.",
             "labels": ["Lead Office", "Genesis Mission Challenge", "Funding Mix", "Total", *FUNDING_LEVELS],
+            "fiscal_year_labels": fiscal_year_labels,
+            "phased_funding_modes": list(EXPANDABLE_FUNDING_COLUMNS),
         },
         ontology_graph=ontology_graph,
     )
@@ -1553,6 +1623,8 @@ def _dashboard_view_html(
         metadata={
             "description": "Funding coverage, claimed offices, actual contributors, and coordination signal.",
             "labels": ["Genesis Mission Challenge", "Total", *FUNDING_LEVELS, "Office Players", "Funding Offices"],
+            "fiscal_year_labels": fiscal_year_labels,
+            "phased_funding_modes": list(EXPANDABLE_FUNDING_COLUMNS),
         },
         ontology_graph=ontology_graph,
     )
@@ -1691,9 +1763,12 @@ def _positive_funding_rows(reviewed: pd.DataFrame) -> pd.DataFrame:
     frame = reviewed.copy()
     frame["funding_level"] = frame["funding_level"].astype(str).str.upper().str.strip()
     frame = frame.loc[frame["funding_level"].isin(FUNDING_LEVELS)].copy()
-    for column in (*FY_COLUMNS, "five_year_total"):
+    fiscal_year_columns = detect_fiscal_year_columns(frame.columns)
+    for column in (*fiscal_year_columns, "five_year_total"):
         if column in frame.columns:
             frame[column] = pd.to_numeric(frame[column], errors="coerce").fillna(0.0)
+    if "five_year_total" not in frame.columns and fiscal_year_columns:
+        frame["five_year_total"] = frame[list(fiscal_year_columns)].sum(axis=1)
     if "programming_record_id" not in frame.columns:
         frame["programming_record_id"] = frame.index.astype(str)
     return frame
@@ -1724,11 +1799,14 @@ def _challenge_funding_summary(
     challenge_coverage: pd.DataFrame,
     claims: pd.DataFrame,
 ) -> pd.DataFrame:
+    fiscal_year_columns = _view_fiscal_year_columns(positive)
+    fiscal_year_labels = [fiscal_year_label(column) for column in fiscal_year_columns]
     if positive.empty:
         funding = pd.DataFrame(columns=["challenge_name", *FUNDING_LEVELS])
         counts = pd.DataFrame(
             columns=["challenge_name", "project_rows", "wbs_count", "contributing_office_count"]
         )
+        phasing = pd.DataFrame(columns=["challenge_name", "funding_phasing"])
     else:
         funding = (
             positive.pivot_table(
@@ -1750,6 +1828,7 @@ def _challenge_funding_summary(
             )
             .rename(columns={"predicted_challenge": "challenge_name"})
         )
+        phasing = _challenge_funding_phasing(positive, fiscal_year_columns)
     for level in FUNDING_LEVELS:
         if level not in funding.columns:
             funding[level] = 0.0
@@ -1765,10 +1844,24 @@ def _challenge_funding_summary(
     summary = (
         base_challenges.merge(funding[["challenge_name", *FUNDING_LEVELS]], on="challenge_name", how="left")
         .merge(counts, on="challenge_name", how="left")
+        .merge(phasing, on="challenge_name", how="left")
     )
     for column in [*FUNDING_LEVELS, "project_rows", "wbs_count", "contributing_office_count"]:
         summary[column] = pd.to_numeric(summary[column], errors="coerce").fillna(0)
     summary["total_funding"] = summary[list(FUNDING_LEVELS)].sum(axis=1)
+    summary["fiscal_year_labels"] = [list(fiscal_year_labels) for _ in range(len(summary))]
+    summary["funding_phasing"] = summary["funding_phasing"].map(
+        lambda value: value
+        if isinstance(value, dict)
+        else _zero_funding_phasing(fiscal_year_labels)
+    )
+    summary["funding_phasing_reconciled"] = summary.apply(
+        _funding_phasing_reconciles,
+        axis=1,
+    )
+    if not bool(summary["funding_phasing_reconciled"].all()):
+        bad = "; ".join(summary.loc[~summary["funding_phasing_reconciled"], "challenge_name"].head(5))
+        raise ValueError(f"Funding phasing did not reconcile for: {bad}")
     summary["ufr_share"] = summary.apply(
         lambda row: 0.0
         if row["total_funding"] <= 0
@@ -1797,6 +1890,111 @@ def _challenge_funding_summary(
     )
     summary["collaboration_signal"] = summary.apply(_collaboration_signal, axis=1)
     return summary.sort_values(["total_funding", "challenge_name"], ascending=[False, True]).reset_index(drop=True)
+
+
+def _view_fiscal_year_columns(positive: pd.DataFrame) -> tuple[str, ...]:
+    if positive.empty:
+        return ()
+    cycles = positive["fynsp_cycle"].tolist() if "fynsp_cycle" in positive.columns else []
+    return fiscal_year_columns_for_cycles(positive.columns, cycles)
+
+
+def _challenge_funding_phasing(
+    positive: pd.DataFrame,
+    fiscal_year_columns: tuple[str, ...],
+) -> pd.DataFrame:
+    labels = [fiscal_year_label(column) for column in fiscal_year_columns]
+    if positive.empty:
+        return pd.DataFrame(columns=["challenge_name", "funding_phasing"])
+
+    frame = positive.copy()
+    for column in fiscal_year_columns:
+        frame[column] = pd.to_numeric(frame[column], errors="coerce").fillna(0.0)
+
+    rows = []
+    for challenge, group in frame.groupby("predicted_challenge", dropna=False):
+        phasing = {}
+        for level in FUNDING_LEVELS:
+            level_rows = group.loc[group["funding_level"].eq(level)]
+            phasing[level] = {
+                label: float(level_rows[column].sum()) if not level_rows.empty else 0.0
+                for column, label in zip(fiscal_year_columns, labels)
+            }
+        phasing["Total"] = {
+            label: sum(phasing[level][label] for level in FUNDING_LEVELS)
+            for label in labels
+        }
+        rows.append(
+            {
+                "challenge_name": _clean_text(challenge),
+                "funding_phasing": phasing,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _office_challenge_funding_phasing(
+    positive: pd.DataFrame,
+    fiscal_year_columns: tuple[str, ...],
+) -> pd.DataFrame:
+    labels = [fiscal_year_label(column) for column in fiscal_year_columns]
+    if positive.empty:
+        return pd.DataFrame(
+            columns=["challenge_name", "normalized_funding_office", "funding_phasing"]
+        )
+
+    frame = positive.copy()
+    for column in fiscal_year_columns:
+        frame[column] = pd.to_numeric(frame[column], errors="coerce").fillna(0.0)
+
+    rows = []
+    for (challenge, office), group in frame.groupby(
+        ["predicted_challenge", "normalized_funding_office"],
+        dropna=False,
+    ):
+        phasing = {}
+        for level in FUNDING_LEVELS:
+            level_rows = group.loc[group["funding_level"].eq(level)]
+            phasing[level] = {
+                label: float(level_rows[column].sum()) if not level_rows.empty else 0.0
+                for column, label in zip(fiscal_year_columns, labels)
+            }
+        phasing["Total"] = {
+            label: sum(phasing[level][label] for level in FUNDING_LEVELS)
+            for label in labels
+        }
+        rows.append(
+            {
+                "challenge_name": _clean_text(challenge),
+                "normalized_funding_office": _clean_text(office),
+                "funding_phasing": phasing,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _zero_funding_phasing(labels: list[str]) -> dict[str, dict[str, float]]:
+    return {
+        mode: {label: 0.0 for label in labels}
+        for mode in EXPANDABLE_FUNDING_COLUMNS
+    }
+
+
+def _funding_phasing_reconciles(row: pd.Series) -> bool:
+    labels = list(row.get("fiscal_year_labels") or [])
+    phasing = row.get("funding_phasing")
+    if not isinstance(phasing, dict):
+        return False
+    checks = [("Total", _numeric_value(row.get("total_funding")))]
+    checks.extend((level, _numeric_value(row.get(level))) for level in FUNDING_LEVELS)
+    for mode, expected in checks:
+        profile = phasing.get(mode, {})
+        if not isinstance(profile, dict):
+            return False
+        actual = sum(_numeric_value(profile.get(label)) for label in labels)
+        if abs(actual - expected) > 0.01:
+            return False
+    return True
 
 
 def _claim_summary(claims: pd.DataFrame) -> pd.DataFrame:
@@ -2017,6 +2215,8 @@ def _lead_claim_funding_summary(
     claims: pd.DataFrame,
     contributions: pd.DataFrame,
 ) -> pd.DataFrame:
+    fiscal_year_columns = _view_fiscal_year_columns(positive)
+    fiscal_year_labels = [fiscal_year_label(column) for column in fiscal_year_columns]
     leads = claims.loc[claims["claim_role"].eq("lead")].rename(
         columns={"claimed_office": "lead_program_office"}
     )
@@ -2030,6 +2230,9 @@ def _lead_claim_funding_summary(
                 "project_rows",
                 "wbs_count",
                 "collaboration_signal",
+                "fiscal_year_labels",
+                "funding_phasing",
+                "funding_phasing_reconciled",
             ]
         )
 
@@ -2054,8 +2257,35 @@ def _lead_claim_funding_summary(
         on=["challenge_name", "lead_program_office"],
         how="left",
     )
+    lead_phasing = _office_challenge_funding_phasing(
+        positive,
+        fiscal_year_columns,
+    ).rename(columns={"normalized_funding_office": "lead_program_office"})
+    summary = summary.merge(
+        lead_phasing,
+        on=["challenge_name", "lead_program_office"],
+        how="left",
+    )
     for column in [*FUNDING_LEVELS, "total_funding", "project_rows", "wbs_count"]:
         summary[column] = pd.to_numeric(summary[column], errors="coerce").fillna(0)
+    summary["fiscal_year_labels"] = [list(fiscal_year_labels) for _ in range(len(summary))]
+    summary["funding_phasing"] = summary["funding_phasing"].map(
+        lambda value: value
+        if isinstance(value, dict)
+        else _zero_funding_phasing(fiscal_year_labels)
+    )
+    summary["funding_phasing_reconciled"] = summary.apply(
+        _funding_phasing_reconciles,
+        axis=1,
+    )
+    if not bool(summary["funding_phasing_reconciled"].all()):
+        bad = "; ".join(
+            summary.loc[
+                ~summary["funding_phasing_reconciled"],
+                "challenge_name",
+            ].head(5)
+        )
+        raise ValueError(f"Lead office funding phasing did not reconcile for: {bad}")
 
     contributor_counts = contributions.groupby("challenge_name")["normalized_funding_office"].nunique()
     summary["collaboration_signal"] = summary["challenge_name"].map(
@@ -2593,6 +2823,7 @@ def _mission_funding_mix_html(challenge_summary: pd.DataFrame) -> str:
     if challenge_summary.empty:
         return "<p>No BASELINE, UFR, or ROT funding rows were found.</p>"
 
+    fiscal_year_labels = _summary_fiscal_year_labels(challenge_summary)
     max_total = max(float(challenge_summary["total_funding"].max()), 1.0)
     rows = []
     for _, row in challenge_summary.iterrows():
@@ -2603,8 +2834,9 @@ def _mission_funding_mix_html(challenge_summary: pd.DataFrame) -> str:
             f"data-{level.lower()}-total=\"{funding_values[level]:.2f}\""
             for level in FUNDING_LEVELS
         )
-        funding_cells = "".join(
-            f"<td class=\"num\">{_format_money(funding_values[level])}</td>"
+        funding_cells = _expandable_funding_cells_html(row, "Total", fiscal_year_labels)
+        funding_cells += "".join(
+            _expandable_funding_cells_html(row, level, fiscal_year_labels)
             for level in FUNDING_LEVELS
         )
         rows.append(
@@ -2615,7 +2847,6 @@ def _mission_funding_mix_html(challenge_summary: pd.DataFrame) -> str:
             f"data-contributor-count=\"{int(row['contributing_office_count'])}\">"
             f"<td>{_h(row['challenge_name'])}</td>"
             f"<td>{_stacked_bar(total, funding_values, width)}</td>"
-            f"<td class=\"num\">{_format_money(total)}</td>"
             f"{funding_cells}"
             f"<td class=\"num\">{int(row['contributing_office_count'])}</td>"
             f"<td class=\"num\">{int(row['program_office_player_count'])}</td>"
@@ -2623,9 +2854,10 @@ def _mission_funding_mix_html(challenge_summary: pd.DataFrame) -> str:
             "</tr>"
         )
     return (
-        "<div class=\"viz-block\"><table class=\"data-table\">"
-        "<thead><tr><th>Genesis Mission Challenge</th><th>Funding Mix</th><th>Total</th>"
-        f"{_funding_header_html()}<th>Funding Offices</th><th>Office Players</th><th>Collaboration Signal</th></tr></thead>"
+        "<div class=\"viz-block\"><table class=\"data-table\" data-expandable-funding-table=\"mission-funding-mix\">"
+        "<thead><tr><th>Genesis Mission Challenge</th><th>Funding Mix</th>"
+        f"{_expandable_funding_header_html(fiscal_year_labels)}"
+        "<th>Funding Offices</th><th>Office Players</th><th>Collaboration Signal</th></tr></thead>"
         f"<tbody>{''.join(rows)}</tbody></table></div>"
     )
 
@@ -2906,14 +3138,16 @@ def _lead_claim_funding_html(lead_summary: pd.DataFrame) -> str:
     if lead_summary.empty:
         return "<p>No claimed lead office rows were found.</p>"
 
+    fiscal_year_labels = _summary_fiscal_year_labels(lead_summary)
     max_total = max(float(lead_summary["total_funding"].max()), 1.0)
     rows = []
     for _, row in lead_summary.iterrows():
         total = float(row["total_funding"])
         width = 3 if total <= 0 else max(6, 100 * total / max_total)
         funding_values = _funding_values(row)
-        funding_cells = "".join(
-            f"<td class=\"num\">{_format_money(funding_values[level])}</td>"
+        funding_cells = _expandable_funding_cells_html(row, "Total", fiscal_year_labels)
+        funding_cells += "".join(
+            _expandable_funding_cells_html(row, level, fiscal_year_labels)
             for level in FUNDING_LEVELS
         )
         rows.append(
@@ -2921,7 +3155,6 @@ def _lead_claim_funding_html(lead_summary: pd.DataFrame) -> str:
             f"<td>{_h(row['lead_program_office'])}</td>"
             f"<td>{_h(row['challenge_name'])}</td>"
             f"<td>{_stacked_bar(total, funding_values, width)}</td>"
-            f"<td class=\"num\">{_format_money(total)}</td>"
             f"{funding_cells}"
             f"<td class=\"num\">{int(row['project_rows'])}</td>"
             f"<td class=\"num\">{int(row['wbs_count'])}</td>"
@@ -2929,9 +3162,10 @@ def _lead_claim_funding_html(lead_summary: pd.DataFrame) -> str:
             "</tr>"
         )
     return (
-        "<div class=\"viz-block\"><table class=\"data-table\">"
+        "<div class=\"viz-block\"><table class=\"data-table\" data-expandable-funding-table=\"lead-office-funding\">"
         "<thead><tr><th>Lead Office</th><th>Genesis Mission Challenge</th><th>Funding Mix</th>"
-        f"<th>Total</th>{_funding_header_html()}<th>Rows</th><th>WBS</th><th>Signal</th></tr></thead>"
+        f"{_expandable_funding_header_html(fiscal_year_labels)}"
+        "<th>Rows</th><th>WBS</th><th>Signal</th></tr></thead>"
         f"<tbody>{''.join(rows)}</tbody></table></div>"
     )
 
@@ -2940,17 +3174,17 @@ def _challenge_coverage_html(challenge_summary: pd.DataFrame) -> str:
     if challenge_summary.empty:
         return "<p>No challenge coverage rows were found.</p>"
 
+    fiscal_year_labels = _summary_fiscal_year_labels(challenge_summary)
     rows = []
     for _, row in challenge_summary.iterrows():
-        funding_values = _funding_values(row)
-        funding_cells = "".join(
-            f"<td class=\"num\">{_format_money(funding_values[level])}</td>"
+        funding_cells = _expandable_funding_cells_html(row, "Total", fiscal_year_labels)
+        funding_cells += "".join(
+            _expandable_funding_cells_html(row, level, fiscal_year_labels)
             for level in FUNDING_LEVELS
         )
         rows.append(
             "<tr>"
             f"<td>{_h(row['challenge_name'])}</td>"
-            f"<td class=\"num\">{_format_money(row['total_funding'])}</td>"
             f"{funding_cells}"
             f"<td class=\"num\">{int(row['program_office_player_count'])}</td>"
             f"<td class=\"num\">{int(row['contributing_office_count'])}</td>"
@@ -2961,8 +3195,8 @@ def _challenge_coverage_html(challenge_summary: pd.DataFrame) -> str:
             "</tr>"
         )
     return (
-        "<table class=\"data-table\">"
-        f"<thead><tr><th>Genesis Mission Challenge</th><th>Total</th>{_funding_header_html()}"
+        "<table class=\"data-table\" data-expandable-funding-table=\"challenge-coverage\">"
+        f"<thead><tr><th>Genesis Mission Challenge</th>{_expandable_funding_header_html(fiscal_year_labels)}"
         "<th>Office Players</th><th>Funding Offices</th><th>Claimed Lead</th><th>Claimed Partners</th><th>Actual Contributors</th><th>Signal</th></tr></thead>"
         f"<tbody>{''.join(rows)}</tbody></table>"
     )
@@ -2993,8 +3227,67 @@ def _funding_values(row: Any) -> dict[str, float]:
     }
 
 
-def _funding_header_html() -> str:
-    return "".join(f"<th>{_h(level)}</th>" for level in FUNDING_LEVELS)
+def _summary_fiscal_year_labels(frame: pd.DataFrame) -> list[str]:
+    if "fiscal_year_labels" in frame.columns:
+        for value in frame["fiscal_year_labels"]:
+            if isinstance(value, list):
+                return [str(label) for label in value]
+            if isinstance(value, tuple):
+                return [str(label) for label in value]
+    return [fiscal_year_label(column) for column in detect_fiscal_year_columns(frame.columns)]
+
+
+def _expandable_funding_header_html(fiscal_year_labels: list[str]) -> str:
+    cells = []
+    for mode in EXPANDABLE_FUNDING_COLUMNS:
+        cells.append(
+            "<th class=\"funding-summary-header\">"
+            f"<button type=\"button\" class=\"funding-expand-toggle\" "
+            f"data-funding-expand=\"{_ha(mode)}\" aria-expanded=\"false\" "
+            f"aria-label=\"Expand {_ha(mode)} fiscal-year phasing\">"
+            "<span class=\"funding-toggle-symbol\" aria-hidden=\"true\">+</span>"
+            f"<span>{_h(mode)}</span>"
+            "</button></th>"
+        )
+        cells.extend(
+            "<th class=\"funding-phase-header\" "
+            f"data-funding-phase=\"{_ha(mode)}\" hidden>{_h(mode)} {_h(label)}</th>"
+            for label in fiscal_year_labels
+        )
+    return "".join(cells)
+
+
+def _expandable_funding_cells_html(
+    row: Any,
+    mode: str,
+    fiscal_year_labels: list[str],
+) -> str:
+    amount = _funding_amount(row, mode)
+    profile = _funding_phase_profile(row, mode)
+    cells = [f"<td class=\"num\">{_format_money(amount)}</td>"]
+    cells.extend(
+        "<td class=\"num funding-phase-cell\" "
+        f"data-funding-phase=\"{_ha(mode)}\" hidden>"
+        f"{_format_money(profile.get(label, 0.0))}</td>"
+        for label in fiscal_year_labels
+    )
+    return "".join(cells)
+
+
+def _funding_amount(row: Any, mode: str) -> float:
+    if mode == "Total":
+        return _numeric_value(row.get("total_funding", 0.0) if hasattr(row, "get") else 0.0)
+    return _numeric_value(row.get(mode, 0.0) if hasattr(row, "get") else 0.0)
+
+
+def _funding_phase_profile(row: Any, mode: str) -> dict[str, float]:
+    phasing = row.get("funding_phasing", {}) if hasattr(row, "get") else {}
+    if not isinstance(phasing, dict):
+        return {}
+    profile = phasing.get(mode, {})
+    if not isinstance(profile, dict):
+        return {}
+    return {str(label): _numeric_value(value) for label, value in profile.items()}
 
 
 def _stacked_bar(total: Any, funding_values: dict[str, float], width: float = 100.0) -> str:
